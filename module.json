@@ -1,5 +1,5 @@
 {
-   "name": "Axecleft-Gemstones",
+   "name": "axecleft-gemstones",
    "title": "Axecleft's Gemstones",
    "description": "A collection of 3.5 SRD gemstones",
    "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.1/module.json",
@@ -20,7 +20,7 @@
     {
       "label": "Gems, 10 gp",
       "type": "Item",
-      "module": "Axecleft-Gemstones",
+      "module": "axecleft-gemstones",
       "name": "gems-10-gp",
       "path": "packs/gems-10-gp.db",
       "system": "D35E",
@@ -30,7 +30,7 @@
     {
       "label": "Gems, 50 gp",
       "type": "Item",
-      "module": "Axecleft-Gemstones",
+      "module": "axecleft-gemstones",
       "name": "gems-50-gp",
       "path": "packs/gems-50-gp.db",
       "system": "D35E",
@@ -40,7 +40,7 @@
     {
       "label": "Gems, 100 gp",
       "type": "Item",
-      "module": "Axecleft-Gemstones",
+      "module": "axecleft-gemstones",
       "name": "gems-100-gp",
       "path": "packs/gems-100-gp.db",
       "system": "D35E",
@@ -50,7 +50,7 @@
     {
       "label": "Gems, 500 gp",
       "type": "Item",
-      "module": "Axecleft-Gemstones",
+      "module": "axecleft-gemstones",
       "name": "gems-500-gp",
       "path": "packs/gems-500-gp.db",
       "system": "D35E",
@@ -60,7 +60,7 @@
     {
       "label": "Gems, 1000 gp",
       "type": "Item",
-      "module": "Axecleft-Gemstones",
+      "module": "axecleft-gemstones",
       "name": "gems-1000-gp",
       "path": "packs/gems-1000-gp.db",
       "system": "D35E",
@@ -70,7 +70,7 @@
     {
       "label": "Gems, 5000 gp",
       "type": "Item",
-      "module": "Axecleft-Gemstones",
+      "module": "axecleft-gemstones",
       "name": "gems-5000-gps",
       "path": "packs/gems-5000-gp.db",
       "system": "D35E",
