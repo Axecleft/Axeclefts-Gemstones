@@ -1,0 +1,81 @@
+{
+   "name": "Axecleft-Gemstones",
+   "title": "Axecleft's Gemstones",
+   "description": "A collection of 3.5 SRD gemstones",
+   "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.1/module.json",
+   "download": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.1.zip",
+   "authors": [
+    {
+      "name": "Axecleft",
+      "discord": "axecleft",
+      "flags": {}
+    }
+  ],
+   "version": "1.1",
+   "compatibility": {
+   "minimum": "0.7.5",
+   "verified": "11.302"
+  },
+"packs": [
+    {
+      "label": "Gems, 10 gp",
+      "type": "Item",
+      "module": "Axecleft-Gemstones",
+      "name": "gems-10-gp",
+      "path": "packs/gems-10-gp.db",
+      "system": "D35E",
+      "private": false,
+      "flags": {}
+    },
+    {
+      "label": "Gems, 50 gp",
+      "type": "Item",
+      "module": "Axecleft-Gemstones",
+      "name": "gems-50-gp",
+      "path": "packs/gems-50-gp.db",
+      "system": "D35E",
+      "private": false,
+      "flags": {}
+    },
+    {
+      "label": "Gems, 100 gp",
+      "type": "Item",
+      "module": "Axecleft-Gemstones",
+      "name": "gems-100-gp",
+      "path": "packs/gems-100-gp.db",
+      "system": "D35E",
+      "private": false,
+      "flags": {}
+    },
+    {
+      "label": "Gems, 500 gp",
+      "type": "Item",
+      "module": "Axecleft-Gemstones",
+      "name": "gems-500-gp",
+      "path": "packs/gems-500-gp.db",
+      "system": "D35E",
+      "private": false,
+      "flags": {}
+    },
+    {
+      "label": "Gems, 1000 gp",
+      "type": "Item",
+      "module": "Axecleft-Gemstones",
+      "name": "gems-1000-gp",
+      "path": "packs/gems-1000-gp.db",
+      "system": "D35E",
+      "private": false,
+      "flags": {}
+    },
+    {
+      "label": "Gems, 5000 gp",
+      "type": "Item",
+      "module": "Axecleft-Gemstones",
+      "name": "gems-5000-gps",
+      "path": "packs/gems-5000-gp.db",
+      "system": "D35E",
+      "private": false,
+      "flags": {}
+    }
+  ]
+ }
