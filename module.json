@@ -2,8 +2,8 @@
    "name": "axecleft-gemstones",
    "title": "Axecleft's Gemstones",
    "description": "A collection of 3.5 SRD gemstones",
-   "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.1/module.json",
-   "download": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.1.zip",
+   "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.2/module.json",
+   "download": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.2.zip",
    "authors": [
     {
       "name": "Axecleft",
@@ -11,10 +11,10 @@
       "flags": {}
     }
   ],
-   "version": "1.1",
+   "version": "1.2",
    "compatibility": {
    "minimum": "0.7.5",
-   "verified": "11.302"
+   "verified": "11.313"
   },
 "packs": [
     {
