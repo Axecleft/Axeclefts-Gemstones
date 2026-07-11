@@ -1,5 +1,5 @@
 {
-   "name": "axecleft-gemstones",
+   "id": "axecleft-gemstones",
    "title": "Axecleft's Gemstones",
    "description": "A collection of 3.5 SRD gemstones",
    "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.2/module.json",
@@ -11,70 +11,106 @@
       "flags": {}
     }
   ],
-   "version": "1.2",
+   "version": "1.14",
    "compatibility": {
-   "minimum": "0.7.5",
-   "verified": "11.313"
+   "minimum": "13",
+   "verified": "14"
   },
-"packs": [
+   "packFolders": [
+     {
+        "name": "Axecleft's Gemstones",
+        "sorting": "a",
+        "color": "#3b24f0",
+        "packs": [],
+        "folders": [
+            {
+                 "name": "Gemstones",
+                 "sorting": "a",
+                 "color": "#1f08c9",
+                 "packs": [
+                      "gems-10-gp",
+                      "gems-50-gp",
+                      "gems-100-gp",
+                      "gems-500-gp",
+                      "gems-1000-gp",
+                      "gems-5000-gp"
+                      ],
+                  "folders": []
+             }
+            ]
+           }
+          ],
+   "packs": [
     {
       "label": "Gems, 10 gp",
       "type": "Item",
-      "module": "axecleft-gemstones",
       "name": "gems-10-gp",
-      "path": "packs/gems-10-gp.db",
+      "path": "packs/gems-10-gp",
       "system": "D35E",
-      "private": false,
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
       "flags": {}
     },
     {
       "label": "Gems, 50 gp",
       "type": "Item",
-      "module": "axecleft-gemstones",
       "name": "gems-50-gp",
-      "path": "packs/gems-50-gp.db",
+      "path": "packs/gems-50-gp",
       "system": "D35E",
-      "private": false,
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
       "flags": {}
     },
     {
       "label": "Gems, 100 gp",
       "type": "Item",
-      "module": "axecleft-gemstones",
       "name": "gems-100-gp",
-      "path": "packs/gems-100-gp.db",
+      "path": "packs/gems-100-gp",
       "system": "D35E",
-      "private": false,
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
       "flags": {}
     },
     {
       "label": "Gems, 500 gp",
       "type": "Item",
-      "module": "axecleft-gemstones",
       "name": "gems-500-gp",
-      "path": "packs/gems-500-gp.db",
+      "path": "packs/gems-500-gp",
       "system": "D35E",
-      "private": false,
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
       "flags": {}
     },
     {
       "label": "Gems, 1000 gp",
       "type": "Item",
-      "module": "axecleft-gemstones",
       "name": "gems-1000-gp",
-      "path": "packs/gems-1000-gp.db",
+      "path": "packs/gems-1000-gp",
       "system": "D35E",
-      "private": false,
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
       "flags": {}
     },
     {
       "label": "Gems, 5000 gp",
       "type": "Item",
-      "module": "axecleft-gemstones",
-      "name": "gems-5000-gps",
-      "path": "packs/gems-5000-gp.db",
+      "name": "gems-5000-gp",
+      "path": "packs/gems-5000-gp",
       "system": "D35E",
-      "private": false,
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
       "flags": {}
     }
   ]
