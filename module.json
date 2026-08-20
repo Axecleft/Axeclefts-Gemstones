@@ -1,9 +1,9 @@
 {
    "id": "axecleft-gemstones",
    "title": "Axecleft's Gemstones",
-   "description": "A collection of 3.5 SRD gemstones",
-   "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.14.2/module.json",
-   "download": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.14.2.zip",
+   "description": "A collection of 3.5 SRD gemstones With added support for Homebrew entries as well as 5 quality and 5 size variations for every entry. Almost 11,000 total variations.\n\n** Gem descriptions are AI generated using ChatGPT",
+   "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.14.3/module.json",
+   "download": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.14.3.zip",
    "authors": [
     {
       "name": "Axecleft",
@@ -11,35 +11,58 @@
       "flags": {}
     }
   ],
-   "version": "1.14.2",
+   "version": "1.14.3",
    "compatibility": {
    "minimum": "13",
    "verified": "14"
   },
-   "packFolders": [
-     {
-        "name": "Axecleft's Gemstones",
-        "sorting": "a",
-        "color": "#3b24f0",
-        "packs": [],
-        "folders": [
-            {
-                 "name": "Gemstones",
-                 "sorting": "a",
-                 "color": "#1f08c9",
-                 "packs": [
-                      "gems-10-gp",
-                      "gems-50-gp",
-                      "gems-100-gp",
-                      "gems-500-gp",
-                      "gems-1000-gp",
-                      "gems-5000-gp"
-                      ],
-                  "folders": []
-             }
-            ]
-           }
+  "packFolders": [
+    {
+      "name": "Axecleft's Gemstones",
+      "sorting": "a",
+      "color": "#3b24f0",
+      "packs": [],
+      "folders": [
+        {
+          "name": "Roll Tables",
+          "sorting": "a",
+          "color": "#1f08c9",
+          "packs": [
+            "roll-tables"
           ],
+          "folders": []
+        },
+        {
+          "name": "SRD Gemstones",
+          "sorting": "a",
+          "color": "#1f08c9",
+          "packs": [
+            "gems-10-gp",
+            "gems-50-gp",
+            "gems-100-gp",
+            "gems-500-gp",
+            "gems-1000-gp",
+            "gems-5000-gp"
+          ],
+          "folders": []
+        },
+        {
+          "name": "Homebrew Gemstones",
+          "sorting": "a",
+          "color": "#1f08c9",
+          "packs": [
+            "homebrew-base-10-gp-gems",
+            "homebrew-base-50-gp-gems",
+            "homebrew-base-100-gp-gems",
+            "homebrew-base-500-gp-gems",
+            "homebrew-base-1000-gp-gems",
+            "homebrew-base-5000-gp-gems"
+          ],
+          "folders": []
+        }
+      ]
+    }
+  ],
    "packs": [
     {
       "label": "Gems, 10 gp",
@@ -106,6 +129,90 @@
       "type": "Item",
       "name": "gems-5000-gp",
       "path": "packs/gems-5000-gp",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    },
+    {
+      "name": "homebrew-base-10-gp-gems",
+      "label": "Homebrew, Base 10 gp Gems",
+      "path": "packs/homebrew-base-10-gp-gems",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    },
+    {
+      "name": "homebrew-base-50-gp-gems",
+      "label": "Homebrew, Base 50 gp Gems",
+      "path": "packs/homebrew-base-50-gp-gems",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    },
+    {
+      "name": "homebrew-base-100-gp-gems",
+      "label": "Homebrew, Base 100 gp Gems",
+      "path": "packs/homebrew-base-100-gp-gems",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    },
+    {
+      "name": "homebrew-base-500-gp-gems",
+      "label": "Homebrew, Base 500 gp Gems",
+      "path": "packs/homebrew-base-500-gp-gems",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    },
+    {
+      "name": "homebrew-base-1000-gp-gems",
+      "label": "Homebrew, Base 1000 gp Gems",
+      "path": "packs/homebrew-base-1000-gp-gems",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    },
+    {
+      "name": "homebrew-base-5000-gp-gems",
+      "label": "Homebrew, Base 5000 gp Gems",
+      "path": "packs/homebrew-base-5000-gp-gems",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    },
+    {
+      "name": "roll-tables",
+      "label": "Roll Tables",
+      "path": "packs/roll-tables",
+      "type": "RollTable",
       "system": "D35E",
       "ownership": {
         "PLAYER": "OBSERVER",
