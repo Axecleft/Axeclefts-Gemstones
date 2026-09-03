@@ -1,31 +1,29 @@
 {
-   "id": "axecleft-gemstones",
-   "title": "Axecleft's Gemstones",
-   "description": "A collection of 3.5 SRD gemstones With added support for Homebrew entries as well as 5 quality and 5 size variations for every entry. Almost 11,000 total variations.\n\n** Gem descriptions are AI generated using ChatGPT",
-   "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.14.3/module.json",
-   "download": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.14.3.zip",
-   "authors": [
+  "title": "Axecleft's Gemstones",
+  "description": "A collection of 3.5 SRD gemstones With added support for Homebrew entries as well as 5 quality and 5 size variations for every entry. Almost 11,000 total variations.\n\n** Gem descriptions are AI generated using ChatGPT",
+  "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.11.2/module.json",
+  "download": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.11.2.zip",
+  "authors": [
     {
       "name": "Axecleft",
-      "discord": "axecleft",
-      "flags": {}
+      "discord": "axecleft"
     }
   ],
-   "version": "1.14.3",
-   "compatibility": {
-   "minimum": "13",
-   "verified": "14"
+  "version": "1.11.2",
+  "compatibility": {
+    "minimum": "0.9.0",
+    "verified": "11.315"
   },
   "packFolders": [
     {
       "name": "Axecleft's Gemstones",
-      "sorting": "a",
+      "sorting": "m",
       "color": "#3b24f0",
       "packs": [],
       "folders": [
         {
           "name": "Roll Tables",
-          "sorting": "a",
+          "sorting": "m",
           "color": "#1f08c9",
           "packs": [
             "roll-tables"
@@ -33,8 +31,18 @@
           "folders": []
         },
         {
+          "name": "Documentation",
+          "sorting": "m",
+          "color": "#1f08c9",
+          "packs": [
+            "documentation"
+          ],
+          "folders": []
+        },
+
+        {
           "name": "SRD Gemstones",
-          "sorting": "a",
+          "sorting": "m",
           "color": "#1f08c9",
           "packs": [
             "gems-10-gp",
@@ -42,171 +50,166 @@
             "gems-100-gp",
             "gems-500-gp",
             "gems-1000-gp",
-            "gems-5000-gp"
+            "gems-5000-gps"
           ],
           "folders": []
         },
         {
           "name": "Homebrew Gemstones",
-          "sorting": "a",
+          "sorting": "m",
           "color": "#1f08c9",
-          "packs": [
-            "homebrew-base-10-gp-gems",
-            "homebrew-base-50-gp-gems",
-            "homebrew-base-100-gp-gems",
-            "homebrew-base-500-gp-gems",
-            "homebrew-base-1000-gp-gems",
-            "homebrew-base-5000-gp-gems"
-          ],
-          "folders": []
+          "packs": [],
+          "folders": [
+           {
+              "name": "Base 10gp",
+              "sorting": "m",
+              "color": "#3b24f0",
+              "packs": [
+                 "homebrew-base-10gp-tiny",
+                 "homebrew-base-10gp-small",
+                 "homebrew-base-10gp-standard",
+                 "homebrew-base-10gp-large",
+                 "homebrew-base-10gp-huge"
+                 ],
+              "folders": []
+           },
+           {
+              "name": "Base 50gp",
+              "sorting": "m",
+              "color": "#3b24f0",
+              "packs": [
+                 "homebrew-base-50gp-tiny",
+                 "homebrew-base-50gp-small",
+                 "homebrew-base-50gp-standard",
+                 "homebrew-base-50gp-large",
+                 "homebrew-base-50gp-huge"
+                 ],
+              "folders": []
+           },
+           {
+              "name": "Base 100gp",
+              "sorting": "m",
+              "color": "#3b24f0",
+              "packs": [
+                 "homebrew-base-100gp-tiny",
+                 "homebrew-base-100gp-small",
+                 "homebrew-base-100gp-standard",
+                 "homebrew-base-100gp-large",
+                 "homebrew-base-100gp-huge"
+                 ],
+              "folders": []
+           },
+           {
+              "name": "Base 500gp",
+              "sorting": "m",
+              "color": "#3b24f0",
+              "packs": [
+                 "homebrew-base-500gp-tiny",
+                 "homebrew-base-500gp-small",
+                 "homebrew-base-500gp-standard",
+                 "homebrew-base-500gp-large",
+                 "homebrew-base-500gp-huge"
+                 ],
+              "folders": []
+           },
+           {
+              "name": "Base 1000gp",
+              "sorting": "m",
+              "color": "#3b24f0",
+              "packs": [
+                 "homebrew-base-1000gp-tiny",
+                 "homebrew-base-1000gp-small",
+                 "homebrew-base-1000gp-standard",
+                 "homebrew-base-1000gp-large",
+                 "homebrew-base-1000gp-huge"
+                 ],
+              "folders": []
+           },
+           {
+              "name": "Base 5000gp",
+              "sorting": "m",
+              "color": "#3b24f0",
+              "packs": [
+                 "homebrew-base-5000gp-tiny",
+                 "homebrew-base-5000gp-small",
+                 "homebrew-base-5000gp-standard",
+                 "homebrew-base-5000gp-large",
+                 "homebrew-base-5000gp-huge"
+                 ],
+              "folders": []
+           }
+
+]
         }
       ]
     }
   ],
-   "packs": [
+  "packs": [
     {
-      "label": "Gems, 10 gp",
-      "type": "Item",
       "name": "gems-10-gp",
+      "label": "Gems, 10 gp",
       "path": "packs/gems-10-gp",
+      "type": "Item",
       "system": "D35E",
       "ownership": {
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
-      },
-      "flags": {}
+      }
     },
     {
-      "label": "Gems, 50 gp",
-      "type": "Item",
       "name": "gems-50-gp",
+      "label": "Gems, 50 gp",
       "path": "packs/gems-50-gp",
+      "type": "Item",
       "system": "D35E",
       "ownership": {
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
-      },
-      "flags": {}
+      }
     },
     {
-      "label": "Gems, 100 gp",
-      "type": "Item",
       "name": "gems-100-gp",
+      "label": "Gems, 100 gp",
       "path": "packs/gems-100-gp",
+      "type": "Item",
       "system": "D35E",
       "ownership": {
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
-      },
-      "flags": {}
+      }
     },
     {
-      "label": "Gems, 500 gp",
-      "type": "Item",
       "name": "gems-500-gp",
+      "label": "Gems, 500 gp",
       "path": "packs/gems-500-gp",
+      "type": "Item",
       "system": "D35E",
       "ownership": {
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
-      },
-      "flags": {}
+      }
     },
     {
-      "label": "Gems, 1000 gp",
-      "type": "Item",
       "name": "gems-1000-gp",
+      "label": "Gems, 1000 gp",
       "path": "packs/gems-1000-gp",
+      "type": "Item",
       "system": "D35E",
       "ownership": {
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
-      },
-      "flags": {}
+      }
     },
     {
+      "name": "gems-5000-gps",
       "label": "Gems, 5000 gp",
-      "type": "Item",
-      "name": "gems-5000-gp",
       "path": "packs/gems-5000-gp",
-      "system": "D35E",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "flags": {}
-    },
-    {
-      "name": "homebrew-base-10-gp-gems",
-      "label": "Homebrew, Base 10 gp Gems",
-      "path": "packs/homebrew-base-10-gp-gems",
       "type": "Item",
       "system": "D35E",
       "ownership": {
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
-      },
-      "flags": {}
-    },
-    {
-      "name": "homebrew-base-50-gp-gems",
-      "label": "Homebrew, Base 50 gp Gems",
-      "path": "packs/homebrew-base-50-gp-gems",
-      "type": "Item",
-      "system": "D35E",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "flags": {}
-    },
-    {
-      "name": "homebrew-base-100-gp-gems",
-      "label": "Homebrew, Base 100 gp Gems",
-      "path": "packs/homebrew-base-100-gp-gems",
-      "type": "Item",
-      "system": "D35E",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "flags": {}
-    },
-    {
-      "name": "homebrew-base-500-gp-gems",
-      "label": "Homebrew, Base 500 gp Gems",
-      "path": "packs/homebrew-base-500-gp-gems",
-      "type": "Item",
-      "system": "D35E",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "flags": {}
-    },
-    {
-      "name": "homebrew-base-1000-gp-gems",
-      "label": "Homebrew, Base 1000 gp Gems",
-      "path": "packs/homebrew-base-1000-gp-gems",
-      "type": "Item",
-      "system": "D35E",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "flags": {}
-    },
-    {
-      "name": "homebrew-base-5000-gp-gems",
-      "label": "Homebrew, Base 5000 gp Gems",
-      "path": "packs/homebrew-base-5000-gp-gems",
-      "type": "Item",
-      "system": "D35E",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "flags": {}
+      }
     },
     {
       "name": "roll-tables",
@@ -217,8 +220,349 @@
       "ownership": {
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-10gp-tiny",
+      "label": "Homebrew, Base 10gp, Tiny",
+      "path": "packs/homebrew-base-10gp-tiny",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-10gp-small",
+      "label": "Homebrew, Base 10gp, Small",
+      "path": "packs/homebrew-base-10gp-small",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-10gp-standard",
+      "label": "Homebrew, Base 10gp, Standard",
+      "path": "packs/homebrew-base-10gp-standard",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-10gp-large",
+      "label": "Homebrew, Base 10gp,  Large",
+      "path": "packs/homebrew-base-10gp-large",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-10gp-huge",
+      "label": "Homebrew, Base 10gp, Huge",
+      "path": "packs/homebrew-base-10gp-huge",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-50gp-tiny",
+      "label": "Homebrew, Base 50gp, Tiny",
+      "path": "packs/homebrew-base-50gp-tiny",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-50gp-small",
+      "label": "Homebrew, Base 50gp,  Small",
+      "path": "packs/homebrew-base-50gp-small",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-50gp-standard",
+      "label": "Homebrew, Base 50gp,  Standard",
+      "path": "packs/homebrew-base-50gp-standard",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-50gp-large",
+      "label": "Homebrew, Base 50gp, Large",
+      "path": "packs/homebrew-base-50gp-large",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-50gp-huge",
+      "label": "Homebrew, Base 50gp, Huge",
+      "path": "packs/homebrew-base-50gp-huge",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-100gp-tiny",
+      "label": "Homebrew, Base 100gp, Tiny",
+      "path": "packs/homebrew-base-100gp-tiny",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-100gp-small",
+      "label": "Homebrew, Base 100gp, Small",
+      "path": "packs/homebrew-base-100gp-small",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-100gp-standard",
+      "label": "Homebrew, Base 100gp, Standard",
+      "path": "packs/homebrew-base-100gp-standard",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-100gp-large",
+      "label": "Homebrew, Base 100gp, Large",
+      "path": "packs/homebrew-base-100gp-large",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-100gp-huge",
+      "label": "Homebrew, Base 100gp, Huge",
+      "path": "packs/homebrew-base-100gp-huge",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-500gp-tiny",
+      "label": "Homebrew, Base 500gp, Tiny",
+      "path": "packs/homebrew-base-500gp-tiny",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-500gp-small",
+      "label": "Homebrew, Base 500gp, Small",
+      "path": "packs/homebrew-base-500gp-small",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-500gp-standard",
+      "label": "Homebrew, Base 500gp, Standard",
+      "path": "packs/homebrew-base-500gp-standard",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-500gp-large",
+      "label": "Homebrew, Base 500gp, Large",
+      "path": "packs/homebrew-base-500gp-large",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-500gp-huge",
+      "label": "Homebrew, Base 500gp, Huge",
+      "path": "packs/homebrew-base-500gp-huge",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-1000gp-tiny",
+      "label": "Homebrew, Base 1000gp, Tiny",
+      "path": "packs/homebrew-base-1000gp-tiny",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-1000gp-small",
+      "label": "Homebrew, Base 1000gp, Small",
+      "path": "packs/homebrew-base-1000gp-small",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-1000gp-standard",
+      "label": "Homebrew, Base 1000gp, Standard",
+      "path": "packs/homebrew-base-1000gp-standard",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-1000gp-large",
+      "label": "Homebrew, Base 1000gp, Large",
+      "path": "packs/homebrew-base-1000gp-large",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-1000gp-huge",
+      "label": "Homebrew, Base 1000gp, Huge",
+      "path": "packs/homebrew-base-1000gp-huge",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-5000gp-tiny",
+      "label": "Homebrew, Base 5000gp, Tiny",
+      "path": "packs/homebrew-base-5000gp-tiny",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-5000gp-small",
+      "label": "Homebrew, Base 5000gp, Small",
+      "path": "packs/homebrew-base-5000gp-small",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-5000gp-standard",
+      "label": "Homebrew, Base 5000gp, Standard",
+      "path": "packs/homebrew-base-5000gp-standard",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-5000gp-large",
+      "label": "Homebrew, Base 5000gp, Large",
+      "path": "packs/homebrew-base-5000gp-large",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "homebrew-base-5000gp-huge",
+      "label": "Homebrew, Base 5000gp, Huge",
+      "path": "packs/homebrew-base-5000gp-huge",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "documentation",
+      "label": "Documentation",
+      "path": "packs/documentation",
+      "type": "JournalEntry",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
       },
-      "flags": {}
+      "system": "D35E"
     }
-  ]
- }
+  ],
+  "id": "axecleft-gemstones"
+}
