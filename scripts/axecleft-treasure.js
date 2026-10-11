@@ -26,7 +26,7 @@
  *
  * Register at load time (top level of your script). See README "For module authors".
  */
-const AXECLEFT_TREASURE_VERSION = 9.91;
+const AXECLEFT_TREASURE_VERSION = 9.92;
 const AXECLEFT_TREASURE_HOST = (() => {
   try { return decodeURIComponent(new URL(import.meta.url).pathname).match(/\/modules\/([^/]+)\//)?.[1] ?? null; } catch (e) { return null; }
 })();
@@ -452,11 +452,15 @@ const AXECLEFT_TREASURE_HOST = (() => {
   /* ------------------------------------------ */
 
   const normName = (s) => String(s).toLowerCase().replace(/[’']/g, "'").replace(/[^a-z0-9']+/g, " ").trim();
+  /** A compendium index with English names (Axecleft's Tools 8: Babele and other languages), display: the shown name. */
+  const enIndex = async (pack, opts = {}) => (globalThis.AxecleftTools?.enIndex ? globalThis.AxecleftTools.enIndex(pack, opts) : [...await pack.getIndex(opts)]);
+  /** An item's English name (Axecleft's Tools 8), else its name. */
+  const enOf = (x, pack = null) => globalThis.AxecleftTools?.enName?.(x, { pack }) ?? x?.name ?? "";
   let d35eIndex = null;
   async function d35eItem(name) {
     const pack = game.packs.get("D35E.items");
     if (!pack) return null;
-    d35eIndex ??= [...await pack.getIndex()];
+    d35eIndex ??= await enIndex(pack);
     const n = normName(name);
     const sing = (t) => t.split(" ").map((w) => w.replace(/(?<=\w\w)s$/, "")).join(" ");
     const e = d35eIndex.find((x) => normName(x.name) === n)
@@ -598,10 +602,10 @@ const AXECLEFT_TREASURE_HOST = (() => {
     registry.marks.set(def.module, { epic: new Set((def.epic ?? []).map(normName)), psionic: new Set((def.psionic ?? []).map(normName)) });
   }
   const marked = (kind, name) => [...registry.marks.entries()].some(([m, sets]) => (game.modules?.get(m)?.active ?? true) && sets[kind]?.has(normName(name)));
-  function isEpicItem(e) { return truthy(e?.system?.epic) || /\bepic\b/i.test(e?.name ?? "") || marked("epic", e?.name); }
+  function isEpicItem(e) { const n = enOf(e); return truthy(e?.system?.epic) || /\bepic\b/i.test(n) || marked("epic", n); }
   function isPsionicItem(e) {
     const s = e?.system ?? {};
-    return truthy(s.psionic) || s.isPower === true || ["dorje", "tattoo", "powerstone"].includes(s.consumableType) || PSIONIC_NAME.test(e?.name ?? "") || marked("psionic", e?.name);
+    return truthy(s.psionic) || s.isPower === true || ["dorje", "tattoo", "powerstone"].includes(s.consumableType) || PSIONIC_NAME.test(enOf(e)) || marked("psionic", enOf(e));
   }
   /** Drop pool entries the campaign switches rule out. ctx.epic: this roll may include epic items (Forge, Epic campaign merchants). */
   function allowedByRules(list, ctx = {}) {
@@ -684,7 +688,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
     if (!pack) throw new Error(`Compendium ${packId} not found.`);
     const label = pack.metadata?.label ?? packId;
     const magicPack = /magic|wondrous|enchant/i.test(label) || packId === "D35E.magicitems";
-    const index = await pack.getIndex({ fields: INDEX_FIELDS });
+    const index = await enIndex(pack, { fields: INDEX_FIELDS });
     const rows = [];
     for (const e of index) {
       if (e.type === "Folder") continue;
@@ -694,7 +698,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
       // Epic items stay out of shops: no suggestions (a hand-written tag still counts)
       const epic = e.system?.epic === true || /\bepic\b/i.test(e.name ?? "");
       const suggested = epic ? { cats: [], hints: [] } : suggestShopTags(e.name, `${folder} ${magicPack ? "magic" : ""}`.trim(), primary);
-      rows.push({ id: e._id, name: e.name, folder, primary, current, suggested });
+      rows.push({ id: e._id, name: e.display ?? e.name, folder, primary, current, suggested });
     }
     return rows.sort((a, b) => a.folder.localeCompare(b.folder) || a.name.localeCompare(b.name));
   }
@@ -775,7 +779,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
   }
   /** Fix the price on item data copied from a compendium. Returns the correction applied (or null). */
   function applyPriceCorrection(packId, data) {
-    const c = correctionFor(packId, data?.name);
+    const c = correctionFor(packId, enOf(data, packId));
     if (!c || Number(data.system?.price) === c.price) return null;
     foundry.utils.setProperty(data, "system.price", c.price);
     return c;
@@ -794,12 +798,12 @@ const AXECLEFT_TREASURE_HOST = (() => {
     for (const [id, list] of byPack) {
       const pack = game.packs.get(id);
       let index = [];
-      try { index = pack ? [...await pack.getIndex({ fields: ["system.price"] })] : []; } catch (e) { /* unreadable */ }
+      try { index = pack ? await enIndex(pack, { fields: ["system.price"] }) : []; } catch (e) { /* unreadable */ }
       for (const c of list) {
         const e = index.find((x) => normName(x.name) === normName(c.name));
         if (!e && !c.pack) continue; // an "any compendium" row only reports where the item exists
         const current = e ? Number(e.system?.price) || 0 : null;
-        rows.push({ pack: id, packLabel: pack?.metadata?.label ?? id, name: e?.name ?? c.name, found: !!e, current, corrected: c.price,
+        rows.push({ pack: id, packLabel: pack?.metadata?.label ?? id, name: e?.display ?? e?.name ?? c.name, found: !!e, current, corrected: c.price,
           needed: !!e && current !== c.price, note: c.note ?? "", source: c.source === "gm" ? "GM" : (game.modules.get(c.module)?.title ?? c.module) });
       }
     }
@@ -868,11 +872,11 @@ const AXECLEFT_TREASURE_HOST = (() => {
         const pack = game.packs.get(id);
         if (!pack) continue;
         let index;
-        try { index = await pack.getIndex({ fields: [...new Set([...INDEX_FIELDS, ...(k.fields ?? [])])] }); } catch (err) { console.warn(`AxecleftTreasure | could not read ${id}`, err); continue; }
+        try { index = await enIndex(pack, { fields: [...new Set([...INDEX_FIELDS, ...(k.fields ?? [])])] }); } catch (err) { console.warn(`AxecleftTreasure | could not read ${id}`, err); continue; }
         for (const e of index) {
           if (e.type === "Folder") continue;
           try { if (k.accept && !k.accept(e)) continue; } catch (err) { continue; }
-          out.push({ pack: id, packLabel: pack.metadata?.label ?? id, id: e._id, name: e.name, entry: e });
+          out.push({ pack: id, packLabel: pack.metadata?.label ?? id, id: e._id, name: e.name, display: e.display ?? e.name, entry: e });
         }
       }
       return out;
@@ -893,7 +897,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
         const label = pack.metadata?.label ?? id;
         const magicPack = /magic|wondrous|enchant/i.test(label) || id === "D35E.magicitems";
         let index;
-        try { index = await pack.getIndex({ fields: INDEX_FIELDS }); } catch (err) { console.warn(`AxecleftTreasure | could not read ${id}`, err); continue; }
+        try { index = await enIndex(pack, { fields: INDEX_FIELDS }); } catch (err) { console.warn(`AxecleftTreasure | could not read ${id}`, err); continue; }
         const st = stats[id] = { label, total: 0, byCategory: {} };
         for (const e0 of index) {
           if (e0.type === "Folder") continue;
@@ -905,7 +909,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
           const tags = readShopTags(e.system?.tags);
           if (!cat && !(tags.cats.length && price > 0)) continue;
           if (corrected) st.corrected = (st.corrected ?? 0) + 1;
-          const entry = { pack: id, id: e._id, name: e.name, price, ranged: e.system?.weaponSubtype === "ranged" || e.system?.subType === "ammo", label, hints: tags.hints, epic: isEpicItem(e), psionic: isPsionicItem(e) };
+          const entry = { pack: id, id: e._id, name: e.name, display: e.display ?? e.name, price, ranged: e.system?.weaponSubtype === "ranged" || e.system?.subType === "ammo", label, hints: tags.hints, epic: isEpicItem(e), psionic: isPsionicItem(e) };
           for (const c of new Set([cat, ...tags.cats].filter(Boolean))) {
             (pools[c] ??= []).push(entry);
             st.byCategory[c] = (st.byCategory[c] ?? 0) + 1;

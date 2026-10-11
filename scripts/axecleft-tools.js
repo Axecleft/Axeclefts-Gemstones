@@ -24,9 +24,20 @@
  * Searchable lists (version 7): AxecleftTools.enhanceDatalists(root) turns every <input list="…"> inside root
  * into a list that scrolls and stays on screen (the browser's own <datalist> popup doesn't scroll in Foundry).
  *
+ * English names (version 8), for worlds in other languages (Babele-translated compendiums, items named in French…):
+ *   AxecleftTools.enName(docOrIndexEntry, { pack })  → the item's English name. In order: our own flag (flags.world.axecleftEn),
+ *     Babele's original name (flags.babele.originalName), an "en:Bastard Sword" tag, the English key in the Babele
+ *     translation of its compendium, else its own name.
+ *   await AxecleftTools.enIndex(pack, { fields })     → the compendium index as copies whose name is English
+ *     (display: the name as shown), so name matching works in any language.
+ *   AxecleftTools.classEn("Magicien")                  → "Wizard" (class names in translated spell lists).
+ *   AxecleftTools.registerEnglishNames(module, names)  → names offered when a user gives an item its English name.
+ * In a world not in English, naming or renaming an item asks for its English name (optional; Skip / Don't ask again),
+ * and item sheets get an "English name" header button.
+ *
  * If two modules ship different versions of this file, the newest one wins.
  */
-const AXECLEFT_TOOLS_VERSION = 7;
+const AXECLEFT_TOOLS_VERSION = 8;
 
 (() => {
   const LAYER = "axecleftTools";
@@ -136,11 +147,149 @@ const AXECLEFT_TOOLS_VERSION = 7;
     }
   }
 
+  /* ---------- English names (version 8) ---------- */
+  const enNorm = (s) => String(s ?? "").toLowerCase().normalize("NFC").replace(/[’']/g, "'").replace(/[^\p{L}\p{N}']+/gu, " ").trim();
+  const babeleMaps = new Map(); // pack id -> Map(normalized translated name -> English name)
+  const englishNames = existing?.englishNames ?? new Map(); // module -> [names]
+  function babeleEntries(packId) {
+    const b = globalThis.game?.babele;
+    if (!b || !packId) return null;
+    try {
+      const tc = b.packs?.get?.(packId);
+      if (tc?.translations) return tc.translations;
+      const t = (Array.isArray(b.translations) ? b.translations : []).find((x) => x.collection === packId);
+      return t?.entries ?? null;
+    } catch (e) { return null; }
+  }
+  function babeleMap(packId) {
+    if (!packId) return null;
+    if (babeleMaps.has(packId)) return babeleMaps.get(packId);
+    const entries = babeleEntries(packId);
+    const map = new Map();
+    if (entries) {
+      const list = Array.isArray(entries) ? entries.map((e) => [e.id ?? e.name, e]) : Object.entries(entries);
+      for (const [key, v] of list) if (key && v?.name) map.set(enNorm(v.name), key);
+    }
+    if (globalThis.game?.babele) babeleMaps.set(packId, map);
+    return map;
+  }
+  const packOf = (x, pack) => pack ?? x?.pack ?? x?.compendium?.collection
+    ?? String(x?._stats?.compendiumSource ?? x?.flags?.core?.sourceId ?? x?.uuid ?? "").match(/^Compendium\.([^.]+\.[^.]+)\./)?.[1] ?? null;
+  const tagEn = (x) => {
+    for (const t of Array.isArray(x?.system?.tags) ? x.system.tags : []) {
+      const txt = String(Array.isArray(t) ? t[0] : t ?? "").trim();
+      if (/^en\s*:/i.test(txt)) return txt.replace(/^en\s*:\s*/i, "").trim() || null;
+    }
+    return null;
+  };
+  /** The English name of an item, an index entry or item data (see the header). */
+  function enName(x, { pack = null } = {}) {
+    if (!x) return "";
+    const f = x.flags ?? {};
+    const own = f.world?.axecleftEn ?? f.axecleft?.en ?? foundry.utils?.getProperty?.(x, "flags.world.axecleftEn");
+    if (own) return own;
+    const orig = f.babele?.originalName ?? foundry.utils?.getProperty?.(x, "flags.babele.originalName");
+    if (orig) return orig;
+    const tag = tagEn(x);
+    if (tag) return tag;
+    const hit = babeleMap(packOf(x, pack))?.get(enNorm(x.name));
+    return hit ?? x.name ?? "";
+  }
+  const INDEX_EXTRA = ["flags.babele.originalName", "flags.world.axecleftEn", "system.tags"];
+  /** A compendium's index with English names: [{ ...entry, name: English, display: shown name }]. */
+  async function enIndex(pack, { fields = [] } = {}) {
+    const index = await pack.getIndex({ fields: [...new Set([...fields, ...INDEX_EXTRA])] });
+    return [...index].map((e) => { const en = enName(e, { pack: pack.collection }); return en === e.name ? { ...e, display: e.name } : { ...e, name: en, display: e.name }; });
+  }
+  let classMap = null;
+  /** A class name in English ("Magicien" -> "Wizard"), from the Babele translations of the classes compendiums. */
+  function classEn(name) {
+    if (!globalThis.game?.babele) return name;
+    if (!classMap) {
+      classMap = new Map();
+      for (const pack of game.packs ?? []) {
+        if (pack.documentName !== "Item" || !/class/i.test(pack.collection) || /abilit|feature/i.test(pack.collection)) continue;
+        for (const [k, v] of babeleMap(pack.collection) ?? []) classMap.set(k, v);
+      }
+    }
+    return classMap.get(enNorm(name)) ?? name;
+  }
+  Hooks.on("babele.ready", () => { babeleMaps.clear(); classMap = null; });
+
+  /* English name prompt: worlds not in English */
+  const ASK_KEY = "axecleft-tools.askEnglish";
+  const ASK_TYPES = new Set(["weapon", "equipment", "consumable", "loot", "spell", "feat", "enhancement", "material", "container"]);
+  const askOff = () => { try { return localStorage.getItem(ASK_KEY) === "off"; } catch (e) { return false; } };
+  const nonEnglish = () => !/^en\b/i.test(globalThis.game?.i18n?.lang ?? "en");
+  const hasEnglish = (item) => !!(item.flags?.world?.axecleftEn || item.flags?.babele?.originalName || tagEn(item));
+  function knownEnglish() {
+    const out = new Set();
+    for (const list of englishNames.values()) for (const n of list) out.add(n);
+    try { for (const pack of game.packs ?? []) if (pack.documentName === "Item") for (const v of babeleMap(pack.collection)?.values() ?? []) out.add(v); } catch (e) { /* none */ }
+    return [...out].sort((a, b) => a.localeCompare(b));
+  }
+  async function askEnglishName(item, { force = false } = {}) {
+    if (!force && (askOff() || hasEnglish(item))) return;
+    const DV = foundry.applications?.api?.DialogV2;
+    const current = item.flags?.world?.axecleftEn ?? "";
+    const listId = `axecleft-en-${item.id}`;
+    const content = `<p>What is <strong>${esc(item.name)}</strong> called in English? Axecleft's modules (treasure, merchants, crafting) recognize items by their English name. Optional.</p>
+      <div class="form-group"><label>English name</label><input type="text" name="en" list="${listId}" value="${esc(current)}" autofocus><datalist id="${listId}">${knownEnglish().map((n) => `<option value="${esc(n)}">`).join("")}</datalist></div>`;
+    let res = null;
+    if (DV) {
+      const buttons = [{ action: "save", label: "Save", icon: "fas fa-check", default: true, callback: (ev, btn) => ({ action: "save", en: btn.form.elements.en?.value }) },
+        { action: "skip", label: "Skip", icon: "fas fa-forward" }];
+      if (!force) buttons.push({ action: "never", label: "Don't ask again", icon: "fas fa-ban" });
+      const p = DV.wait({ window: { title: "English name" }, content, buttons, rejectClose: false, render: (ev, dlg) => { try { api.enhanceDatalists(dlg.element ?? dlg); } catch (e) { /* plain list */ } } });
+      res = await p;
+    } else {
+      // Foundry v11: the classic Dialog
+      res = await new Promise((resolve) => new Dialog({ title: "English name", content: `<form>${content}</form>`,
+        buttons: { save: { label: "Save", callback: (html) => resolve({ action: "save", en: html.find('[name="en"]').val() }) }, skip: { label: "Skip", callback: () => resolve(null) },
+          ...(force ? {} : { never: { label: "Don't ask again", callback: () => resolve("never") } }) }, default: "save", close: () => resolve(null) }).render(true));
+    }
+    if (res === "never" || res?.action === "never") { try { localStorage.setItem(ASK_KEY, "off"); } catch (e) { /* private mode */ } ui.notifications.info("Axecleft: you won't be asked for English names again (the item sheet's English name button still works)."); return; }
+    if (res?.action !== "save") return;
+    const en = String(res.en ?? "").trim();
+    await item.update(en ? { "flags.world.axecleftEn": en } : { "flags.world.-=axecleftEn": null }, { axecleftEnglish: true });
+  }
+  if (!existing || (existing.version ?? 0) < 8) {
+    // A person creating an item (Foundry's Create Item dialog opens its sheet), not a module or an import
+    Hooks.on("createItem", (item, options, userId) => {
+      const T = globalThis.AxecleftTools;
+      if (userId !== game.user?.id || !nonEnglish() || !ASK_TYPES.has(item.type) || options?.renderSheet !== true) return;
+      if (options?.axecleftEnglish || options?.curiosInternal || item._stats?.compendiumSource || item.flags?.core?.sourceId) return;
+      if (!item.name || /^(new|nouvel|nouveau|nueva?o?|novo|nova)\b/i.test(item.name)) return; // default name: asked when it's renamed
+      T.askEnglishName(item);
+    });
+    // A person renaming an item (modules rename with their own options, which are skipped)
+    Hooks.on("updateItem", (item, changes, options, userId) => {
+      const T = globalThis.AxecleftTools;
+      if (userId !== game.user?.id || !nonEnglish() || changes?.name === undefined || options?.axecleftEnglish || options?.curiosInternal || options?.axecleft || !ASK_TYPES.has(item.type)) return;
+      if (item._stats?.compendiumSource || item.flags?.core?.sourceId) return;
+      T.askEnglishName(item);
+    });
+    const headerButton = (sheet, buttons) => {
+      const item = sheet.document ?? sheet.item ?? sheet.object;
+      if (!nonEnglish() || !item || item.documentName !== "Item" || !item.isOwner) return;
+      buttons.unshift({ label: "English name", class: "axecleft-en", icon: "fas fa-language", onclick: () => globalThis.AxecleftTools.askEnglishName(item, { force: true }) });
+    };
+    Hooks.on("getItemSheetHeaderButtons", headerButton);
+    // Foundry v13+ ApplicationV2 sheets
+    Hooks.on("getHeaderControlsItemSheet", (sheet, controls) => {
+      const item = sheet.document;
+      if (!nonEnglish() || !item?.isOwner) return;
+      controls.unshift({ label: "English name", icon: "fas fa-language", action: "axecleftEnglish", onClick: () => globalThis.AxecleftTools.askEnglishName(item, { force: true }) });
+    });
+  }
+
 
   const api = {
     version: AXECLEFT_TOOLS_VERSION,
     tools,
     enhanceDatalists,
+    englishNames, enName, enIndex, classEn, enNorm, askEnglishName,
+    registerEnglishNames(module, names) { englishNames.set(module, [...new Set((names ?? []).filter(Boolean))]); },
 
     /** Add (or replace) a tool in the shared menu. */
     register(tool) {

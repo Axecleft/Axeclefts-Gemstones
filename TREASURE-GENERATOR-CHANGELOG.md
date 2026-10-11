@@ -3,6 +3,10 @@
 File: scripts/axecleft-treasure.js. Ship the same copy in every Axecleft treasure module; the highest version runs.
 
 
+## Version 9.92
+
+- **Worlds in other languages** (Babele-translated compendiums): compendium items are sorted, priced and corrected by their English name (Axecleft's Tools 8: Babele's original name, or an English name the user gave the item), so French, Spanish or Portuguese compendiums fill treasure and shops as English ones do. Lists still show the names as translated.
+
 ## Version 9.91
 
 - Epic scrolls (Axecleft's Curios 1.14.7) join the epic extra items at EL 21+. (Version numbers compare as numbers, so 9.91 follows 9.9.)

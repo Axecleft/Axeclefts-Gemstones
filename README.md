@@ -3,6 +3,15 @@
 
 Changelog:
 
+v1.14.6
+
+- Added module update support.
+
+v1.14.5.5:
+
+- Ships the Treasure Generator 9.92: in worlds with Babele-translated compendiums, items are sorted and priced by their English names.
+- Axecleft's Tools 8: in a world not in English, naming or renaming an item asks for its English name (optional; Skip / Don't ask again), and item sheets get an "English name" button, so items made in your language are recognized by the treasure, merchant and crafting tools.
+
 v1.14.5.4:
 
 - Ships the Merchant Generator 7.5: epic stock in Epic campaign settlements of any size (about 1 magic item in 10, past the gp limit).
