@@ -1,0 +1,2914 @@
+{
+ "levels": [
+  {
+   "level": 1,
+   "formula": "1d10*10",
+   "avg": 55,
+   "w": 10
+  },
+  {
+   "level": 2,
+   "formula": "3d6*10",
+   "avg": 105,
+   "w": 15
+  },
+  {
+   "level": 3,
+   "formula": "1d6*100",
+   "avg": 350,
+   "w": 15
+  },
+  {
+   "level": 4,
+   "formula": "1d10*100",
+   "avg": 550,
+   "w": 10
+  },
+  {
+   "level": 5,
+   "formula": "2d6*100",
+   "avg": 700,
+   "w": 10
+  },
+  {
+   "level": 6,
+   "formula": "3d6*100",
+   "avg": 1050,
+   "w": 10
+  },
+  {
+   "level": 7,
+   "formula": "4d6*100",
+   "avg": 1400,
+   "w": 10
+  },
+  {
+   "level": 8,
+   "formula": "5d6*100",
+   "avg": 1750,
+   "w": 5
+  },
+  {
+   "level": 9,
+   "formula": "1d4*1000",
+   "avg": 2500,
+   "w": 5
+  },
+  {
+   "level": 10,
+   "formula": "1d6*1000",
+   "avg": 3500,
+   "w": 5
+  },
+  {
+   "level": 11,
+   "formula": "2d4*1000",
+   "avg": 5000,
+   "w": 4
+  },
+  {
+   "level": 12,
+   "formula": "2d6*1000",
+   "avg": 7000,
+   "w": 1
+  }
+ ],
+ "qualities": [
+  {
+   "key": "junk",
+   "label": "Junk",
+   "mult": 0.25,
+   "w": 5,
+   "text": "Crude, damaged or clumsily made. Dents, cracks, loose fittings and poor finishing are obvious to a trained eye."
+  },
+  {
+   "key": "common",
+   "label": "Common",
+   "mult": 0.5,
+   "w": 15,
+   "text": "Serviceable workmanship of the kind found in any market town. Sound, but plain and unremarkable."
+  },
+  {
+   "key": "average",
+   "label": "Average",
+   "mult": 1,
+   "w": 60,
+   "text": "Competent work by a trained artisan, well finished and in good condition."
+  },
+  {
+   "key": "fine",
+   "label": "Fine",
+   "mult": 2.5,
+   "w": 15,
+   "text": "Superior craftsmanship with crisp detail, careful finishing and a pleasing balance of form and decoration."
+  },
+  {
+   "key": "masterpiece",
+   "label": "Masterpiece",
+   "mult": 5,
+   "w": 5,
+   "text": "The work of a master. Flawless execution and striking artistry make this a piece collectors and nobles compete for."
+  }
+ ],
+ "makes": {
+  "Molded": {
+   "label": "Molded / cast",
+   "verb": "cast and worked in",
+   "gem": "set with",
+   "img": "modules/axecleft-gemstones/icons/art-molded.svg"
+  },
+  "Carved": {
+   "label": "Carved",
+   "verb": "carved from",
+   "gem": "inlaid with",
+   "img": "modules/axecleft-gemstones/icons/art-carved.svg"
+  },
+  "Clothing": {
+   "label": "Cloth / hide",
+   "verb": "made of",
+   "gem": "adorned with",
+   "img": "modules/axecleft-gemstones/icons/art-cloth.svg"
+  },
+  "Book": {
+   "label": "Book / document",
+   "verb": "bound in",
+   "gem": "decorated with",
+   "img": "modules/axecleft-gemstones/icons/art-book.svg"
+  }
+ },
+ "jewelryImg": "modules/axecleft-gemstones/icons/jewelry.svg",
+ "objects": [
+  {
+   "name": "Altar Slab",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 500
+  },
+  {
+   "name": "Amphora",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 8
+  },
+  {
+   "name": "Amulet",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Ankh",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Anklet",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Armband",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Armchair",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 30
+  },
+  {
+   "name": "Astrolabe",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Badge",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Ball",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Banner",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Bas-Relief",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 60
+  },
+  {
+   "name": "Bead",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Bearer Note",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Bell",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Belt",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Blanket",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Blindfold",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Book",
+   "make": "Book",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Boots",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Bottle",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Bottle Stopper",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Bowl",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Box",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Bracelet",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Brazier",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 20
+  },
+  {
+   "name": "Brooch",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Buckle",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Bust",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 30
+  },
+  {
+   "name": "Cage",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 5
+  },
+  {
+   "name": "Cameo",
+   "make": "Carved",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Cane",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Cap",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Cape",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 2
+  },
+  {
+   "name": "Carpet",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 40
+  },
+  {
+   "name": "Carved Bone Statuette",
+   "make": "Carved",
+   "kind": "art",
+   "fixedMaterial": "Bone",
+   "weight": 1
+  },
+  {
+   "name": "Carved Ivory Statuette",
+   "make": "Carved",
+   "kind": "art",
+   "fixedMaterial": "Ivory",
+   "weight": 1
+  },
+  {
+   "name": "Carving",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Censer",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Centerpiece",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Chain",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Chalice",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Chandelier",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 40
+  },
+  {
+   "name": "Chess Set",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 4
+  },
+  {
+   "name": "Chessboard",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Chest",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 25
+  },
+  {
+   "name": "Chime",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Choker",
+   "make": "Clothing",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Cigar Box",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Circlet",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Cloak",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 2
+  },
+  {
+   "name": "Cloak Clasp",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Cloak Pin",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Clockwork",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Coat",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 5
+  },
+  {
+   "name": "Coin Purse",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Collar",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Collar and Leash",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Comb",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Crown",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Crystal Ball",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 7
+  },
+  {
+   "name": "Crystal Dice",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Cube",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Cup",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Dagger",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Decanter",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Deed",
+   "make": "Book",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Diadem",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Doublet",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Dowsing Rod",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Dream Catcher",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Ear Gauge",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Ear Horn",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Earrings",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Egg",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Ewer",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Eye",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Eye Patch",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Fan",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Figurehead",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 120
+  },
+  {
+   "name": "Figurine",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Finely Wrought Small Gold Bracelet",
+   "make": "Molded",
+   "kind": "jewelry",
+   "fixedMaterial": "Gold",
+   "weight": 0
+  },
+  {
+   "name": "Flagon",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Flask",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Flatware",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Flute",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Fountain",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 400
+  },
+  {
+   "name": "Frame",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Gag",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Glove",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Goblet",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Gong",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 20
+  },
+  {
+   "name": "Hair Brush",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Hair Clip",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Hair Net",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Hair Pin",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Handle",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Harp",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 10
+  },
+  {
+   "name": "Hat",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Hat Pin",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Helm",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Holy Symbol",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Hookah",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 4
+  },
+  {
+   "name": "Horn",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Hourglass",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 2
+  },
+  {
+   "name": "Idol",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 5
+  },
+  {
+   "name": "Incense Burner",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Ingot",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 5
+  },
+  {
+   "name": "Inkwell",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Insignia",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Jewelry Box",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 2
+  },
+  {
+   "name": "Lamp",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 2
+  },
+  {
+   "name": "Lantern",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Lap Desk",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 5
+  },
+  {
+   "name": "Lens",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Lockbox",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 5
+  },
+  {
+   "name": "Locket",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Longsword",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 4
+  },
+  {
+   "name": "Lute",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Lyre",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Mantle",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Manuscript",
+   "make": "Book",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Map",
+   "make": "Book",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Mark",
+   "make": "Book",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Mask",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Masterpiece Painting",
+   "make": "Carved",
+   "kind": "art",
+   "fixedMaterial": "",
+   "weight": 10
+  },
+  {
+   "name": "Medal",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Medallion",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Miniature",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Mirror",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 5
+  },
+  {
+   "name": "Model",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Model Ship",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 8
+  },
+  {
+   "name": "Monocle",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Mosaic",
+   "make": "Molded",
+   "kind": "art",
+   "fixedMaterial": "",
+   "weight": 40
+  },
+  {
+   "name": "Mug",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Mural",
+   "make": "Carved",
+   "kind": "art",
+   "fixedMaterial": "",
+   "weight": 80
+  },
+  {
+   "name": "Music Box",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 2
+  },
+  {
+   "name": "Muzzle",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Necklace",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Nipple Ring",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Nipple Shield",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Nose Ring",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Obelisk",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 300
+  },
+  {
+   "name": "Orary",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Orb",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Ornament",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Painting",
+   "make": "Carved",
+   "kind": "art",
+   "fixedMaterial": "",
+   "weight": 8
+  },
+  {
+   "name": "Pan Pipes",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Panel with Forest Scenes",
+   "make": "Carved",
+   "kind": "art",
+   "fixedMaterial": "",
+   "weight": 15
+  },
+  {
+   "name": "Pendant",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Peppermill",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Perfume Bottle",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Petrified Songbird",
+   "make": "Molded",
+   "kind": "art",
+   "fixedMaterial": "",
+   "weight": 1
+  },
+  {
+   "name": "Pin",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Pipe",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Pitcher",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Plate",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Platter",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Portrait",
+   "make": "Carved",
+   "kind": "art",
+   "fixedMaterial": "",
+   "weight": 8
+  },
+  {
+   "name": "Prayer Bead",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Purse",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Puzzle Box",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Puzzle Cube",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Quill",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Quiver",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Relief Panel",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 40
+  },
+  {
+   "name": "Reliquary",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Ring",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Rod",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 2
+  },
+  {
+   "name": "Rosary",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Rug",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 20
+  },
+  {
+   "name": "Saddle",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 25
+  },
+  {
+   "name": "Sake Service",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 6
+  },
+  {
+   "name": "Salt Cellar",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Sash",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Saucer",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Scabbard",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Scepter",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Scroll Case",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Sculpture",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 60
+  },
+  {
+   "name": "Seal",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Serving Tray",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Sextant",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 2
+  },
+  {
+   "name": "Shawl",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Sheath",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Shoehorn",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Shoes",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Skull",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 2
+  },
+  {
+   "name": "Slippers",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Snuff Box",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Sphere",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Spyglass",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Staff",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 4
+  },
+  {
+   "name": "Statue",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 250
+  },
+  {
+   "name": "Suncatcher",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Sundial",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 20
+  },
+  {
+   "name": "Sword Hilt",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Tabard",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Tablet of Sigils",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 10
+  },
+  {
+   "name": "Talisman",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Tankard",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 2
+  },
+  {
+   "name": "Tapestry",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 20
+  },
+  {
+   "name": "Tea Service",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 8
+  },
+  {
+   "name": "Telescope",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 8
+  },
+  {
+   "name": "Throne",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 150
+  },
+  {
+   "name": "Tiara",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Tile",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Tobacco Pouch",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Torc",
+   "make": "Molded",
+   "kind": "jewelry",
+   "weight": 0
+  },
+  {
+   "name": "Totem",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 15
+  },
+  {
+   "name": "Toy",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Trophy",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 4
+  },
+  {
+   "name": "Tureen",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 6
+  },
+  {
+   "name": "Urn",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 15
+  },
+  {
+   "name": "Vase",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 4
+  },
+  {
+   "name": "Vest",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Vestments",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 6
+  },
+  {
+   "name": "Walking Stick",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 3
+  },
+  {
+   "name": "Wall Hanging",
+   "make": "Clothing",
+   "kind": "art",
+   "weight": 6
+  },
+  {
+   "name": "Wand",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 1
+  },
+  {
+   "name": "Wind Chime",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 1
+  }
+ ],
+ "materials": [
+  {
+   "name": "Adamantine",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 8,
+   "maxLevel": 12
+  },
+  {
+   "name": "Astral Driftmetal",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 9,
+   "maxLevel": 12
+  },
+  {
+   "name": "Bronze",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Cinnabar Steel",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 6,
+   "maxLevel": 11
+  },
+  {
+   "name": "Coin Silver",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 2,
+   "maxLevel": 7
+  },
+  {
+   "name": "Cold Iron",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 3,
+   "maxLevel": 8
+  },
+  {
+   "name": "Copper",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5
+  },
+  {
+   "name": "Damascus Steel",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 5,
+   "maxLevel": 10
+  },
+  {
+   "name": "Electrum",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9
+  },
+  {
+   "name": "Gold",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 4,
+   "maxLevel": 12
+  },
+  {
+   "name": "Hammered Bronze",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Hammered Copper",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5
+  },
+  {
+   "name": "Hammered Electrum",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9
+  },
+  {
+   "name": "Hammered Gold",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 4,
+   "maxLevel": 11
+  },
+  {
+   "name": "Hammered Lead",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 4
+  },
+  {
+   "name": "Hammered Steel",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 2,
+   "maxLevel": 7
+  },
+  {
+   "name": "Iron",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5
+  },
+  {
+   "name": "Lead",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 4
+  },
+  {
+   "name": "Mithral",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 7,
+   "maxLevel": 12
+  },
+  {
+   "name": "Orichalcum",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 8,
+   "maxLevel": 12
+  },
+  {
+   "name": "Platinum",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 6,
+   "maxLevel": 12
+  },
+  {
+   "name": "Silver",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 2,
+   "maxLevel": 8
+  },
+  {
+   "name": "Steel",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 2,
+   "maxLevel": 7
+  },
+  {
+   "name": "Sterling Silver",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9
+  },
+  {
+   "name": "Tin",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 4
+  },
+  {
+   "name": "Abyssal Chromium",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 9,
+   "maxLevel": 12
+  },
+  {
+   "name": "Meteoric Iron",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 6,
+   "maxLevel": 12
+  },
+  {
+   "name": "Silverado Iron",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 5,
+   "maxLevel": 10
+  },
+  {
+   "name": "Irritated Cobalt",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 7,
+   "maxLevel": 12
+  },
+  {
+   "name": "Shadow Steel",
+   "group": "metal",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 8,
+   "maxLevel": 12
+  },
+  {
+   "name": "Apple Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Ash Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Azalea Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Balsam Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Bamboo",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Cedar",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Cherry Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Chestnut Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Cypress Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Dogwood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Driftwood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Hemlock",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Hickory",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Ironwood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 4,
+   "maxLevel": 10
+  },
+  {
+   "name": "Locust Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Magnolia Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Mahogany",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9
+  },
+  {
+   "name": "Maple",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Oak",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Olive Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 2,
+   "maxLevel": 8
+  },
+  {
+   "name": "Palm",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Pear Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Pecan Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Petrified Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 4,
+   "maxLevel": 10
+  },
+  {
+   "name": "Pine",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Poplar Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Rosewood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9
+  },
+  {
+   "name": "Walnut Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 2,
+   "maxLevel": 8
+  },
+  {
+   "name": "Willow",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Elysium Sequoia",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 8,
+   "maxLevel": 12
+  },
+  {
+   "name": "Ivory",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 4,
+   "maxLevel": 11
+  },
+  {
+   "name": "Horn",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Antler",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Tooth",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Bone",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5
+  },
+  {
+   "name": "Jade",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 4,
+   "maxLevel": 12
+  },
+  {
+   "name": "Amber",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 3,
+   "maxLevel": 10
+  },
+  {
+   "name": "Baleen",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 2,
+   "maxLevel": 7
+  },
+  {
+   "name": "Obsidian",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 2,
+   "maxLevel": 8
+  },
+  {
+   "name": "Glass",
+   "group": "nonwood",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Stained Glass",
+   "group": "nonwood",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 2,
+   "maxLevel": 8
+  },
+  {
+   "name": "Ceramic",
+   "group": "nonwood",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Soapstone",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Porcelain",
+   "group": "nonwood",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9
+  },
+  {
+   "name": "Opal",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 6,
+   "maxLevel": 12
+  },
+  {
+   "name": "Alabaster",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9
+  },
+  {
+   "name": "Mother of Pearl",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 3,
+   "maxLevel": 10
+  },
+  {
+   "name": "Coral",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 3,
+   "maxLevel": 10
+  },
+  {
+   "name": "Tortoise Shell",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9
+  },
+  {
+   "name": "Dragon Scale",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 8,
+   "maxLevel": 12
+  },
+  {
+   "name": "Unicorn Horn",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 9,
+   "maxLevel": 12
+  },
+  {
+   "name": "Dragon Tooth",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 8,
+   "maxLevel": 12
+  },
+  {
+   "name": "Basilisk Scale",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 6,
+   "maxLevel": 11
+  },
+  {
+   "name": "Elemental Stone",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 7,
+   "maxLevel": 12
+  },
+  {
+   "name": "Elemental Ice",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 7,
+   "maxLevel": 12
+  },
+  {
+   "name": "Gorgon Horn",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 6,
+   "maxLevel": 11
+  },
+  {
+   "name": "Minotaur Horn",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 5,
+   "maxLevel": 10
+  },
+  {
+   "name": "Geode",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 2,
+   "maxLevel": 8
+  },
+  {
+   "name": "Astral Driftstone",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 9,
+   "maxLevel": 12
+  },
+  {
+   "name": "Cuttlebone",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5
+  },
+  {
+   "name": "Silk",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 3,
+   "maxLevel": 10
+  },
+  {
+   "name": "Ermine",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 5,
+   "maxLevel": 11,
+   "adj": "Ermine"
+  },
+  {
+   "name": "Fox",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 2,
+   "maxLevel": 8,
+   "adj": "Fox Fur"
+  },
+  {
+   "name": "Wolf",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 2,
+   "maxLevel": 8,
+   "adj": "Wolf Fur"
+  },
+  {
+   "name": "Rabbit",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5,
+   "adj": "Rabbit Fur"
+  },
+  {
+   "name": "Mink",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 4,
+   "maxLevel": 10,
+   "adj": "Mink"
+  },
+  {
+   "name": "Feathers",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6,
+   "adj": "Feathered"
+  },
+  {
+   "name": "Spider Silk",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 5,
+   "maxLevel": 11
+  },
+  {
+   "name": "Cotton",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5
+  },
+  {
+   "name": "Wool",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5,
+   "adj": "Woolen"
+  },
+  {
+   "name": "Alpaca",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 2,
+   "maxLevel": 7,
+   "adj": "Alpaca Wool"
+  },
+  {
+   "name": "Beaver",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 2,
+   "maxLevel": 7,
+   "adj": "Beaver Fur"
+  },
+  {
+   "name": "Leather",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Cockatrice Feathers",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 6,
+   "maxLevel": 11,
+   "adj": "Cockatrice-Feather"
+  },
+  {
+   "name": "Peacock Feathers",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9,
+   "adj": "Peacock-Feather"
+  },
+  {
+   "name": "Eagle Feather",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9,
+   "adj": "Eagle-Feather"
+  },
+  {
+   "name": "Corpse Cloth",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 5,
+   "maxLevel": 11
+  },
+  {
+   "name": "Woven Frog's Hair",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 4,
+   "maxLevel": 10
+  },
+  {
+   "name": "Alligator Hide",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 3,
+   "maxLevel": 9
+  },
+  {
+   "name": "Lion Skin",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 4,
+   "maxLevel": 10
+  },
+  {
+   "name": "Unicorn Hide",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 9,
+   "maxLevel": 12
+  },
+  {
+   "name": "Displacer Fur",
+   "group": "cloth",
+   "uses": [
+    "Clothing"
+   ],
+   "minLevel": 7,
+   "maxLevel": 12
+  },
+  {
+   "name": "Rice Paper",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Glow Worm Silk",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 6,
+   "maxLevel": 12
+  },
+  {
+   "name": "Drider Hide",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 7,
+   "maxLevel": 12
+  },
+  {
+   "name": "Shark Skin",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 3,
+   "maxLevel": 8
+  },
+  {
+   "name": "Seal Skin",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 2,
+   "maxLevel": 8
+  },
+  {
+   "name": "Snake Skin",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 2,
+   "maxLevel": 8
+  },
+  {
+   "name": "Ostrich Hide",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 3,
+   "maxLevel": 8
+  },
+  {
+   "name": "Couatl Skin",
+   "group": "cloth",
+   "uses": [
+    "Clothing",
+    "Book"
+   ],
+   "minLevel": 9,
+   "maxLevel": 12
+  }
+ ],
+ "gemstones": [
+  {
+   "name": "Amber",
+   "grade": 100,
+   "minLevel": 2,
+   "maxLevel": 10
+  },
+  {
+   "name": "Amethyst",
+   "grade": 100,
+   "minLevel": 2,
+   "maxLevel": 10
+  },
+  {
+   "name": "Aquamarine",
+   "grade": 500,
+   "minLevel": 4,
+   "maxLevel": 12
+  },
+  {
+   "name": "Bloodstone",
+   "grade": 50,
+   "minLevel": 1,
+   "maxLevel": 8
+  },
+  {
+   "name": "Carbuncle",
+   "grade": 100,
+   "minLevel": 2,
+   "maxLevel": 10
+  },
+  {
+   "name": "Carnelian",
+   "grade": 50,
+   "minLevel": 1,
+   "maxLevel": 8
+  },
+  {
+   "name": "Citrine",
+   "grade": 50,
+   "minLevel": 1,
+   "maxLevel": 8
+  },
+  {
+   "name": "Coral",
+   "grade": 100,
+   "minLevel": 2,
+   "maxLevel": 10
+  },
+  {
+   "name": "Diamond",
+   "grade": 5000,
+   "minLevel": 9,
+   "maxLevel": 12
+  },
+  {
+   "name": "Emerald",
+   "grade": 1000,
+   "minLevel": 6,
+   "maxLevel": 12
+  },
+  {
+   "name": "Garnet",
+   "grade": 100,
+   "minLevel": 2,
+   "maxLevel": 10
+  },
+  {
+   "name": "Jacinth",
+   "grade": 5000,
+   "minLevel": 9,
+   "maxLevel": 12
+  },
+  {
+   "name": "Jade",
+   "grade": 100,
+   "minLevel": 2,
+   "maxLevel": 10
+  },
+  {
+   "name": "Jasper",
+   "grade": 50,
+   "minLevel": 1,
+   "maxLevel": 8
+  },
+  {
+   "name": "Jet",
+   "grade": 100,
+   "minLevel": 2,
+   "maxLevel": 10
+  },
+  {
+   "name": "Moonstone",
+   "grade": 50,
+   "minLevel": 1,
+   "maxLevel": 8
+  },
+  {
+   "name": "Obsidian",
+   "grade": 10,
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Onyx",
+   "grade": 50,
+   "minLevel": 1,
+   "maxLevel": 8
+  },
+  {
+   "name": "Opal",
+   "grade": 1000,
+   "minLevel": 6,
+   "maxLevel": 12
+  },
+  {
+   "name": "Pearl",
+   "grade": 100,
+   "minLevel": 2,
+   "maxLevel": 10
+  },
+  {
+   "name": "Peridot",
+   "grade": 50,
+   "minLevel": 1,
+   "maxLevel": 8
+  },
+  {
+   "name": "Quartz",
+   "grade": 50,
+   "minLevel": 1,
+   "maxLevel": 8
+  },
+  {
+   "name": "Ruby",
+   "grade": 1000,
+   "minLevel": 6,
+   "maxLevel": 12
+  },
+  {
+   "name": "Sapphire",
+   "grade": 1000,
+   "minLevel": 6,
+   "maxLevel": 12
+  },
+  {
+   "name": "Spinel",
+   "grade": 100,
+   "minLevel": 2,
+   "maxLevel": 10
+  },
+  {
+   "name": "Sunstone",
+   "grade": 50,
+   "minLevel": 1,
+   "maxLevel": 8
+  },
+  {
+   "name": "Topaz",
+   "grade": 500,
+   "minLevel": 4,
+   "maxLevel": 12
+  },
+  {
+   "name": "Turquoise",
+   "grade": 10,
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Tourmaline",
+   "grade": 100,
+   "minLevel": 2,
+   "maxLevel": 10
+  },
+  {
+   "name": "Zircon",
+   "grade": 50,
+   "minLevel": 1,
+   "maxLevel": 8
+  }
+ ],
+ "goodsByLevel": [
+  {
+   "level": 1,
+   "none": 90,
+   "gemsTo": 95,
+   "gems": "1",
+   "art": "1"
+  },
+  {
+   "level": 2,
+   "none": 81,
+   "gemsTo": 95,
+   "gems": "1d3",
+   "art": "1d3"
+  },
+  {
+   "level": 3,
+   "none": 77,
+   "gemsTo": 95,
+   "gems": "1d3",
+   "art": "1d3"
+  },
+  {
+   "level": 4,
+   "none": 70,
+   "gemsTo": 95,
+   "gems": "1d4",
+   "art": "1d3"
+  },
+  {
+   "level": 5,
+   "none": 60,
+   "gemsTo": 95,
+   "gems": "1d4",
+   "art": "1d4"
+  },
+  {
+   "level": 6,
+   "none": 56,
+   "gemsTo": 92,
+   "gems": "1d4",
+   "art": "1d4"
+  },
+  {
+   "level": 7,
+   "none": 48,
+   "gemsTo": 88,
+   "gems": "1d4",
+   "art": "1d4"
+  },
+  {
+   "level": 8,
+   "none": 45,
+   "gemsTo": 85,
+   "gems": "1d6",
+   "art": "1d4"
+  },
+  {
+   "level": 9,
+   "none": 40,
+   "gemsTo": 80,
+   "gems": "1d8",
+   "art": "1d4"
+  },
+  {
+   "level": 10,
+   "none": 35,
+   "gemsTo": 79,
+   "gems": "1d8",
+   "art": "1d6"
+  },
+  {
+   "level": 11,
+   "none": 24,
+   "gemsTo": 74,
+   "gems": "1d10",
+   "art": "1d6"
+  },
+  {
+   "level": 12,
+   "none": 17,
+   "gemsTo": 70,
+   "gems": "1d10",
+   "art": "1d8"
+  },
+  {
+   "level": 13,
+   "none": 11,
+   "gemsTo": 66,
+   "gems": "1d12",
+   "art": "1d10"
+  },
+  {
+   "level": 14,
+   "none": 11,
+   "gemsTo": 66,
+   "gems": "2d8",
+   "art": "2d6"
+  },
+  {
+   "level": 15,
+   "none": 10,
+   "gemsTo": 65,
+   "gems": "2d10",
+   "art": "2d8"
+  },
+  {
+   "level": 16,
+   "none": 7,
+   "gemsTo": 64,
+   "gems": "4d6",
+   "art": "2d10"
+  },
+  {
+   "level": 17,
+   "none": 4,
+   "gemsTo": 63,
+   "gems": "4d8",
+   "art": "3d8"
+  },
+  {
+   "level": 18,
+   "none": 4,
+   "gemsTo": 54,
+   "gems": "3d12",
+   "art": "3d10"
+  },
+  {
+   "level": 19,
+   "none": 3,
+   "gemsTo": 50,
+   "gems": "6d6",
+   "art": "6d6"
+  },
+  {
+   "level": 20,
+   "none": 2,
+   "gemsTo": 38,
+   "gems": "4d10",
+   "art": "7d6"
+  }
+ ]
+}

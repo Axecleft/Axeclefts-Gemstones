@@ -1,81 +1,186 @@
 {
-   "name": "axecleft-gemstones",
-   "title": "Axecleft's Gemstones",
-   "description": "A collection of 3.5 SRD gemstones",
-   "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.2/module.json",
-   "download": "https://github.com/Axecleft/Axeclefts-Gemstones/archive/refs/tags/1.2.zip",
-   "authors": [
+  "id": "axecleft-gemstones",
+  "title": "Axecleft's Gemstones",
+  "description": "3.5 SRD gemstones plus Axecleft's Treasure Generator and Merchant Generator. Gems, art objects and jewelry: choose any quality from dropdowns or roll it: 505 gem types with homebrew sizes and qualities, and art and jewelry built from 221 objects, 120 materials, 30 embellishment gems, 12 SRD value levels and 5 workmanship qualities. Roll the SRD Treasure table by encounter level, or each NPC token's own loot by its CR, straight into its inventory; stock merchants for any settlement; add your own entries in lists shared between worlds.\n\n** Gem descriptions are AI generated using ChatGPT",
+  "version": "1.14.6",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "14"
+  },
+  "authors": [
     {
       "name": "Axecleft",
-      "discord": "axecleft",
-      "flags": {}
+      "discord": "axecleft"
     }
   ],
-   "version": "1.2",
-   "compatibility": {
-   "minimum": "0.7.5",
-   "verified": "11.313"
-  },
-"packs": [
+  "relationships": {
+    "systems": [
+      {
+        "id": "D35E",
+        "type": "system",
+        "compatibility": {}
+      }
+    ],
+  "recommends": [
     {
-      "label": "Gems, 10 gp",
-      "type": "Item",
-      "module": "axecleft-gemstones",
-      "name": "gems-10-gp",
-      "path": "packs/gems-10-gp.db",
-      "system": "D35E",
-      "private": false,
-      "flags": {}
+      "id": "axeclefts-armory",
+      "type": "module",
+      "manifest": "https://github.com/Axecleft/Armory/releases/latest/download/module.json",
+      "reason": "Magic weapons and armor for treasure, merchants and crafting"
     },
     {
-      "label": "Gems, 50 gp",
-      "type": "Item",
-      "module": "axecleft-gemstones",
-      "name": "gems-50-gp",
-      "path": "packs/gems-50-gp.db",
-      "system": "D35E",
-      "private": false,
-      "flags": {}
+      "id": "axeclefts-curios",
+      "type": "module",
+      "manifest": "https://github.com/Axecleft/Curios/releases/latest/download/module.json",
+      "reason": "Potions, scrolls, wands, rings and wondrous items"
     },
     {
-      "label": "Gems, 100 gp",
-      "type": "Item",
-      "module": "axecleft-gemstones",
-      "name": "gems-100-gp",
-      "path": "packs/gems-100-gp.db",
-      "system": "D35E",
-      "private": false,
-      "flags": {}
-    },
-    {
-      "label": "Gems, 500 gp",
-      "type": "Item",
-      "module": "axecleft-gemstones",
-      "name": "gems-500-gp",
-      "path": "packs/gems-500-gp.db",
-      "system": "D35E",
-      "private": false,
-      "flags": {}
-    },
-    {
-      "label": "Gems, 1000 gp",
-      "type": "Item",
-      "module": "axecleft-gemstones",
-      "name": "gems-1000-gp",
-      "path": "packs/gems-1000-gp.db",
-      "system": "D35E",
-      "private": false,
-      "flags": {}
-    },
-    {
-      "label": "Gems, 5000 gp",
-      "type": "Item",
-      "module": "axecleft-gemstones",
-      "name": "gems-5000-gps",
-      "path": "packs/gems-5000-gp.db",
-      "system": "D35E",
-      "private": false,
-      "flags": {}
+      "id": "traps-and-poisons",
+      "type": "module",
+      "manifest": "https://github.com/Axecleft/Traps-and-Poisons/releases/latest/download/module.json",
+      "reason": "Traps, poisons, diseases and crafting."
     }
   ]
- }
+  },
+  "esmodules": [
+    "scripts/axecleft-tools.js",
+    "scripts/axecleft-treasure.js",
+    "scripts/axecleft-merchants.js",
+    "scripts/treasure-generator.js"
+  ],
+  "packFolders": [
+    {
+      "name": "Axecleft's Gemstones",
+      "sorting": "m",
+      "color": "#3b24f0",
+      "packs": [],
+      "folders": [
+        {
+          "name": "Roll Tables",
+          "sorting": "m",
+          "color": "#1f08c9",
+          "packs": [
+            "roll-tables"
+          ],
+          "folders": []
+        },
+        {
+          "name": "Documentation",
+          "sorting": "m",
+          "color": "#1f08c9",
+          "packs": [
+            "documentation"
+          ],
+          "folders": []
+        },
+        {
+          "name": "SRD Gemstones",
+          "sorting": "m",
+          "color": "#1f08c9",
+          "packs": [
+            "gems-10-gp",
+            "gems-50-gp",
+            "gems-100-gp",
+            "gems-500-gp",
+            "gems-1000-gp",
+            "gems-5000-gp"
+          ],
+          "folders": []
+        }
+      ]
+    }
+  ],
+  "packs": [
+    {
+      "name": "gems-10-gp",
+      "label": "Gems, 10 gp",
+      "path": "packs/gems-10-gp",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "gems-50-gp",
+      "label": "Gems, 50 gp",
+      "path": "packs/gems-50-gp",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "gems-100-gp",
+      "label": "Gems, 100 gp",
+      "path": "packs/gems-100-gp",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "gems-500-gp",
+      "label": "Gems, 500 gp",
+      "path": "packs/gems-500-gp",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "gems-1000-gp",
+      "label": "Gems, 1000 gp",
+      "path": "packs/gems-1000-gp",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "gems-5000-gp",
+      "label": "Gems, 5000 gp",
+      "path": "packs/gems-5000-gp",
+      "type": "Item",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "roll-tables",
+      "label": "Roll Tables",
+      "path": "packs/roll-tables",
+      "type": "RollTable",
+      "system": "D35E",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "documentation",
+      "label": "Documentation",
+      "path": "packs/documentation",
+      "type": "JournalEntry",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "D35E"
+    }
+  ],
+  "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/releases/latest/download/module.json",
+  "download": "https://github.com/Axecleft/Axeclefts-Gemstones/releases/download/1.14.6/module.zip",
+  "url": "https://github.com/Axecleft/Axeclefts-Gemstones"
+}
