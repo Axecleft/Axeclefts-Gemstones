@@ -2,6 +2,14 @@
 
 File: scripts/axecleft-merchants.js. Ship the same copy in every Axecleft module, listed in module.json "esmodules" after axecleft-tools.js and axecleft-treasure.js (version 9 or later for this version). The highest version runs.
 
+## Version 7.7
+
+- **Shop names in the world's language** (Axecleft's Tools 8.4): the name patterns ("The {adj} {noun}", "{last}'s {trade}"…) are translated in lang/<code>.json, and the adjectives, nouns and trades in lang/<code>.words.json with their genders, so they agree ("L'Enclume dorée", "Le Marteau doré"). English shop names are unchanged.
+
+## Version 7.6
+
+- **Text in the world's language** (Axecleft's Tools 8.2 language files): the Merchant Generator's tabs, chat cards and messages, settlement, shop-type, settlement-character, race and sex labels, and the merchant's biography line. Shop names and personal names still come from the English lists until the per-language word files. Shop tags are still written in English (Shop: Scroll) so every world reads them. Item Sources' automatic choices for extra kinds (enhancements, materials) also match English compendium labels.
+
 ## Version 7.5
 
 - **Epic stock** in Epic campaign settlements: about 1 magic item in 10 is an epic item from the SRD epic tables (Axecleft's Armory and Curios, Treasure Generator 9.9 or later), in any settlement size: an epic shopkeeper can be anywhere, and that epic stock ignores the settlement's gp limit. Categories without epic items (potions, wands, gems) get ordinary items. An epic item isn't stocked twice in one shop. Merchants still have no levels.

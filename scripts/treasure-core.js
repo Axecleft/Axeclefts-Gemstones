@@ -8,6 +8,36 @@
 
 export const MOD = "axecleft-gemstones";
 
+/** Text in the world's language (Axecleft's Tools 8.2 language files: lang/<code>.json), else the English. {placeholders} are filled from data. */
+export const t = (s, d) => globalThis.AxecleftTools?.t?.(s, d) ?? (d ? String(s).replace(/\{(\w+)\}/g, (m, k) => d[k] ?? m) : String(s));
+/** A name or phrase from a pattern, in the world's language (Axecleft's Tools 8.3 grammar); { lang: "en" } for the English one. */
+/** A word for N(): its English, with the text to show when the word file has none (Axecleft's Tools 8.4 word files: gender, forms). */
+export const W = (en, text = null) => globalThis.AxecleftTools?.word?.(en, { text }) ?? (text ?? en);
+export const N = (p, s = {}, o = {}) => globalThis.AxecleftTools?.compose?.(p, s, o) ?? String(p).replace(/\[([^\]]*)\]/g, (m, g) => ([...g.matchAll(/\{(\w+)[^}]*\}/g)].every(([, k]) => s[k] !== undefined && s[k] !== "" && s[k] !== null && !(Array.isArray(s[k]) && !s[k].length)) ? g : "")).replace(/\{(\w+)([^}]*)\}/g, (m, k, mods) => { let v = [s[k] ?? ""].flat().map((x) => x?.text ?? x).join(" "); if (/lower/.test(mods)) v = v.toLowerCase(); if (/:a\b/.test(mods) && v) v = `${/^[aeiou]/i.test(v) && !/^(uni|eu|one)/i.test(v) ? "an" : "a"} ${v}`; return v; }).replace(/\s{2,}/g, " ").trim();
+/** Names and phrases (patterns translated in lang/<code>.json; Axecleft's Tools 8.3 grammar). */
+export const GEM_NAME = /*t*/"[{size}, ][{quality}, ]{gem}";
+/** Art and jewelry names by how the gem is attached: set (molded, and all jewelry), inlaid (carved), adorned (cloth), decorated (books). */
+export const ART_NAMES = {
+  set: /*t*/"[{quality}, ]{material} {object}[ set with {gem}]",
+  inlaid: /*t*/"[{quality}, ]{material} {object}[ inlaid with {gem}]",
+  adorned: /*t*/"[{quality}, ]{material} {object}[ adorned with {gem}]",
+  book: /*t*/"[{quality}, ]{object}[ bound in {material}][ decorated with {gem}]",
+};
+/** What an art object is, in its description ("a relief panel carved from soapstone, inlaid with jade"), by construction. */
+export const ART_PHRASES = {
+  Molded: /*t*/"{object:a:lower}[ cast and worked in {material:lower}][, set with {gem:lower}]",
+  Carved: /*t*/"{object:a:lower}[ carved from {material:lower}][, inlaid with {gem:lower}]",
+  Clothing: /*t*/"{object:a:lower}[ made of {material:lower}][, adorned with {gem:lower}]",
+  Book: /*t*/"{object:a:lower}[ bound in {material:lower}][, decorated with {gem:lower}]",
+};
+/** A word from the data lists in the world's language: the word file's (with its gender and forms), else the language file's, else as written. */
+const tw = (s) => (s ? W(s, t(s)) : s);
+/** A number in the world's language format. */
+export const num = (n) => { const l = globalThis.AxecleftTools?.i18n?.lang; return Number(n).toLocaleString(l && l !== "en" ? l : "en-US"); };
+/** Size, quality and construction labels from data/gems.json and data/art.json, for the dropdowns (generated names stay English until the word files). */
+export const DATA_WORDS = [/*t*/"Tiny", /*t*/"Small", /*t*/"Standard", /*t*/"Large", /*t*/"Huge", /*t*/"Flawed", /*t*/"Common", /*t*/"Average", /*t*/"Fine", /*t*/"Exceptional",
+  /*t*/"Junk", /*t*/"Masterpiece", /*t*/"Molded / cast", /*t*/"Carved", /*t*/"Cloth / hide", /*t*/"Book / document"];
+
 /* -------------------------------------------- */
 /*  Dice and random picks                       */
 /* -------------------------------------------- */
@@ -15,11 +45,11 @@ export const MOD = "axecleft-gemstones";
 /** Roll a simple formula such as "2d4*10", "((4d4)*10)*2.5" or "3". */
 export function rollDice(formula, rng = Math.random) {
   const expr = String(formula).replace(/\s+/g, "").replace(/(\d*)d(\d+)/gi, (_, n, s) => {
-    let t = 0;
-    for (let i = 0; i < (+n || 1); i++) t += 1 + Math.floor(rng() * +s);
-    return String(t);
+    let sum = 0;
+    for (let i = 0; i < (+n || 1); i++) sum += 1 + Math.floor(rng() * +s);
+    return String(sum);
   });
-  if (!/^[\d+\-*/().]+$/.test(expr)) throw new Error(`Can't roll "${formula}"`);
+  if (!/^[\d+\-*/().]+$/.test(expr)) throw new Error(t("Can't roll \"{formula}\"", { formula }));
   return Function(`"use strict"; return (${expr});`)();
 }
 
@@ -40,7 +70,7 @@ const pickOne = (list, rng) => list[Math.floor(rng() * list.length)];
 
 const norm = (s) => String(s ?? "").trim().toLowerCase();
 const round2 = (n) => Math.round(n * 100) / 100;
-export const gp = (n) => `${Number(round2(n)).toLocaleString("en-US")} gp`;
+export const gp = (n) => t("{n} gp", { n: num(round2(n)) });
 const article = (w) => (/^[aeiou]/i.test(w) && !/^(uni|eu|one)/i.test(w) ? "an" : "a");
 export const esc = (v) => String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -97,7 +127,9 @@ export function buildCatalog(gemData, artData, custom = {}) {
 /*  Gems                                        */
 /* -------------------------------------------- */
 
-export const SOURCES = { srd: "SRD", homebrew: "Homebrew", custom: "Custom" };
+export const SOURCES = { srd: "SRD", homebrew: /*t*/"Homebrew", custom: /*t*/"Custom" };
+/** A gem list's name in the world's language. */
+export const sourceName = (s) => (SOURCES[s] ? t(SOURCES[s]) : s);
 
 /** Gems available from the chosen sources (optionally one grade). */
 export function gemsFor(cat, { sources = ["srd", "homebrew", "custom"], grade = null } = {}) {
@@ -114,13 +146,13 @@ export function rollGem(cat, opts = {}, rng = Math.random) {
   if (opts.gem) {
     const [src, ...rest] = String(opts.gem).split("|");
     gem = cat.gems.find((g) => g.source === src && g.name === rest.join("|"));
-    if (!gem) throw new Error(`Gem "${rest.join("|")}" is not in the lists`);
+    if (!gem) throw new Error(t("Gem \"{gem}\" is not in the lists", { gem: rest.join("|") }));
   } else {
     const pool = gemsFor(cat, { sources });
-    if (!pool.length) throw new Error("No gems match those sources.");
+    if (!pool.length) throw new Error(t("No gems match those sources."));
     let grades = cat.grades.filter((g) => pool.some((x) => x.grade === g.value));
     if (opts.grade) grades = grades.filter((g) => g.value === Number(opts.grade));
-    if (!grades.length) throw new Error(`No ${opts.grade} gp gems in the chosen lists.`);
+    if (!grades.length) throw new Error(t("No {value} gems in the chosen lists.", { value: gp(Number(opts.grade)) }));
     const grade = weighted(grades, rng).value;
     gem = pickOne(pool.filter((g) => g.grade === grade), rng);
   }
@@ -129,9 +161,11 @@ export function rollGem(cat, opts = {}, rng = Math.random) {
   const size = vary ? (cat.sizes.find((s) => s.key === opts.size) ?? weighted(cat.sizes, rng)) : cat.sizes.find((s) => s.key === "standard");
   const quality = vary ? (cat.gemQualities.find((q) => q.key === opts.quality) ?? weighted(cat.gemQualities, rng)) : cat.gemQualities.find((q) => q.key === "average");
   const mult = size.mult * quality.mult;
-  const name = [size.key !== "standard" && size.label, quality.key !== "average" && quality.label, gem.name].filter(Boolean).join(", ");
+  const parts = (en) => ({ size: size.key !== "standard" ? (en ? size.label : tw(size.label)) : "", quality: quality.key !== "average" ? (en ? quality.label : tw(quality.label)) : "", gem: en ? gem.name : tw(gem.name) });
+  const name = N(GEM_NAME, parts(false));
+  const nameEn = N(GEM_NAME, parts(true), { lang: "en" });
   return {
-    kind: "gem", name, gem: gem.name, source: gem.source, appraiseAs: gem.appraiseAs, img: gem.img,
+    kind: "gem", name, nameEn, gem: gem.name, source: gem.source, appraiseAs: gem.appraiseAs, img: gem.img,
     base: grade.value, formula: grade.formula, size: size.key, quality: quality.key, mult, variations: vary,
     priceFormula: mult === 1 ? `((${grade.formula}))` : `(((${grade.formula}))*${mult})`,
     range: [averageOf(grade.formula.replace(/(\d*)d(\d+)/gi, (_, n) => String(+n || 1))) * mult, averageOf(grade.formula.replace(/(\d*)d(\d+)/gi, (_, n, s) => String((+n || 1) * +s))) * mult],
@@ -146,7 +180,7 @@ export function multiplierTable(cat, spec) {
     const v = Number((s.mult * q.mult).toFixed(4));
     return s.key === spec.size && q.key === spec.quality ? `<td><strong>×${v}</strong></td>` : `<td>×${v}</td>`;
   }).join("")}</tr>`).join("");
-  return `<table class="axecleft-mult"><thead><tr><th>Value multipliers</th>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+  return `<table class="axecleft-mult"><thead><tr><th>${esc(t("Value multipliers"))}</th>${head}</tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 /* -------------------------------------------- */
@@ -171,14 +205,12 @@ export function embellishmentsFor(cat, level = null) {
 /** Chance that a randomly rolled piece carries a gemstone. */
 export const gemChance = (kind, level) => (kind === "jewelry" ? Math.min(0.85, 0.25 + 0.05 * level) : Math.min(0.45, 0.05 + 0.03 * level));
 
-/** Display name of an object made of a material (and gem). */
-export function artName(obj, material, gem) {
-  let core;
-  if (obj.fixedMaterial !== undefined || !material) core = obj.name;
-  else if (obj.make === "Book") core = `${obj.name} bound in ${material.name}`;
-  else core = `${material.adj ?? material.name} ${obj.name}`;
-  if (gem) core += ` ${obj.make === "Book" ? "decorated" : obj.kind === "jewelry" ? "set" : obj.make === "Carved" ? "inlaid" : obj.make === "Clothing" ? "adorned" : "set"} with ${gem.name}`;
-  return core;
+/** Display name of an object made of a material (and gem), with its quality word if any; { en: true } for the English name. */
+export function artName(obj, material, gem, { quality = "", en = false } = {}) {
+  const pattern = ART_NAMES[obj.make === "Book" ? "book" : obj.kind === "jewelry" ? "set" : obj.make === "Carved" ? "inlaid" : obj.make === "Clothing" ? "adorned" : "set"];
+  const w = (s) => (en ? s ?? "" : tw(s ?? ""));
+  const mat = obj.fixedMaterial !== undefined || !material ? "" : obj.make === "Book" ? material.name : material.adj ?? material.name;
+  return N(pattern, { quality: w(quality), material: w(mat), object: w(obj.name), gem: gem ? w(gem.name) : "" }, en ? { lang: "en" } : {});
 }
 
 /**
@@ -195,7 +227,7 @@ export function rollArt(cat, opts = {}, rng = Math.random) {
     if (fit.length) pool = fit;
   }
   const obj = opts.object ? cat.objects.find((o) => o.name === opts.object) : pickOne(pool, rng);
-  if (!obj) throw new Error(opts.object ? `Object "${opts.object}" is not in the lists` : "No objects in the lists.");
+  if (!obj) throw new Error(opts.object ? t("Object \"{object}\" is not in the lists", { object: opts.object }) : t("No objects in the lists."));
   const make = cat.makes[obj.make] ?? cat.makes.Molded;
 
   let material = null;
@@ -210,12 +242,14 @@ export function rollArt(cat, opts = {}, rng = Math.random) {
   const vary = opts.variations !== false;
   const quality = vary ? (cat.artQualities.find((q) => q.key === opts.quality) ?? weighted(cat.artQualities, rng)) : cat.artQualities.find((q) => q.key === "average");
   const core = artName(obj, material, gem);
-  const name = quality.key === "average" ? core : `${quality.label}, ${core}`;
+  const coreEn = artName(obj, material, gem, { en: true });
+  const name = quality.key === "average" ? core : artName(obj, material, gem, { quality: quality.label });
+  const nameEn = quality.key === "average" ? coreEn : artName(obj, material, gem, { quality: quality.label, en: true });
   const mult = quality.mult;
   const lo = averageOf(level.formula.replace(/(\d*)d(\d+)/gi, (_, n) => String(+n || 1))) * mult;
   const hi = averageOf(level.formula.replace(/(\d*)d(\d+)/gi, (_, n, s) => String((+n || 1) * +s))) * mult;
   return {
-    kind: obj.kind, name, core, object: obj.name, make: obj.make, material: material?.name ?? null, gem: gem?.name ?? null,
+    kind: obj.kind, name, nameEn, core, coreEn, object: obj.name, make: obj.make, material: material?.name ?? null, gem: gem?.name ?? null,
     quality: quality.key, qualityLabel: quality.label, qualityText: quality.text, variations: vary,
     level: level.level, base: level.avg, formula: level.formula, mult, range: [lo, hi],
     priceFormula: mult === 1 ? `((${level.formula}))` : `(((${level.formula}))*${mult})`,
@@ -225,16 +259,16 @@ export function rollArt(cat, opts = {}, rng = Math.random) {
 
 /** Description HTML for an art object: what anyone sees, and what an appraiser learns. */
 export function artDescriptions(cat, s) {
-  const make = cat.makes[s.make] ?? cat.makes.Molded;
-  const what = s.material && !cat.objects.find((o) => o.name === s.object)?.fixedMaterial
-    ? `${article(s.object)} ${s.object.toLowerCase()} ${make.verb} ${s.material.toLowerCase()}`
-    : `${article(s.object)} ${s.object.toLowerCase()}`;
-  const gemTxt = s.gem ? `, ${make.gem} ${s.gem.toLowerCase()}` : "";
-  const kindTxt = s.kind === "jewelry" ? "A piece of jewelry" : "An art object";
-  const seen = `<h3>${esc(s.core)}</h3><p>${kindTxt}: ${esc(what + gemTxt)}.</p>${s.objDesc ? `<p>${esc(s.objDesc)}</p>` : ""}`;
-  const unid = `${seen}<p>It looks to be worth about ${gp(s.base)}. Its true value is unknown until it is appraised.</p>`;
-  const quality = s.variations ? `<p><strong>Quality: ${esc(s.qualityLabel)}.</strong> ${esc(s.qualityText)}</p>` : "";
-  const value = `<p><strong>Appraised value:</strong> SRD art object value ${s.level} (${s.formula.replace("*", " × ")} gp)${s.mult !== 1 ? ` × ${s.mult} for ${s.qualityLabel.toLowerCase()} quality` : ""}: ${gp(s.range[0])} to ${gp(s.range[1])}.</p>`;
+  // "a relief panel carved from soapstone, inlaid with jade" (Axecleft's Tools 8.3 grammar: word order, articles and agreement of the world's language)
+  const withMaterial = s.material && !cat.objects.find((o) => o.name === s.object)?.fixedMaterial;
+  const what = N(ART_PHRASES[s.make] ?? ART_PHRASES.Molded, { object: tw(s.object), material: withMaterial ? tw(s.material) : "", gem: tw(s.gem ?? "") }, { phrase: true });
+  const kindTxt = t(s.kind === "jewelry" ? "A piece of jewelry: {what}." : "An art object: {what}.", { what });
+  const seen = `<h3>${esc(s.core)}</h3><p>${esc(kindTxt)}</p>${s.objDesc ? `<p>${esc(s.objDesc)}</p>` : ""}`;
+  const unid = `${seen}<p>${esc(t("It looks to be worth about {value}. Its true value is unknown until it is appraised.", { value: gp(s.base) }))}</p>`;
+  const quality = s.variations ? `<p><strong>${esc(t("Quality: {quality}.", { quality: t(s.qualityLabel) }))}</strong> ${esc(s.qualityText)}</p>` : "";
+  const rule = t("SRD art object value {level} ({formula} gp)", { level: s.level, formula: s.formula.replace("*", " × ") })
+    + (s.mult !== 1 ? t(" × {mult} for {quality} quality", { mult: s.mult, quality: t(s.qualityLabel).toLowerCase() }) : "");
+  const value = `<p><strong>${esc(t("Appraised value:"))}</strong> ${esc(t("{rule}: {low} to {high}.", { rule, low: gp(s.range[0]), high: gp(s.range[1]) }))}</p>`;
   return { value: seen + quality + value, unidentified: unid };
 }
 
@@ -248,7 +282,7 @@ export function artDescriptions(cat, s) {
  */
 export function rollGoods(cat, el, { gem = {}, art = {} } = {}, rng = Math.random) {
   const row = cat.goodsByLevel.find((r) => r.level === Number(el));
-  if (!row) throw new Error(`No goods row for encounter level ${el}`);
+  if (!row) throw new Error(t("No goods row for encounter level {el}", { el }));
   const roll = 1 + Math.floor(rng() * 100);
   if (roll <= row.none) return { level: row.level, roll, type: "none", dice: null, count: 0, items: [] };
   const type = roll <= row.gemsTo ? "gems" : "art";
@@ -297,17 +331,18 @@ export function itemData(cat, spec, { rollNow = false, rng = Math.random } = {})
       identified: false,
       carried: true,
       identifiedName: spec.name,
-      unidentified: { price: spec.base, name: spec.kind === "gem" ? spec.appraiseAs : spec.core },
+      unidentified: { price: spec.base, name: spec.kind === "gem" ? (tw(spec.appraiseAs)?.text ?? spec.appraiseAs) : spec.core },
       creationChanges: rollNow ? [] : [["price", spec.priceFormula]],
     },
-    flags: { [MOD]: { generated: { ...strip(spec), price: rollNow ? price : null } } },
+    flags: { [MOD]: { generated: { ...strip(spec), price: rollNow ? price : null } }, world: { axecleftEn: spec.nameEn ?? spec.name } },
   };
 }
 const strip = (s) => { const { desc, unid, objDesc, qualityText, ...rest } = s; return rest; };
 
 /** One-line summary for chat cards. */
 export function summary(spec, price = null) {
-  const value = price != null ? `true value ${gp(price)}` : `true value ${gp(spec.range[0])}–${gp(spec.range[1])}, rolled when added to a character`;
-  const what = spec.kind === "gem" ? `${SOURCES[spec.source] ?? spec.source} gem, base ${gp(spec.base)}` : `${spec.kind === "jewelry" ? "Jewelry" : "Art"}, value ${spec.level}, base ${gp(spec.base)}`;
+  const value = price != null ? t("true value {value}", { value: gp(price) }) : t("true value {low}–{high}, rolled when added to a character", { low: gp(spec.range[0]), high: gp(spec.range[1]) });
+  const what = spec.kind === "gem" ? t("{list} gem, base {value}", { list: sourceName(spec.source), value: gp(spec.base) })
+    : t(spec.kind === "jewelry" ? "Jewelry, value {level}, base {value}" : "Art, value {level}, base {value}", { level: spec.level, value: gp(spec.base) });
   return `${what}; ${value}`;
 }

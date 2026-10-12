@@ -3,6 +3,45 @@
 
 Changelog:
 
+v1.14.6.8:
+
+- French draft: lang/fr.json (buttons, menus, hints, messages and name patterns) and lang/fr.words.json (the words in item and shop names, with their genders) are filled in, and languages.json now lists fr, so worlds set to French show this module in French. A first draft for Gigalad to correct; English worlds are unchanged.
+
+v1.14.6.7:
+
+- Axecleft's Tools 8.4: word files. Each module's lang folder has words.template.json, every English word that goes into names (abilities, materials, base items, gems, art objects, item kinds, shop-name words); a translator copies it to <code>.words.json and writes each word with a short notation: "Épée longue (f)" (text and gender), "(f)" (gender only, keeping Babele's name), "acéré/acérée/acérés/acérées" (forms that agree with the noun), "de feu (of)" (a word that moves after the noun). Patterns can also hold agreeing words: {~sculpté/sculptée}. lang/README.md explains it. This module's template has 945 words.
+- Ships the Merchant Generator 7.7: shop names ("The Gilded Anvil", "Garrick's Smithy") go through the grammar and the word files, so they can read "L'Enclume dorée" or "Forge de Garrick".
+- Gem names, sizes and qualities, art objects, materials, embellishment gems and workmanship come from the word file when it has them, with their genders ("Perle rose grande bonne", "une statue sculptée dans l'ivoire").
+- English names and descriptions are unchanged.
+
+v1.14.6.6:
+
+- Axecleft's Tools 8.3: names built from parts ("+1 Flaming Longsword of Speed", "Scroll of Fireball", "Gold Ring set with Ruby") follow the language's grammar: the name patterns are translated in lang/<code>.json like other texts (word order), and a new grammar file per language (lang/<code>.grammar.json) sets the word for "and", articles, agreement ("acérée" with "Épée longue"), elision (de → d'), contractions (de le → du) and capital letters. Drafts for French, Spanish and Portuguese are included (used once the language is listed in languages.json); lang/README.md explains patterns and grammar files.
+- Gem, art object and jewelry names ("Large, Fine, Ruby", "Ivory Statuette inlaid with Jade") and the description's "a statuette carved from ivory, inlaid with jade" are built through the grammar, and keep their English names (for matching). Sizes, qualities, materials and objects show their translation once the language file has one.
+- English names and descriptions are unchanged.
+
+v1.14.6.5:
+
+- The Gems, Art Objects and Jewelry tabs are translatable: labels, choices, previews, messages, the two world settings and the Lists tab's help for the custom lists. The descriptions and chat-card summaries of generated gems, art objects and jewelry are too ("Appraised value", "It looks to be worth about…"). Prices use the world's number format. lang/template.json now lists 736 texts.
+- Kept in English on purpose: the Treasure Lists journal's page names and column headings (the generator reads them back), and gem, object and material names and the names built from them, until the word and grammar files.
+
+v1.14.6.4:
+
+- Axecleft's Tools 8.2: a language loader for Axecleft's modules. Each module has a lang folder (template.json to translate, one file per language, e.g. fr.json); texts not translated yet stay in English, Brazilian and European Portuguese fall back on each other, and setting names are translated too.
+- Ships the Treasure Generator 9.94 and Merchant Generator 7.6: their windows, chat cards and messages are translatable.
+
+v1.14.6.3:
+
+- Ships the Treasure Generator 9.93: in worlds in other languages, compendiums are matched by their English labels.
+
+v1.14.6.2:
+
+- Roll Tables: the "SRD base 5000 gp gem" table pointed at the old pack name (gems-5000-gps); its results now link to the 5000 gp gems again.
+
+v1.14.6.1:
+
+- Axecleft's Tools 8.1: works with Babele 2.9 (Foundry 13/14), which keeps its translations in a new place; with it, translated compendium items are found by their English names again.
+
 v1.14.6
 
 - Added module update support.

@@ -3,6 +3,14 @@
 File: scripts/axecleft-treasure.js. Ship the same copy in every Axecleft treasure module; the highest version runs.
 
 
+## Version 9.94
+
+- **Text in the world's language**: every window, chat card, note and message of the Treasure Generator goes through Axecleft's Tools 8.2 language files (lang/<code>.json in each module, "English text": "translation"). Untranslated text stays in English, so nothing changes in an English world. Numbers follow the language's format; the "Generated Treasure" folder takes the translated name (one already made under its English name is still used). The Treasure Lists journal keeps English column headings, which is how the tables are read back.
+
+## Version 9.93
+
+- **Worlds in other languages:** compendiums are matched by their English label. Babele also translates compendium labels ("Spells" becomes "Sorts"), so Curios' spell and power sources and Armory's enhancement and material sources found no compendium, and spell items (potions, scrolls, wands) could not be made. The item sources' automatic choices and the magic-compendium check use the English label too.
+
 ## Version 9.92
 
 - **Worlds in other languages** (Babele-translated compendiums): compendium items are sorted, priced and corrected by their English name (Axecleft's Tools 8: Babele's original name, or an English name the user gave the item), so French, Spanish or Portuguese compendiums fill treasure and shops as English ones do. Lists still show the names as translated.
