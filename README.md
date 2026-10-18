@@ -3,6 +3,42 @@
 
 Changelog:
 
+v1.14.6.16:
+
+- Ships Axecleft's Tools 9.2: the User Guide button opens the Tool Suite's wiki in Foundry's language: French, Spanish, Brazilian Portuguese or European Portuguese when you play in one of them, English otherwise.
+
+v1.14.6.15:
+
+- Ships Axecleft's Tools 9.1: a User Guide button at the end of the Axecleft's Tools toolbar group (and menu), for GMs and players. It opens the Tool Suite's wiki (https://github.com/Axecleft/Axecleft-s-Tools-Suite/wiki/Home) in your web browser.
+
+v1.14.6.14:
+
+- Ships the Treasure Generator 9.98: a cursed item that sheds light keeps its own light until the curse is active ("Curse Active" ticked); only then does it glow with the curse's eerie light, and unticking it brings its own light back. Before, the eerie light was there from the start and gave the curse away. The eerie lights now use animations from D35E's item sheet, so saving the sheet no longer clears the animation.
+- The module description says 443 gem types (it said 505).
+
+v1.14.6.13:
+
+- Ships the Treasure Generator 9.97: custom curses on a "Custom Curses" page of the Treasure Lists journal (your own curses, drawbacks, situations and specific cursed items, with weights, the items they fit and buff penalties); the SRD's curses can be switched off one by one.
+
+v1.14.6.12:
+
+- Ships the Treasure Generator 9.96: cursed items (SRD tables; Generation settings: a flat rate, 1% by default, or by grade, 3% / 2% / 1%). Gems, art and jewelry are never cursed.
+
+v1.14.6.11:
+
+- French words: Gilgalad's corrections to the Words tab are applied (gems, art objects, materials, shop words).
+- French clothing names: a material word can go after the object instead of "en …" ("Calot à plumes"), with the word's role marker (role:with).
+- The homebrew gem list no longer repeats the 62 SRD gems (Azurite, Amber, Emerald…): they were listed in both, so with both sources on they came up twice as often, and the misspelled "Tiger Eye Turquosie" was one of them. The homebrew list now has 376 gems of its own; the SRD gems are unchanged.
+
+v1.14.6.10:
+
+- Ships Axecleft's Tools 9.0, Treasure Generator 9.95, Merchant Generator 7.9: the same scripts now run on Foundry v11 too (the Foundry v11 build of this module is 1.11 instead of 1.14). On v11, windows and dialogs use Foundry's classic ones; nothing changes on v13/v14.
+
+v1.14.6.9:
+
+- French draft, second pass: Gigalad's terminology corrections are applied (weapon and armor abilities, bane foes, metamagic words, item grades Faible/Puissant, Pierre psionique, Biens précieux, Token, Améliorer, Objet spécial, Grimoire).
+- Ships the Merchant Generator 7.8: shop-name words have their own lines in the word files (Shop: Anvil, Shop: Shadow), so a shop word can differ from the same English word in item names. English shop names are unchanged.
+
 v1.14.6.8:
 
 - French draft: lang/fr.json (buttons, menus, hints, messages and name patterns) and lang/fr.words.json (the words in item and shop names, with their genders) are filled in, and languages.json now lists fr, so worlds set to French show this module in French. A first draft for Gigalad to correct; English worlds are unchanged.
@@ -105,7 +141,7 @@ Put items in (shared by every tab)
 
 Gems tab
 
-- 505 gem types: the 67 SRD gems and the 438 homebrew gems, with the same descriptions and images as the compendiums, plus any gems you add yourself.
+- 443 gem types: the 67 SRD gems and the 376 homebrew gems, with the same descriptions and images as the compendiums, plus any gems you add yourself.
 - Choose the lists (SRD, Homebrew, Custom), the base value (or Random at SRD odds), the gem, the size (Tiny to Huge) and the quality (Flawed to Exceptional).
 - Sizes and qualities use the same multipliers and 5/15/60/15/5 odds as the roll tables. Identified gems show the multiplier table with their own size and quality marked.
 - A checkbox (and a module setting) turns the homebrew size and quality variations off for plain SRD-value gems.

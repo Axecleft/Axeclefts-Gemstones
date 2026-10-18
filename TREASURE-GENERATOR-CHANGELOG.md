@@ -3,13 +3,30 @@
 File: scripts/axecleft-treasure.js. Ship the same copy in every Axecleft treasure module; the highest version runs.
 
 
-## Version 9.94
+## Version 9.98
 
-- **Text in the world's language**: every window, chat card, note and message of the Treasure Generator goes through Axecleft's Tools 8.2 language files (lang/<code>.json in each module, "English text": "translation"). Untranslated text stays in English, so nothing changes in an English world. Numbers follow the language's format; the "Generated Treasure" folder takes the translated name (one already made under its English name is still used). The Treasure Lists journal keeps English column headings, which is how the tables are read back.
+- **Cursed light only while the curse is active**: a cursed item that sheds light keeps its own light while it's unidentified or its curse is dormant, so the light no longer gives the curse away. Ticking "Curse Active" swaps in the curse's eerie light (saving the item's own); unticking it restores the item's own light.
+- The eerie lights use animations from D35E's item sheet list (ghostly light, mysterious emanation, pulse, swirling fog, hexa dome). The previous vortex, siren, smoke patch and witch wave weren't in that list, so any save of the item sheet (ticking Curse Active, for one) cleared the animation.
+- Items cursed by 9.96–9.97 already carry their eerie light; edit their light by hand if needed.
 
-## Version 9.93
+## Version 9.97
 
-- **Worlds in other languages:** compendiums are matched by their English label. Babele also translates compendium labels ("Spells" becomes "Sorts"), so Curios' spell and power sources and Armory's enhancement and material sources found no compendium, and spell items (potions, scrolls, wands) could not be made. The item sources' automatic choices and the magic-compendium check use the English label too.
+- **Custom curses**: a "Custom Curses" page in the Treasure Lists journal. Each row is a curse of its own (rolled among the common curses), a drawback, a dependent situation for intermittent functioning, a cursed psionic item's curse, or a specific cursed item (by name, from the item compendiums or the Items sidebar), with a weight (its share of the d% table, like the SRD's rows), the items it can appear on, what it does, and its penalties for the curse buff ("-2 attack; -2 saves; -1 str; -4 spot; -5 hp").
+- The SRD's own curses are the page's built-in rows, so any of them can be switched off on the Disabled Entries page.
+- Custom curses appear in the Forge and Workshop "Cursed" choice, get a buff when the curse is active, and join the "Axecleft's Curses" world compendium (the button in Generation settings), which their items link to.
+
+## Version 9.96
+
+- **Cursed items (SRD)**: any random magic item can be cursed: arms and armor, rings, rods, staffs, wondrous items, potions, scrolls, wands, psionic, epic and intelligent items. Generation settings: a flat rate (1% by default) or a rate by grade (minor 3%, medium 2%, major and epic 1%); merchant stock only when ticked (off by default); specific cursed items and simple effects can be turned off.
+- Curses are rolled on the SRD tables: delusion, opposite effect or target, intermittent functioning (unreliable, dependent on a rolled situation, uncontrolled), requirement (the GM chooses it, as the SRD says), drawback (the full d% table), completely different effect (the item works as another rolled item), or a specific cursed item from D35E's compendium (the "–2 sword, cursed" is made with the Armory). Psionic items can also roll a cursed psionic item's curse (backfire, exhausting, subversive).
+- The item gets D35E's own Cursed mark (hidden from players). The GM sees the curse at the top of the item sheet; the identified description links the curse's buff (Curios' Common Buffs compendium), and ticking "Curse Identified" adds the full curse to the description.
+- Simple effects: a reversed weapon or armor bonus becomes a penalty (+2 becomes –2) and reversed item changes are negated; a delusion item loses its magic. Ticking "Curse Active" gives the holder the curse as a buff with its penalties (blurred vision, negative levels, subversive –2 on saves); unticking it or losing the item removes it.
+- Cursed items that shed light glow with an eerie light (sickly green, bruised violet, blood red, murky smoke, witch-light or corpse-light fog).
+- A "Cursed" choice in the Forge and the Workshop (no curse, a random curse, or a chosen kind), and a button that makes every curse in the tables a buff in a world compendium ("Axecleft's Curses"), for worlds without Curios or in another language.
+
+## Version 9.95
+
+- **Foundry v11**: the Treasure Generator window, its chat cards and the Items-sidebar button work on Foundry v11 (with Axecleft's Tools 9). Random intelligent items are offered only when the D35E system supports them (3.1.0 or later).
 
 ## Version 9.92
 

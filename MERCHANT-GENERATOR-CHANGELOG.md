@@ -2,6 +2,14 @@
 
 File: scripts/axecleft-merchants.js. Ship the same copy in every Axecleft module, listed in module.json "esmodules" after axecleft-tools.js and axecleft-treasure.js (version 9 or later for this version). The highest version runs.
 
+## Version 7.9
+
+- **Foundry v11**: the Merchant Generator window and its dialogs work on Foundry v11 (with Axecleft's Tools 9).
+
+## Version 7.8
+
+- **Shop words have their own lines** in the word files (Shop: Anvil, Shop: Shadow…): a translator can give a shop word a different form from the same English word in item names ("Shadow" is an armor ability and a shop noun). Older word files without those lines still work (the plain word is used). English shop names are unchanged.
+
 ## Version 7.7
 
 - **Shop names in the world's language** (Axecleft's Tools 8.4): the name patterns ("The {adj} {noun}", "{last}'s {trade}"…) are translated in lang/<code>.json, and the adjectives, nouns and trades in lang/<code>.words.json with their genders, so they agree ("L'Enclume dorée", "Le Marteau doré"). English shop names are unchanged.

@@ -1,5 +1,5 @@
 /**
- * Axecleft's Treasure Generator — shared hub, version 9.94.
+ * Axecleft's Treasure Generator — shared hub, version 9.97.
  *
  * Copy this same file into every Axecleft module that makes treasure (Gemstones,
  * Armory, Curios...) and list it in module.json "esmodules" AFTER
@@ -18,7 +18,8 @@
  *   T.customList(module, key)   // a list with the GM's additions and switched-off entries applied
  *   T.registerSourceKind({ module, key, label, match, accept, hint })   // extra compendium sources (enhancements, materials...)
  *   T.registerPriceCorrections({ module, corrections: [{ pack, name, price, note }] })   // fix wrong compendium prices
- *   T.generation()              // the world's Generation Settings (light, intelligence, hints, poisons)
+ *   T.generation()              // the world's Generation Settings (light, intelligence, hints, poisons, curses)
+ *   T.curse(entry, category, ctx, { force })  // curse a generated item by the SRD tables (version 9.96)
  *   T.rules()                   // the world's campaign switches: { psionics, epic } (version 9.5)
  *   T.registerItemMarks({ module, epic: [names], psionic: [names] })   // mark compendium items as epic or psionic
  *   T.enhanceDatalists(root)    // searchable lists that scroll and stay on screen (version 9.6)
@@ -26,7 +27,7 @@
  *
  * Register at load time (top level of your script). See README "For module authors".
  */
-const AXECLEFT_TREASURE_VERSION = 9.94; // 9.94: text in the world's language (Axecleft's Tools 8.2 language files)
+const AXECLEFT_TREASURE_VERSION = 9.98; // 9.98: a cursed item's eerie light only while the curse is active (D35E sheet animations); 9.97: custom curses (Treasure Lists); 9.96: cursed items (SRD tables, Generation settings, Forge/Workshop option); 9.94: text in the world's language (Axecleft's Tools 8.2 language files); 9.95: Foundry v11 (Tools 9 window, chat), no intelligent items before D35E 3.1
 const AXECLEFT_TREASURE_HOST = (() => {
   try { return decodeURIComponent(new URL(import.meta.url).pathname).match(/\/modules\/([^/]+)\//)?.[1] ?? null; } catch (e) { return null; }
 })();
@@ -237,6 +238,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
     },
     hints: { enabled: true, melee: { on: true, chance: 15 }, ranged: { on: true, chance: 15 } },
     poison: { enabled: true, chance: 1 },
+    // Cursed items (version 9.96): a flat rate, or a rate by grade (the SRD gives no frequency)
+    curse: { enabled: true, method: "flat", flat: 1, minor: 3, medium: 2, major: 1, merchants: false, specific: true, mechanics: true },
     size: { enabled: true, small: 30, medium: 60, large: 10 },
     // Campaign switches (version 9.5), shared by every Axecleft module: psionic items and powers, and epic items
     rules: { psionics: true, epic: false, epicShare: 25 },
@@ -264,11 +267,530 @@ const AXECLEFT_TREASURE_HOST = (() => {
 
   /** Roll whether a random item gets an extra: genChance("light", "melee") is true about 30% of the time by default. */
   function genChance(kind, cat = null) {
+    if (kind === "intelligence" && globalThis.AxecleftTools?.intelligentItems?.() === false) return false; // D35E before 3.1.0: no intelligent items
     const g = generation()[kind];
     if (!g?.enabled) return false;
     const c = cat ? g[cat] : g;
     if (!c || c.on === false) return false;
     return Math.random() * 100 < (Number(c.chance) || 0);
+  }
+
+  /* ------------------------------------------ */
+  /*  Cursed items (version 9.96)               */
+  /* ------------------------------------------ */
+
+  /*
+   * SRD "Cursed Items": a random magic item can be cursed (any magic item: arms, armor, rings, rods, staffs,
+   * wondrous items, potions, scrolls, wands, psionic, epic and intelligent items). The SRD gives no frequency, so the
+   * chance is a Generation setting: a flat rate (1% by default) or a rate by grade (minor 3%, medium 2%, major 1%).
+   * The curse is rolled on the SRD tables (common curses, intermittent functioning, dependent situations, drawbacks,
+   * specific cursed items; cursed psionic items for psionic items). The item gets D35E's own "Cursed" mark
+   * (players see nothing until the GM ticks "Curse Identified" or "Curse Active"), the curse is kept in
+   * flags.world.axecleftCurse and shown to the GM on the item sheet, and simple effects are applied as D35E data:
+   * reversed bonuses on arms and armor become penalties, reversed item changes are negated, a delusion item loses
+   * its magic, blurred vision and a subversive psionic item get their penalties. A cursed item that sheds light
+   * glows with an eerie light instead while the curse is active (9.98). Ticking "Curse Identified" adds the curse to the item's description.
+   */
+  const CURSE_FLAG = "axecleftCurse";
+  const CURSE_GRADES = ["minor", "medium", "major", "epic"];
+  const COMMON_CURSES = [[1, 15, "delusion"], [16, 35, "reversed"], [36, 45, "intermittent"], [46, 60, "requirement"], [61, 75, "drawback"], [76, 90, "different"], [91, 100, "specific"]];
+  const PSIONIC_CURSES = [[1, 33, "backfire"], [34, 66, "exhausting"], [67, 100, "subversive"]];
+  const CURSE_LABELS = {
+    delusion: /*t*/"Delusion", reversed: /*t*/"Opposite effect or target", intermittent: /*t*/"Intermittent functioning",
+    requirement: /*t*/"Requirement", drawback: /*t*/"Drawback", different: /*t*/"Completely different effect", specific: /*t*/"Specific cursed item",
+    backfire: /*t*/"Backfire (psionic)", exhausting: /*t*/"Exhausting (psionic)", subversive: /*t*/"Subversive (psionic)",
+  };
+  const CURSE_TEXT = {
+    delusion: /*t*/"Delusion: the user believes the item is what it seems, but it has no magical power beyond the deception. The user can't be convinced otherwise without remove curse.",
+    reversed: /*t*/"Opposite effect or target: the item does the reverse of what it should, or targets its user instead of others. Once this is known the item can be discarded, unless a compulsion keeps the user from it (remove curse).",
+    requirement: /*t*/"Requirement: the item works only while the user meets a condition the GM chooses (the SRD says never to roll it). Examples: eat or sleep twice as much; sacrifice valuables or magic items each week; swear fealty to a noble or a deity; take a new name; discard all other magic items; finish a quest. If the requirement isn't met, the item stops working until it is.",
+    different: /*t*/"Completely different effect: the item does something else entirely. It actually works as {item}.",
+    differentNone: /*t*/"Completely different effect: the item does something else entirely, of the GM's choosing.",
+    backfire: /*t*/"Backfire: whenever the item's power is used, it affects the user instead of the intended target.",
+    exhausting: /*t*/"Exhausting: each time the item's power is used, it drains power points from the user as well.",
+    subversive: /*t*/"Subversive: the item imposes a constant –2 penalty on its wearer's saving throws, which may go unnoticed for some time.",
+  };
+  /*t*/"unreliable"; /*t*/"dependent"; /*t*/"uncontrolled"; // the kinds of intermittent functioning, shown in summaries
+  const INTERMITTENT = [
+    ["unreliable", /*t*/"Intermittent functioning (unreliable): each time the item is activated there is a 5% chance (01–05 on d%) that it doesn't work."],
+    ["dependent", /*t*/"Intermittent functioning (dependent): the item works only in a certain situation: {situation}."],
+    ["uncontrolled", /*t*/"Intermittent functioning (uncontrolled): the item activates on its own. Roll d% each day: on 01–05 it activates at a random moment that day."],
+  ];
+  const DEPENDENT = [
+    [1, 3, /*t*/"below freezing"], [4, 5, /*t*/"above freezing"], [6, 10, /*t*/"during the day"], [11, 15, /*t*/"during the night"],
+    [16, 20, /*t*/"in direct sunlight"], [21, 25, /*t*/"out of direct sunlight"], [26, 34, /*t*/"underwater"], [35, 37, /*t*/"out of water"],
+    [38, 45, /*t*/"underground"], [46, 55, /*t*/"aboveground"], [56, 60, /*t*/"within 10 feet of a creature of a type the GM chooses"],
+    [61, 64, /*t*/"within 10 feet of a creature of a race or kind the GM chooses"], [65, 72, /*t*/"within 10 feet of an arcane spellcaster"],
+    [73, 80, /*t*/"within 10 feet of a divine spellcaster"], [81, 85, /*t*/"in the hands of a nonspellcaster"], [86, 90, /*t*/"in the hands of a spellcaster"],
+    [91, 95, /*t*/"in the hands of a creature of an alignment the GM chooses"], [96, 96, /*t*/"in the hands of a creature of a gender the GM chooses"],
+    [97, 99, /*t*/"on nonholy days or during particular astrological events"], [100, 100, /*t*/"more than 100 miles from a particular site"],
+  ];
+  // Drawbacks: [low, high, short name (the buff's name), text, D35E changes (as a buff on the holder) or null]
+  const NEG = (n) => [[`-${n}`, "attack", "attack", "penalty"], [`-${n}`, "savingThrows", "allSavingThrows", "penalty"], [`-${n}`, "skills", "skills", "penalty"], [`-${n}`, "abilityChecks", "allChecks", "penalty"], [`-${5 * n}`, "misc", "mhp", "penalty"]];
+  const DRAWBACKS = [
+    [1, 4, /*t*/"Growing hair", /*t*/"The user's hair grows 1 inch longer (once only).", null],
+    [5, 9, /*t*/"Changing height", /*t*/"The user shrinks or grows 1/2 inch (once only; 50% chance of each).", null],
+    [10, 13, /*t*/"Chill", /*t*/"The temperature around the item is 10° F cooler than normal.", null],
+    [14, 17, /*t*/"Warmth", /*t*/"The temperature around the item is 10° F warmer than normal.", null],
+    [18, 21, /*t*/"Hair color", /*t*/"The user's hair color changes.", null],
+    [22, 25, /*t*/"Skin color", /*t*/"The user's skin color changes.", null],
+    [26, 29, /*t*/"Identifying mark", /*t*/"The user bears an identifying mark (tattoo, weird glow, or the like).", null],
+    [30, 32, /*t*/"Gender change", /*t*/"The user's gender changes.", null],
+    [33, 34, /*t*/"Race change", /*t*/"The user's race or kind changes.", null],
+    [35, 35, /*t*/"Incurable disease", /*t*/"The user is afflicted with a random disease that can't be cured.", null],
+    [36, 39, /*t*/"Disturbing sound", /*t*/"The item continually emits a disturbing sound (moaning, weeping, screaming, cursing, insults).", null],
+    [40, 40, /*t*/"Ridiculous look", /*t*/"The item looks ridiculous (garishly colored, silly shape, glows bright pink…).", null],
+    [41, 45, /*t*/"Possessiveness", /*t*/"The user becomes selfishly possessive of the item.", null],
+    [46, 49, /*t*/"Paranoia", /*t*/"The user becomes paranoid about losing the item and afraid of damage to it.", null],
+    [50, 51, /*t*/"Alignment change", /*t*/"The user's alignment changes.", null],
+    [52, 54, /*t*/"Compulsive attacks", /*t*/"The user must attack the nearest creature (5% chance, 01–05 on d%, each day).", null],
+    [55, 57, /*t*/"Stunning", /*t*/"The user is stunned for 1d4 rounds once the item's function is finished (or at random once per day).", null],
+    [58, 60, /*t*/"Blurred vision", /*t*/"The user's vision is blurry (–2 penalty on attack rolls, saves and skill checks requiring vision).", [["-2", "attack", "attack", "penalty"], ["-2", "savingThrows", "allSavingThrows", "penalty"], ["-2", "skill", "skill.spt", "penalty"], ["-2", "skill", "skill.src", "penalty"]]],
+    [61, 64, /*t*/"One negative level", /*t*/"The user gains one negative level (–1 on attacks, saves, skill and ability checks; –5 hit points; –1 effective level).", NEG(1)],
+    [65, 65, /*t*/"Two negative levels", /*t*/"The user gains two negative levels (–2 on attacks, saves, skill and ability checks; –10 hit points; –2 effective levels).", NEG(2)],
+    [66, 70, /*t*/"Intelligence drain", /*t*/"The user must make a Will save each day or take 1 point of Intelligence damage.", null],
+    [71, 75, /*t*/"Wisdom drain", /*t*/"The user must make a Will save each day or take 1 point of Wisdom damage.", null],
+    [76, 80, /*t*/"Charisma drain", /*t*/"The user must make a Will save each day or take 1 point of Charisma damage.", null],
+    [81, 85, /*t*/"Constitution drain", /*t*/"The user must make a Fortitude save each day or take 1 point of Constitution damage.", null],
+    [86, 90, /*t*/"Strength drain", /*t*/"The user must make a Fortitude save each day or take 1 point of Strength damage.", null],
+    [91, 95, /*t*/"Dexterity drain", /*t*/"The user must make a Fortitude save each day or take 1 point of Dexterity damage.", null],
+    [96, 96, /*t*/"Polymorph", /*t*/"The user is polymorphed into a specific creature (5% chance, 01–05 on d%, each day).", null],
+    [97, 97, /*t*/"No arcane spells", /*t*/"The user can't cast arcane spells.", null],
+    [98, 98, /*t*/"No divine spells", /*t*/"The user can't cast divine spells.", null],
+    [99, 99, /*t*/"No spells", /*t*/"The user can't cast any spells.", null],
+    [100, 100, /*t*/"GM's drawback", /*t*/"A drawback the GM chooses or creates, suited to the item.", null],
+  ];
+  // Specific cursed items (SRD table): [low, high, name in D35E's magic item compendium, SRD price]
+  const SPECIFIC_CURSED = [
+    [1, 5, "Incense of Obsession", 200], [6, 15, "Ring of Clumsiness", 500], [16, 20, "Amulet of Inescapable Location", 1000],
+    [21, 25, "Stone of Weight (Loadstone)", 1000], [26, 30, "Bracers of Defenselessness", 1200], [31, 35, "Gauntlets of Fumbling", 1300],
+    [36, 40, "-2 Sword, Cursed", 1500], [41, 43, "Armor of Rage", 1600], [44, 46, "Medallion of Thought Projection", 1800],
+    [47, 52, "Flask of Curses", 2100], [53, 54, "Dust of Sneezing and Choking", 2400], [55, 55, "Helm of Opposite Alignment", 4000],
+    [56, 60, "Potion of Poison", 5000], [61, 61, "Broom of Animated Attack", 5200], [62, 63, "Robe of Powerlessness", 5500],
+    [64, 64, "Vacuous Grimoire", 6000], [65, 68, "Spear, Cursed Backbiter", 7500], [69, 70, "Armor of Arrow Attraction", 9000],
+    [71, 72, "Net of Snaring", 10000], [73, 75, "Bag of Devouring", null], [76, 80, "Mace of Blood", 16000], [81, 85, "Robe of Vermin", 16500],
+    [86, 88, "Periapt of Foul Rotting", 17000], [89, 92, "Sword, Berserking", 17500], [93, 96, "Boots of Dancing", 30000],
+    [97, 97, "Crystal Hypnosis Ball", null], [98, 98, "Necklace of Strangulation", 60000], [99, 99, "Cloak of Poisonousness", 62000], [100, 100, "Scarab of Death", 80000],
+  ];
+  /**
+   * Eerie light for cursed items that shed light (9.98: only while the curse is active; animations from D35E's item
+   * sheet list, so saving the sheet keeps them; all in Foundry v11 to v14).
+   */
+  const CURSED_LIGHTS = [
+    { color: "#7fd13b", type: "ghost", speed: 2, intensity: 4 },      // sickly green, drifting
+    { color: "#6a2c91", type: "emanation", speed: 3, intensity: 5 },  // bruised violet, seeping
+    { color: "#9b1c1c", type: "pulse", speed: 2, intensity: 4 },      // blood red, slow throb
+    { color: "#4f6b3a", type: "fog", speed: 2, intensity: 5 },        // murky, smoky
+    { color: "#b38bd9", type: "hexa", speed: 4, intensity: 5 },       // pale witch-light
+    { color: "#3fbfa5", type: "fog", speed: 1, intensity: 6 },        // corpse-light fog
+  ];
+  const pickCursedLight = () => ({ ...CURSED_LIGHTS[Math.floor(Math.random() * CURSED_LIGHTS.length)] });
+  const LIGHT_KEYS = ["color", "type", "animationSpeed", "animationIntensity", "alpha"];
+  /** Curse Active on/off: an item that sheds light swaps its own light for the curse's eerie light, and back. */
+  async function curseLightUpdate(item, c, active) {
+    const light = item.system?.light ?? {};
+    if (active) {
+      if (!light.emitLight || c.normalLight) return;
+      const L = c.eerie ?? ((Number(c.version) || 0) >= 9.98 ? pickCursedLight() : null); // older items got it when made
+      if (!L) return;
+      const normal = Object.fromEntries(LIGHT_KEYS.map((k) => [k, light[k] ?? null]));
+      await item.update({ "system.light.color": L.color, "system.light.type": L.type, "system.light.animationSpeed": L.speed,
+        "system.light.animationIntensity": L.intensity, "system.light.alpha": Math.max(0.5, Number(light.alpha) || 0.5),
+        [`flags.world.${CURSE_FLAG}.normalLight`]: normal, [`flags.world.${CURSE_FLAG}.eerie`]: L });
+    } else if (c.normalLight) {
+      const back = Object.fromEntries(LIGHT_KEYS.filter((k) => c.normalLight[k] !== null && c.normalLight[k] !== undefined).map((k) => [`system.light.${k}`, c.normalLight[k]]));
+      await item.update({ ...back, [`flags.world.${CURSE_FLAG}.normalLight`]: null });
+    }
+  }
+  const CURSE_GEN_DEFAULTS = { enabled: true, method: "flat", flat: 1, minor: 3, medium: 2, major: 1, merchants: false, specific: true, mechanics: true };
+
+  const curseSettings = () => ({ ...CURSE_GEN_DEFAULTS, ...(generation().curse ?? {}) });
+  /** This roll's chance (%) of a curse, or 0: ctx { grade, merchant, curse: false }. */
+  function curseChance(category, ctx = {}) {
+    if (ctx.curse === false || !String(category ?? "").startsWith("magic:")) return 0;
+    const c = curseSettings();
+    if (!c.enabled || (ctx.merchant && !c.merchants)) return 0;
+    const grade = CURSE_GRADES.includes(ctx.grade) ? ctx.grade : null;
+    if (!grade) return 0; // mundane rolls
+    if (c.method === "grade") return Number(c[grade === "epic" ? "major" : grade]) || 0;
+    return Number(c.flat) || 0;
+  }
+  /** A specific cursed item from D35E's magic item compendium (Babele-translated names too), or null. */
+  async function specificCursed(name) {
+    const d35e = game.packs.get("D35E.magicitems") ?? game.packs.get("D35E.magic-items") ?? game.packs.find((p) => (p.metadata?.packageName ?? p.metadata?.system) === "D35E" && /magic.?items/i.test(p.metadata?.name ?? ""));
+    // D35E's magic items first, then the world's item sources (custom specific cursed items), then the Items sidebar
+    let sources = [];
+    try { sources = itemSources().packs ?? []; } catch (e) { /* none */ }
+    const packs = [d35e, ...sources.map((id) => game.packs.get(id))].filter((p, i, a) => p && a.indexOf(p) === i);
+    const want = normKey(name);
+    for (const pack of packs) {
+      const idx = await pack.getIndex({ fields: ["flags.babele.originalName"] });
+      // Babele translates compendium names: match the English name, Babele's original name, or Babele's translation of it
+      const tr = game.babele?.packs?.get?.(pack.collection)?.translations?.[name]?.name;
+      const hit = idx.find((e) => [e.originalName, e.flags?.babele?.originalName, e.name].some((n) => n && normKey(n) === want) || (tr && normKey(e.name) === normKey(tr)));
+      if (hit) { const doc = await pack.getDocument(hit._id); return doc?.toObject?.() ?? null; }
+    }
+    const own = game.items?.find?.((i) => normKey(i.name) === want);
+    return own?.toObject?.() ?? null;
+  }
+  /** The SRD's "–2 sword, cursed": a longsword that seems fine in practice but has a –2 penalty in real combat (Armory). */
+  async function cursedSword() {
+    const armory = game.modules.get("axeclefts-armory");
+    if (!armory?.active || !armory.api?.build) return null;
+    const b = await armory.api.build({ base: { name: "Longsword" }, masterwork: true });
+    const data = b?.data;
+    if (!data) return null;
+    data.name = t("–2 Sword, Cursed");
+    foundry.utils.setProperty(data, "flags.world.axecleftEn", "-2 Sword, Cursed");
+    foundry.utils.setProperty(data, "system.enh", -2);
+    foundry.utils.setProperty(data, "system.price", 1500);
+    return data;
+  }
+
+  /*
+   * Custom curses (version 9.97): the "Custom Curses" page of the Treasure Lists journal. Every SRD table row is a
+   * built-in row (switch it off on the Disabled Entries page); the GM's rows join the tables with their own weight.
+   * Tables: common (a curse of its own, among delusion, opposite effect…), drawback, situation (a dependent situation
+   * for intermittent functioning), psionic (a cursed psionic item's curse), specific (an item from the item compendiums).
+   * Weight is the row's share of the d% table, as the SRD's rows have (01–05 = 5). Kinds limit which items can get it.
+   * Penalties (for the curse buff) are written "-2 attack; -2 saves; -1 str; -4 spot; -5 hp".
+   */
+  const CURSE_TABLES = [["common", /*t*/"Curse (common curses table)"], ["drawback", /*t*/"Drawback"], ["situation", /*t*/"Dependent situation (intermittent)"], ["psionic", /*t*/"Cursed psionic item"], ["specific", /*t*/"Specific cursed item"]];
+  const CURSE_KINDS = [["arms", /*t*/"Arms and armor"], ["ring", /*t*/"Rings"], ["rod", /*t*/"Rods"], ["staff", /*t*/"Staffs"], ["wondrous", /*t*/"Wondrous items"], ["potion", /*t*/"Potions"], ["scroll", /*t*/"Scrolls"], ["wand", /*t*/"Wands"]];
+  const kindOfCategory = (cat) => ({ "magic:weapon": "arms", "magic:armor": "arms", "magic:ring": "ring", "magic:rod": "rod", "magic:staff": "staff", "magic:wondrous": "wondrous", "magic:potion": "potion", "magic:scroll": "scroll", "magic:wand": "wand" })[cat] ?? null;
+  const SKILL_KEYS = { appraise: "apr", balance: "blc", bluff: "blf", climb: "clm", concentration: "coc", craft: "crf", "decipher script": "dsc", diplomacy: "dip", "disable device": "dev", disguise: "dis",
+    "escape artist": "esc", forgery: "fog", "gather information": "gif", "handle animal": "han", heal: "hea", hide: "hid", intimidate: "int", jump: "jmp", listen: "lis", "move silently": "mos", "open lock": "opl",
+    perform: "prf", profession: "pro", ride: "rid", search: "src", "sense motive": "sen", "sleight of hand": "slt", spellcraft: "spl", spot: "spt", survival: "sur", swim: "swm", tumble: "tmb", "use magic device": "umd" };
+  const PENALTY_TARGETS = {
+    attack: ["attack", "attack"], attacks: ["attack", "attack"], melee: ["attack", "mattack"], ranged: ["attack", "rattack"], damage: ["damage", "damage"],
+    ac: ["ac", "ac"], saves: ["savingThrows", "allSavingThrows"], save: ["savingThrows", "allSavingThrows"], fort: ["savingThrows", "fort"], fortitude: ["savingThrows", "fort"],
+    ref: ["savingThrows", "ref"], reflex: ["savingThrows", "ref"], will: ["savingThrows", "will"], checks: ["abilityChecks", "allChecks"], skills: ["skills", "skills"],
+    hp: ["misc", "mhp"], init: ["misc", "init"], initiative: ["misc", "init"], speed: ["speed", "allSpeeds"],
+    str: ["ability", "str"], dex: ["ability", "dex"], con: ["ability", "con"], int: ["ability", "int"], wis: ["ability", "wis"], cha: ["ability", "cha"],
+    strength: ["ability", "str"], dexterity: ["ability", "dex"], constitution: ["ability", "con"], intelligence: ["ability", "int"], wisdom: ["ability", "wis"], charisma: ["ability", "cha"],
+  };
+  /** "-2 attack; -2 saves; -1 str; -4 spot; -5 hp" → { changes: D35E changes, bad: [parts not understood] }. */
+  function parsePenalties(text) {
+    const changes = [], bad = [];
+    for (const part of String(text ?? "").split(/[;,\n]/).map((x) => x.trim()).filter(Boolean)) {
+      const m = part.match(/^([+-−–]?\s*\d+(?:\.\d+)?)\s+(.+)$/);
+      if (!m) { bad.push(part); continue; }
+      const n = m[1].replace(/[−–]/, "-").replace(/\s+/g, "");
+      const what = m[2].toLowerCase().replace(/\s+/g, " ").replace(/^skill:\s*/, "skill:");
+      const type = Number(n) < 0 ? "penalty" : "untyped";
+      if (PENALTY_TARGETS[what]) changes.push([n, ...PENALTY_TARGETS[what], type]);
+      else if (SKILL_KEYS[what]) changes.push([n, "skill", `skill.${SKILL_KEYS[what]}`, type]);
+      else if (/^skill:[a-z]{3}$/.test(what)) changes.push([n, "skill", `skill.${what.slice(6)}`, type]);
+      else bad.push(part);
+    }
+    return { changes, bad };
+  }
+  /** D35E changes back to "-2 attack; -2 saves" (for the list page). */
+  function penaltyText(changes) {
+    const names = Object.fromEntries(Object.entries(PENALTY_TARGETS).reverse().map(([k, v]) => [v.join("|"), k]));
+    const skills = Object.fromEntries(Object.entries(SKILL_KEYS).map(([k, v]) => [v, k]));
+    return (changes ?? []).map(([f, tg, st]) => `${f} ${names[`${tg}|${st}`] ?? (tg === "skill" ? skills[String(st).replace("skill.", "")] ?? st : `${tg}:${st}`)}`).join("; ");
+  }
+  /** The SRD tables as rows of the Custom Curses list (built-in rows). */
+  function builtinCurseRows() {
+    const w = (lo, hi) => hi - lo + 1;
+    return [
+      ...COMMON_CURSES.map(([lo, hi, key]) => ({ name: CURSE_LABELS[key], table: "common", weight: w(lo, hi), kinds: [], text: key === "specific" ? "" : (CURSE_TEXT[key === "different" ? "differentNone" : key] ?? ""), penalties: "", key })),
+      ...DRAWBACKS.map(([lo, hi, short, text, changes]) => ({ name: short, table: "drawback", weight: w(lo, hi), kinds: [], text, penalties: penaltyText(changes), changes, key: "drawback" })),
+      ...DEPENDENT.map(([lo, hi, sit]) => ({ name: sit, table: "situation", weight: w(lo, hi), kinds: [], text: "", penalties: "", key: "situation" })),
+      ...PSIONIC_CURSES.map(([lo, hi, key]) => ({ name: CURSE_LABELS[key], table: "psionic", weight: w(lo, hi), kinds: [], text: CURSE_TEXT[key], penalties: key === "subversive" ? "-2 saves" : "", changes: key === "subversive" ? [["-2", "savingThrows", "allSavingThrows", "penalty"]] : null, key })),
+      ...SPECIFIC_CURSED.map(([lo, hi, name, price]) => ({ name, table: "specific", weight: w(lo, hi), kinds: [], text: "", penalties: "", price, key: "specific" })),
+    ];
+  }
+  /** A table's rows (built-in minus switched off, plus the GM's), for an item category. */
+  function curseRows(table, category = null) {
+    let rows;
+    try { rows = registry.lists.has(`${CORR_MOD}|curses`) ? customList(CORR_MOD, "curses") : builtinCurseRows(); } catch (e) { rows = builtinCurseRows(); }
+    const kind = kindOfCategory(category);
+    return rows.filter((r) => r.table === table && (Number(r.weight) || 0) > 0 && (!kind || !r.kinds?.length || r.kinds.includes(kind)));
+  }
+  /** A select or checks option's key from its key, its English label or its label in the world's language (list pages show labels). */
+  const optionKey = (opts, v) => {
+    const x = String(v ?? "").trim().toLowerCase();
+    if (!x) return null;
+    return opts.find(([k, l]) => k === x || String(l).toLowerCase() === x || String(t(l)).toLowerCase() === x)?.[0] ?? null;
+  };
+  const pickWeighted = (rows) => {
+    const total = rows.reduce((a, r) => a + (Number(r.weight) || 0), 0);
+    if (!(total > 0)) return null;
+    let x = Math.random() * total;
+    for (const r of rows) { x -= Number(r.weight) || 0; if (x < 0) return r; }
+    return rows.at(-1);
+  };
+  /** The curse a custom row makes (or a built-in row's own curse). */
+  const rowChanges = (r) => (r.source === "custom" ? parsePenalties(r.penalties).changes : (r.changes ?? parsePenalties(r.penalties).changes));
+
+  /**
+   * Roll a curse on the SRD tables for an item: { key, label, text, changes, light, specific?, item? }.
+   * opts.type: a curse type instead of a roll ("delusion", "reversed", …, "specific"); opts.psionic: use the psionic table.
+   */
+  async function rollCurse(data, { type = null, category = null, ctx = {}, psionic = null } = {}) {
+    const psi = psionic ?? isPsionicItem(data);
+    const rolls = [];
+    let row = null, key = type;
+    if (key?.startsWith?.("custom:")) { row = curseRows("common").concat(curseRows("psionic")).find((r) => r.name === key.slice(7)) ?? null; key = row?.key ?? "custom"; }
+    else if (!key) {
+      // Psionic items: the cursed psionic item table or the common curses (even odds); the common curses otherwise
+      const tbl = psi && Math.random() < 0.5 && curseRows("psionic", category).length ? "psionic" : "common";
+      const rows = curseRows(tbl, category).filter((r) => !(r.key === "specific" && curseSettings().specific === false));
+      row = pickWeighted(rows);
+      key = row ? (row.source === "custom" ? "custom" : row.key) : "requirement";
+    }
+    const out = { key, label: row && key === "custom" ? row.name : (CURSE_LABELS[key] ?? key), rolls, changes: null, text: "" };
+    if (key === "custom") {
+      out.text = `${row?.name ?? t("Curse")}: ${row?.text ?? ""}`.trim();
+      out.changes = row ? rowChanges(row) : null;
+      out.custom = row?.name ?? null;
+    } else if (key === "intermittent") {
+      const [sub, text] = INTERMITTENT[Math.floor(Math.random() * INTERMITTENT.length)]; // the SRD lists the three kinds without odds: equal chances
+      out.sub = sub;
+      const sitRow = sub === "dependent" ? pickWeighted(curseRows("situation", category)) : null;
+      if (sub === "dependent" && !sitRow) { out.sub = "unreliable"; out.text = t(INTERMITTENT[0][1]); }
+      else {
+        out.situation = sitRow?.name ?? null;
+        const sitText = sitRow ? (sitRow.source === "custom" ? (sitRow.text || sitRow.name) : t(sitRow.name)) : null;
+        out.text = sitText ? t(text, { situation: sitText }) : t(text);
+      }
+    } else if (key === "drawback") {
+      const d = pickWeighted(curseRows("drawback", category));
+      out.sub = d?.name ?? null;
+      out.text = d ? `${t("Drawback:")} ${d.source === "custom" ? d.text : t(d.text)}` : t(DRAWBACKS.at(-1)[3]);
+      out.changes = d ? rowChanges(d) : null;
+    } else if (key === "different") {
+      let other = null;
+      if (category) { try { other = (await fromCategory(category, { ...ctx, curse: false })).find((e) => e.data && !e.placeholder); } catch (e) { /* none */ } }
+      out.other = other?.name ?? null;
+      out.text = other ? t(CURSE_TEXT.different, { item: other.name }) : t(CURSE_TEXT.differentNone);
+    } else if (key === "subversive") {
+      out.text = t(CURSE_TEXT.subversive);
+      out.changes = [["-2", "savingThrows", "allSavingThrows", "penalty"]];
+    } else if (key === "specific") {
+      const sp = pickWeighted(curseRows("specific", category)) ?? { name: SPECIFIC_CURSED[0][2], price: SPECIFIC_CURSED[0][3] };
+      out.specific = sp.name; out.price = sp.source === "custom" ? null : sp.price;
+      out.text = t("Replaced by a specific cursed item from the SRD: {item}.", { item: sp.name });
+    } else out.text = CURSE_TEXT[key] ? t(CURSE_TEXT[key]) : "";
+    return out;
+  }
+
+  /** Make item data cursed (in place) with a rolled curse; returns the curse. opts.mechanics: apply simple effects. */
+  function curseData(data, curse, { mechanics = curseSettings().mechanics } = {}) {
+    const s = data.system ??= {};
+    s.cursed = true; s.identifiedCurse = false; s.curseActive = false;
+    const applied = [];
+    if (mechanics) {
+      if (curse.key === "reversed") {
+        if (data.type === "weapon" && Number(s.enh) > 0) { s.enh = -Number(s.enh); applied.push(t("enhancement bonus reversed to {n}", { n: s.enh })); }
+        else if (Number(s.armor?.enh) > 0) { s.armor.enh = -Number(s.armor.enh); applied.push(t("enhancement bonus reversed to {n}", { n: s.armor.enh })); }
+        const ch = Array.isArray(s.changes) ? s.changes : [];
+        let n = 0;
+        s.changes = ch.map((c) => { if (!Array.isArray(c) || !String(c[0] ?? "").trim() || c[3] === "penalty") return c; n++; return [`-(${c[0]})`, ...c.slice(1)]; });
+        if (n) applied.push(t("{n} item changes reversed", { n }));
+      } else if (curse.key === "delusion") {
+        if (data.type === "weapon" && s.enh) { s.enh = 0; applied.push(t("no enhancement bonus")); }
+        if (s.armor?.enh) { s.armor.enh = 0; applied.push(t("no enhancement bonus")); }
+        if (s.enhancements?.items?.length) { s.enhancements.items = []; applied.push(t("no special abilities")); }
+        if (Array.isArray(s.changes) && s.changes.length) { s.changes = []; applied.push(t("no item changes")); }
+      }
+      if (curse.changes?.length) applied.push(t("penalties on the curse buff"));
+    }
+    // A cursed item that sheds light glows with an eerie light, but only once the curse is active (9.98): until then
+    // its light is its own, so the light doesn't give the curse away
+    const eerie = pickCursedLight();
+    if (s.light?.emitLight) { curse.light = eerie.type; applied.push(t("eerie light while the curse is active")); }
+    curse.applied = applied;
+    const html = `<p><strong>${esc(t("Curse:"))}</strong> ${esc(curse.text)}${applied.length ? ` <em>(${esc(applied.join("; "))})</em>` : ""}</p>`;
+    foundry.utils.setProperty(data, `flags.world.${CURSE_FLAG}`, { key: curse.key, sub: curse.sub ?? null, situation: curse.situation ?? null, custom: curse.custom ?? null, ref: curseRef(curse), label: curse.label, text: curse.text, eerie,
+      changes: mechanics && curse.changes?.length ? curse.changes.map((c) => [...c]) : [], applied, html, revealed: false, version: AXECLEFT_TREASURE_VERSION });
+    return curse;
+  }
+
+  /**
+   * Curse a generated entry ({ name, data, summary }) or not, by the Generation settings; returns the entry (or the
+   * specific cursed item that replaces it). opts.force: a curse type (or "random") from the Forge/Workshop.
+   */
+  async function maybeCurse(entry, category, ctx = {}, { force = null } = {}) {
+    if (!entry?.data || entry.placeholder) return entry;
+    if (!force) {
+      const pct = curseChance(category, ctx);
+      if (!(pct > 0) || Math.random() * 100 >= pct) return entry;
+    }
+    const curse = await rollCurse(entry.data, { type: force && force !== "random" ? force : null, category, ctx });
+    let out = entry;
+    if (curse.key === "specific") {
+      const data = curse.specific === "-2 Sword, Cursed" ? await cursedSword() : await specificCursed(curse.specific);
+      if (data) {
+        if (curse.price != null) foundry.utils.setProperty(data, "system.price", curse.price);
+        if (entry.data.system?.identified === false) foundry.utils.setProperty(data, "system.identified", false);
+        out = { ...entry, name: data.name, data, price: Number(data.system?.price) || entry.price, summary: t("specific cursed item (SRD), {price}", { price: gp(Number(data.system?.price) || 0) }) };
+      } else {
+        // Not in the compendiums (or no Armory for the sword): a drawback on the rolled item instead
+        Object.assign(curse, await rollCurse(entry.data, { type: "drawback" }));
+      }
+    }
+    curseData(out.data, curse);
+    // The curse's buff (Common Buffs compendium) linked in the identified description, for the GM to apply
+    const link = await curseBuffLink(curseRef(curse)).catch(() => "");
+    if (link) {
+      const d = out.data.system.description ??= {};
+      d.value = `${d.value ?? ""}<p><strong>${esc(t("Curse:"))}</strong> ${link}</p>`;
+      foundry.utils.setProperty(out.data, `flags.world.${CURSE_FLAG}.link`, link);
+    }
+    out.cursed = curse.key;
+    out.summary = `${out.summary ? `${out.summary}; ` : ""}${t("CURSED: {curse}", { curse: t(curse.label) })}${curse.sub ? ` (${t(curse.sub)})` : ""}`;
+    return out;
+  }
+
+  /** GM-only: the curse at the top of the item sheet; "Curse Identified" adds it to the description. */
+  function onItemSheetCurse(app, html) {
+    if (!game.user?.isGM) return;
+    const item = app?.document ?? app?.item ?? app?.object;
+    const c = item?.flags?.world?.[CURSE_FLAG];
+    if (!c?.html) return;
+    const root = html instanceof HTMLElement ? html : html?.[0];
+    const form = root?.querySelector?.("form") ?? root;
+    if (!form || form.querySelector(".axecleft-curse")) return;
+    const box = document.createElement("div");
+    box.className = "axecleft-curse";
+    box.style.cssText = "margin:4px 8px;padding:4px 8px;border:1px solid #9b1c1c;border-radius:4px;background:rgba(155,28,28,0.12);font-size:12px";
+    box.innerHTML = `<i class="fas fa-skull"></i> <small>${esc(t("GM only"))}</small> ${c.html}${c.link ? `<p>${esc(t("Buff:"))} ${c.link.replace(/@UUID\[([^\]]+)\]\{([^}]*)\}/, (m, u, n) => `<a class="content-link" draggable="true" data-uuid="${u}" data-link><i class="fas fa-suitcase"></i>${esc(n)}</a>`)}</p>` : ""}${item.system?.identifiedCurse ? "" : `<small>${esc(t("Tick \"Curse Identified\" to add the curse to the item's description for the players."))}</small>`}`;
+    const anchor = form.querySelector(".sheet-header") ?? form.firstElementChild;
+    anchor ? anchor.after(box) : form.prepend(box);
+  }
+  /** The category a made item would roll as (for "completely different effect"). */
+  function curseCategoryOf(data) {
+    const s = data?.system ?? {};
+    if (data?.type === "weapon" || s.subType === "ammo") return "magic:weapon";
+    if (data?.type === "equipment" && ["armor", "shield"].includes(s.equipmentType)) return "magic:armor";
+    if (data?.type === "consumable") return { potion: "magic:potion", scroll: "magic:scroll", wand: "magic:wand", tattoo: "magic:potion", powerstone: "magic:scroll", dorje: "magic:wand" }[s.consumableType] ?? "magic:potion";
+    if (s.slot === "ring") return "magic:ring";
+    if (/\bstaff\b/i.test(data?.flags?.world?.axecleftEn ?? data?.name ?? "")) return "magic:staff";
+    if (/\brod\b/i.test(data?.flags?.world?.axecleftEn ?? data?.name ?? "")) return "magic:rod";
+    return "magic:wondrous";
+  }
+  /** The "Cursed" row for crafting tabs (Forge, Workshop): No, a random curse, or a curse type. */
+  function curseField(name, value = "none") {
+    let mine = [];
+    try { mine = curseRows("common").concat(curseRows("psionic")).filter((r) => r.source === "custom").map((r) => [`custom:${r.name}`, r.name]); } catch (e) { /* none */ }
+    const opts = [["none", /*t*/"No"], ["random", /*t*/"Random curse (SRD tables)"], ...["delusion", "reversed", "intermittent", "requirement", "drawback", "different", "specific"].map((k) => [k, CURSE_LABELS[k]]), ...mine];
+    return `<div class="form-group"><label>${esc(t("Cursed"))}</label><select name="${name}">${opts.map(([v, l]) => `<option value="${esc(v)}" ${v === value ? "selected" : ""}>${esc(v.startsWith("custom:") ? l : t(l))}</option>`).join("")}</select><span class="hint" style="flex:1">${esc(t("SRD cursed items; the GM sees the curse on the item sheet"))}</span></div>`;
+  }
+  /** Curse made entries by a crafting tab's "Cursed" choice ("none" leaves them alone). */
+  async function curseEntries(entries, force = "none") {
+    if (!force || force === "none") return entries;
+    const out = [];
+    for (const e of entries) out.push(e?.data && !e.placeholder ? await maybeCurse(e, curseCategoryOf(e.data), {}, { force }) : e);
+    return out;
+  }
+  const curseWriter = () => { const gm = game.users?.activeGM ?? game.users?.find((u) => u.isGM && u.active); return gm?.id === game.user?.id; }; // one GM writes
+  const CURSE_BUFF = "axecleftCurseBuff";
+  const CURSE_IMG = "icons/svg/skull.svg";
+  /** A D35E buff for a curse: its penalties as changes, its text as the description. */
+  function curseBuffData({ name, text, changes = [], html = null, key = null, item = null, ref = null, group = null }) {
+    return {
+      name, type: "buff", img: CURSE_IMG,
+      system: { buffType: "item", active: !!item, changes: (changes ?? []).map((c) => [...c]), description: { value: html ?? `<p>${esc(text)}</p>` } },
+      flags: { world: { [CURSE_BUFF]: { key, item, ref, group } } },
+    };
+  }
+  /** A curse's buff reference: "drawback/Blurred vision", "intermittent/underwater", "delusion" (English, stable across languages). */
+  function curseRef(c) {
+    if (c.key === "drawback") return c.sub ? `drawback/${c.sub}` : null;
+    if (c.key === "intermittent") return c.sub === "dependent" ? (c.situation ? `intermittent/${c.situation}` : null) : `intermittent/${c.sub}`;
+    if (c.key === "custom") return c.custom ? `custom/${c.custom}` : null;
+    return ["delusion", "reversed", "requirement", "different", "backfire", "exhausting", "subversive"].includes(c.key) ? c.key : null;
+  }
+  /** The compendiums with curse buffs: Curios' "Common Buffs", then the GM's own "Axecleft's Curses". */
+  const CURSE_PACKS = ["axeclefts-curios.common-buffs", "world.axecleft-curses"];
+  const curseIndex = new Map();
+  /** "@UUID[Compendium.…]{Curse: …}" for a curse's buff, or "". */
+  async function curseBuffLink(ref) {
+    if (!ref) return "";
+    for (const id of CURSE_PACKS) {
+      const pack = game.packs?.get?.(id);
+      if (!pack) continue;
+      let idx = curseIndex.get(id);
+      if (!idx) { idx = await pack.getIndex({ fields: [`flags.world.${CURSE_BUFF}`] }); curseIndex.set(id, idx); }
+      const hit = idx.find((e) => e.flags?.world?.[CURSE_BUFF]?.ref === ref);
+      if (hit) return `@UUID[Compendium.${pack.collection}.Item.${hit._id}]{${hit.name}}`;
+    }
+    return "";
+  }
+  /** The buff for a cursed item's curse, named after what the holder sees of the item. */
+  function itemCurseBuff(item, c) {
+    const shown = item.system?.identified === false ? (item.system?.unidentified?.name || item.name) : item.name;
+    const what = c.key === "drawback" && c.sub ? t(c.sub) : t(c.label);
+    return curseBuffData({ name: t("Curse: {curse} ({item})", { curse: what, item: shown }), text: c.text, html: c.html, changes: c.changes, key: c.key, item: item.id });
+  }
+  const curseBuffsOf = (item) => item?.actor?.items?.filter((i) => i.flags?.world?.[CURSE_BUFF]?.item === item.id) ?? [];
+  async function onItemUpdateCurse(item, changes) {
+    const c = item?.flags?.world?.[CURSE_FLAG];
+    if (!c || !curseWriter()) return;
+    // "Curse Identified": the curse goes into the item's description, for the players
+    if (foundry.utils.getProperty(changes, "system.identifiedCurse") === true && c.html && !c.revealed) {
+      const desc = String(item.system?.description?.value ?? "");
+      await item.update({ "system.description.value": `${desc}<hr>${c.html}`, [`flags.world.${CURSE_FLAG}.revealed`]: true });
+    }
+    // "Curse Active" (D35E: the item can't be unequipped or dropped): the holder gets the curse as a buff
+    const act = foundry.utils.getProperty(changes, "system.curseActive");
+    if (act === undefined) return;
+    try { await curseLightUpdate(item, c, !!act); } catch (e) { console.warn("AxecleftTreasure | cursed light", e); }
+    if (!item.actor) return;
+    const have = curseBuffsOf(item);
+    if (act && !have.length) await item.actor.createEmbeddedDocuments("Item", [itemCurseBuff(item, c)]);
+    else if (!act && have.length) await item.actor.deleteEmbeddedDocuments("Item", have.map((i) => i.id));
+  }
+  /** The item is gone (sold, destroyed, curse lifted by removing it): so is its curse buff. */
+  async function onItemDeleteCurse(item) {
+    if (!item?.actor || !item.flags?.world?.[CURSE_FLAG] || !curseWriter()) return;
+    const have = curseBuffsOf(item).filter((i) => item.actor.items.has(i.id));
+    if (have.length) await item.actor.deleteEmbeddedDocuments("Item", have.map((i) => i.id));
+  }
+
+  /** Every curse in the SRD tables as a buff, for the "Axecleft's Curses" compendium (GM's own use: drag onto a character). */
+  function allCurseBuffs() {
+    const out = [];
+    const add = (group, ref, curse, detail, text, changes = null) => out.push(curseBuffData({ name: detail ? t("Curse: {curse} – {detail}", { curse: t(curse), detail }) : t("Curse: {curse}", { curse: t(curse) }), text, changes, ref, group, key: ref.split("/")[0] }));
+    for (const k of ["delusion", "reversed", "requirement"]) add("Item curses", k, CURSE_LABELS[k], null, t(CURSE_TEXT[k]));
+    add("Item curses", "different", CURSE_LABELS.different, null, t(CURSE_TEXT.differentNone));
+    add("Intermittent functioning", "intermittent/unreliable", CURSE_LABELS.intermittent, t("unreliable"), t(INTERMITTENT[0][1]));
+    add("Intermittent functioning", "intermittent/uncontrolled", CURSE_LABELS.intermittent, t("uncontrolled"), t(INTERMITTENT[2][1]));
+    for (const [, , sit] of DEPENDENT) add("Intermittent functioning", `intermittent/${sit}`, CURSE_LABELS.intermittent, t(sit), t(INTERMITTENT[1][1], { situation: t(sit) }));
+    for (const [, , short, text, changes] of DRAWBACKS) add("Drawbacks", `drawback/${short}`, CURSE_LABELS.drawback, t(short), `${t("Drawback:")} ${t(text)}`, changes);
+    add("Psionic item curses", "backfire", CURSE_LABELS.backfire, null, t(CURSE_TEXT.backfire));
+    add("Psionic item curses", "exhausting", CURSE_LABELS.exhausting, null, t(CURSE_TEXT.exhausting));
+    add("Psionic item curses", "subversive", CURSE_LABELS.subversive, null, t(CURSE_TEXT.subversive), [["-2", "savingThrows", "allSavingThrows", "penalty"]]);
+    // The GM's own curses (Custom Curses page)
+    let mine = [];
+    try { mine = registry.lists.has(`${CORR_MOD}|curses`) ? listRows(CORR_MOD, "curses") : []; } catch (e) { /* none */ }
+    for (const r of mine) {
+      const ch = parsePenalties(r.penalties).changes;
+      if (r.table === "common" || r.table === "psionic") out.push(curseBuffData({ name: t("Curse: {curse}", { curse: r.name }), text: `${r.name}: ${r.text ?? ""}`, changes: ch, ref: `custom/${r.name}`, group: "Custom curses", key: "custom" }));
+      else if (r.table === "drawback") add("Custom curses", `drawback/${r.name}`, CURSE_LABELS.drawback, r.name, `${t("Drawback:")} ${r.text ?? ""}`, ch);
+      else if (r.table === "situation") add("Custom curses", `intermittent/${r.name}`, CURSE_LABELS.intermittent, r.text || r.name, t(INTERMITTENT[1][1], { situation: r.text || r.name }));
+    }
+    return out;
+  }
+  /** Create (or refill) the world compendium "Axecleft's Curses" with every curse buff. */
+  async function buildCurseCompendium() {
+    if (!game.user?.isGM) return null;
+    const CC = typeof CompendiumCollection !== "undefined" ? CompendiumCollection : foundry.documents.collections.CompendiumCollection;
+    const id = "world.axecleft-curses";
+    let pack = game.packs.get(id);
+    if (!pack) pack = await CC.createCompendium({ name: "axecleft-curses", label: t("Axecleft's Curses"), type: "Item", package: "world" });
+    if (pack.locked) { ui.notifications.warn(t("The \"{name}\" compendium is locked. Unlock it and try again.", { name: pack.metadata.label })); return null; }
+    const Item = CONFIG.Item.documentClass;
+    const old = (await pack.getIndex()).filter((e) => e.flags?.world?.[CURSE_BUFF] || e.type === "buff").map((e) => e._id);
+    if (old.length) await Item.deleteDocuments(old, { pack: pack.collection });
+    const docs = allCurseBuffs();
+    await Item.createDocuments(docs, { pack: pack.collection });
+    curseIndex.delete(pack.collection);
+    ui.notifications.info(t("{name}: {n} curse buffs.", { name: pack.metadata.label, n: docs.length }));
+    return pack;
   }
 
   /** The Generation settings fieldset on the Treasure by Level tab. */
@@ -277,26 +799,32 @@ const AXECLEFT_TREASURE_HOST = (() => {
     const num = (name, v, max = 100, step = 1) => `<input type="number" name="${name}" value="${esc(v)}" min="0" max="${max}" step="${step}">`;
     const cb = (name, v, label = "") => `<label class="atg-cb"><input type="checkbox" name="${name}" ${v ? "checked" : ""}>${label ? ` ${esc(t(label))}` : ""}</label>`;
     const H = (s) => `<span class="hint">${esc(t(s))}</span>`;
+    const IQ = globalThis.AxecleftTools?.intelligentItems?.() !== false; // D35E before 3.1.0 has no intelligent items
     const rows = GEN_CATS.map(([k, label]) => `<tr><td>${esc(t(label))}</td>
         <td>${cb(`gen.light.${k}.on`, g.light[k].on)} ${num(`gen.light.${k}.chance`, g.light[k].chance)}%</td>
         <td>${num(`gen.light.${k}.bright`, g.light[k].bright, 120, 5)} / ${num(`gen.light.${k}.dim`, g.light[k].dim, 240, 5)} ${esc(t("ft"))}</td>
-        <td>${cb(`gen.intelligence.${k}.on`, g.intelligence[k].on)} ${num(`gen.intelligence.${k}.chance`, g.intelligence[k].chance)}%</td>
+        ${IQ ? `<td>${cb(`gen.intelligence.${k}.on`, g.intelligence[k].on)} ${num(`gen.intelligence.${k}.chance`, g.intelligence[k].chance)}%</td>` : ""}
         <td>${g.hints[k] ? `${cb(`gen.hints.${k}.on`, g.hints[k].on)} ${num(`gen.hints.${k}.chance`, g.hints[k].chance)}%` : "—"}</td></tr>`).join("");
     const changed = JSON.stringify(g) !== JSON.stringify(GEN_DEFAULTS);
     return `<details class="atg-sec atg-gen" data-sec="gen" ${recall("sec.gen", "0") === "1" ? "open" : ""}><summary>${esc(t("Generation settings"))} <small>(${esc(changed ? t("changed for this world") : t("SRD and Axecleft defaults"))})</small></summary>
       <p class="hint">${esc(t("Extras that Axecleft's modules (Armory, Curios) add to randomly generated magic items, and poisons among mundane items. Untick a row or set 0% to turn it off. Crafting tools (the Armory's Forge) can always add them by hand. Saved for this world."))}</p>
       <div class="form-group"><label>${esc(t("Campaign"))}</label>${cb("gen.rules.psionics", g.rules.psionics, /*t*/"Psionics")}${cb("gen.rules.epic", g.rules.epic, /*t*/"Epic items")}${H("Epic share of the extra items at EL 21+:")} ${num("gen.rules.epicShare", g.rules.epicShare ?? 25)}<span class="hint">%</span></div>
       <p class="hint">${t("For every Axecleft module. <strong>Psionics</strong> off hides psionic items, powers, power stones, psionic tattoos, dorjes and psicrowns from treasure, merchants, crafting and the Forge. <strong>Epic items</strong> on lets the Forge and crafting make epic items (past the SRD +5/+10 limits) and lets merchants with the <em>Epic campaign</em> settlement character stock them; random treasure stays SRD up to EL 20. EL 21–30 (DMG): the EL 20 row plus 1, 2, 4, 6, 9, 12, 17, 23, 31 or 42 extra major items; while Epic items is on, this share of them are epic items from the SRD epic tables (house rule).")}</p>
-      <div class="atg-checks">${cb("gen.light.enabled", g.light.enabled, /*t*/"Random light")}${cb("gen.intelligence.enabled", g.intelligence.enabled, /*t*/"Random intelligence")}${cb("gen.hints.enabled", g.hints.enabled, /*t*/"Inscription hints")}</div>
-      <table class="atg-gen-table"><thead><tr><th></th><th>${esc(t("Sheds light"))}</th><th>${esc(t("Bright / dim"))}</th><th>${esc(t("Intelligent"))}</th><th>${esc(t("Hint"))}</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="atg-checks">${cb("gen.light.enabled", g.light.enabled, /*t*/"Random light")}${IQ ? cb("gen.intelligence.enabled", g.intelligence.enabled, /*t*/"Random intelligence") : ""}${cb("gen.hints.enabled", g.hints.enabled, /*t*/"Inscription hints")}</div>
+      <table class="atg-gen-table"><thead><tr><th></th><th>${esc(t("Sheds light"))}</th><th>${esc(t("Bright / dim"))}</th>${IQ ? `<th>${esc(t("Intelligent"))}</th>` : ""}<th>${esc(t("Hint"))}</th></tr></thead><tbody>${rows}</tbody></table>
       <p class="hint">${t("SRD: 30% of magic melee weapons shed light (a <em>light</em> spell: 20 ft bright, 40 ft dim); ranged weapons don't; 15% of weapons carry an inscription hinting at their power; fewer than 1% of permanent items are intelligent (never potions, scrolls, wands or ammunition). Light on armor, shields and other items is a house rule.")}</p>
-      <div class="atg-checks">${cb("gen.intelligence.purpose.on", g.intelligence.purpose.on, /*t*/"Intelligent items can have a special purpose:")}${cb("gen.intelligence.purpose.greater", g.intelligence.purpose.greater, /*t*/"always with greater powers")} <span>${esc(t("plus"))}</span> ${num("gen.intelligence.purpose.chance", g.intelligence.purpose.chance)}${H("% of the others")}</div>
-      <p class="hint">${esc(t("The SRD lists special purposes and dedicated powers but doesn't say how often they occur; this is Axecleft's default (the most capable items, with greater powers, have one)."))}</p>
+      ${IQ ? `<div class="atg-checks">${cb("gen.intelligence.purpose.on", g.intelligence.purpose.on, /*t*/"Intelligent items can have a special purpose:")}${cb("gen.intelligence.purpose.greater", g.intelligence.purpose.greater, /*t*/"always with greater powers")} <span>${esc(t("plus"))}</span> ${num("gen.intelligence.purpose.chance", g.intelligence.purpose.chance)}${H("% of the others")}</div>
+      <p class="hint">${esc(t("The SRD lists special purposes and dedicated powers but doesn't say how often they occur; this is Axecleft's default (the most capable items, with greater powers, have one)."))}</p>` : ""}
       <div class="atg-checks">${cb("gen.light.themes", g.light.themes, /*t*/"Light color and animation follow the item's abilities")}${cb("gen.light.powerBrightness", g.light.powerBrightness, /*t*/"Stronger items glow brighter")}</div>
       <div class="atg-checks">${cb("gen.light.scaleRadii", g.light.scaleRadii, /*t*/"Stronger items shine farther:")} ${num("gen.light.scaleFeet", g.light.scaleFeet, 30, 5)} ${H("ft per +1 above +2")}</div>
       <div class="form-group"><label>${esc(t("Sizes of arms"))}</label>${cb("gen.size.enabled", g.size.enabled)} ${num("gen.size.small", g.size.small)}${H("% Small")} ${num("gen.size.medium", g.size.medium)}${H("% Medium")} ${num("gen.size.large", g.size.large)}${H("% Large")}</div>
       <p class="hint">${esc(t("SRD: random armor and weapons are Small 30%, Medium 60% and another size 10% (Large here). Small arms cost the same and weigh half; Large cost twice as much and weigh twice as much. Untick for all Medium."))}</p>
       <div class="form-group"><label>${esc(t("Poisons"))}</label>${cb("gen.poison.enabled", g.poison.enabled)} ${num("gen.poison.chance", g.poison.chance, 100, 0.5)}<span class="hint" style="flex:1">${esc(t("% of mundane item rolls become a poison from your item sources (house rule; raise it where poison is common)"))}</span></div>
+      <div class="form-group"><label>${esc(t("Cursed items"))}</label>${cb("gen.curse.enabled", g.curse.enabled)} <select name="gen.curse.method">${[["flat", /*t*/"Flat rate"], ["grade", /*t*/"Rate by grade"]].map(([v, l]) => `<option value="${v}" ${g.curse.method === v ? "selected" : ""}>${esc(t(l))}</option>`).join("")}</select>
+        <span data-curse="flat">${num("gen.curse.flat", g.curse.flat, 100, 0.5)}${H("% of magic items")}</span>
+        <span data-curse="grade">${num("gen.curse.minor", g.curse.minor, 100, 0.5)}${H("% minor")} ${num("gen.curse.medium", g.curse.medium, 100, 0.5)}${H("% medium")} ${num("gen.curse.major", g.curse.major, 100, 0.5)}${H("% major and epic")}</span></div>
+      <div class="atg-checks">${cb("gen.curse.specific", g.curse.specific, /*t*/"Specific cursed items (SRD table)")}${cb("gen.curse.mechanics", g.curse.mechanics, /*t*/"Apply simple effects (penalties, reversed bonuses)")}${cb("gen.curse.merchants", g.curse.merchants, /*t*/"Merchant stock can be cursed")}<button type="button" data-curse-pack><i class="fas fa-skull"></i> ${esc(t("Create the curse buffs compendium"))}</button></div>
+      <p class="hint">${esc(t("SRD: any magic item can be cursed (the SRD gives no frequency; 1% flat, or 3% / 2% / 1% by grade, is Axecleft's default). Curses are rolled on the SRD tables: delusion, opposite effect, intermittent functioning, requirement (the GM chooses it), drawback, completely different effect, or a specific cursed item; psionic items can also roll a cursed psionic item's curse. The item is marked Cursed for the GM only; the curse shows at the top of its sheet, and ticking \"Curse Identified\" adds it to the description. Ticking \"Curse Active\" (the holder can't unequip or drop it) gives the holder the curse as a buff, with its penalties; unticking it, or losing the item, removes the buff. Cursed items that shed light glow with an eerie light while the curse is active. The compendium button makes every curse in the SRD tables a buff, to apply by hand."))}</p>
       <div class="atg-footer"><button type="button" data-gen-reset><i class="fas fa-rotate-left"></i> ${esc(t("Reset to Defaults"))}</button></div>
     </details>`;
   }
@@ -305,7 +833,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
     const g = generation();
     for (const el of section.querySelectorAll("[name^='gen.']")) {
       const path = el.name.slice(4);
-      const v = el.type === "checkbox" ? el.checked : Math.max(0, Number(el.value) || 0);
+      const v = el.type === "checkbox" ? el.checked : el.tagName === "SELECT" ? el.value : Math.max(0, Number(el.value) || 0);
       foundry.utils.setProperty(g, path, v);
     }
     return g;
@@ -987,7 +1515,12 @@ const AXECLEFT_TREASURE_HOST = (() => {
     if (!p) return [placeholder(category, ctx.grade)];
     try {
       const out = await p.roll({ ...ctx, category });
-      return (out ?? []).map((e) => ({ provider: `${p.module}.${p.name}`, ...e }));
+      const rolled = (out ?? []).map((e) => ({ provider: `${p.module}.${p.name}`, ...e }));
+      // Version 9.96: a random magic item can be cursed (Generation settings)
+      if (ctx.curse === false || !curseChance(category, ctx)) return rolled;
+      const cursed = [];
+      for (const e of rolled) { try { cursed.push(await maybeCurse(e, category, ctx)); } catch (err) { console.error("AxecleftTreasure | curse failed", err); cursed.push(e); } }
+      return cursed;
     } catch (err) {
       console.error(`AxecleftTreasure | ${p.module}.${p.name} failed for ${category}`, err);
       return [{ ...placeholder(category, ctx.grade), summary: t("{source} failed: {error}", { source: t(p.label), error: err.message }) }];
@@ -1686,7 +2219,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
   const librarySync = () => libSetting("librarySync", "auto");
   const libraryFolder = () => String(libSetting("libraryFolder", "") || "axecleft-treasure").replace(/^\/+|\/+$/g, "");
   const libraryPath = () => `${libraryFolder()}/${LIBRARY_FILE}`;
-  const FPi = () => foundry.applications?.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
+  const FPi = () => foundry.applications?.apps?.FilePicker?.implementation ?? (typeof FilePicker !== "undefined" ? FilePicker : globalThis.FilePicker);
   const fileSource = () => (typeof ForgeVTT !== "undefined" && ForgeVTT?.usingTheForge ? "forgevtt" : "data");
 
   /** { module: { key: rows } } from a library or export file, old (Gemstones 1.14) or new layout. */
@@ -2045,6 +2578,15 @@ const AXECLEFT_TREASURE_HOST = (() => {
         gen.querySelectorAll("[name^='gen.']").forEach((x) => {
           for (const ev of ["input", "change"]) x.addEventListener(ev, () => { clearTimeout(tmo); pendingGen = save; tmo = setTimeout(save, 300); });
         });
+        // Cursed items: show the flat rate or the rates by grade
+        const curseMethod = () => { const m = gen.querySelector("[name='gen.curse.method']")?.value ?? "flat"; gen.querySelectorAll("[data-curse]").forEach((x) => { x.style.display = x.dataset.curse === m ? "" : "none"; }); };
+        gen.querySelector("[name='gen.curse.method']")?.addEventListener("change", curseMethod);
+        curseMethod();
+        gen.querySelector("[data-curse-pack]")?.addEventListener("click", async (ev) => {
+          ev.preventDefault(); const btn = ev.currentTarget; btn.disabled = true;
+          try { (await buildCurseCompendium())?.render?.(true); } catch (err) { console.error("AxecleftTreasure | curse compendium failed", err); ui.notifications.error(err.message); }
+          finally { btn.disabled = false; }
+        });
         gen.querySelector("[data-gen-reset]")?.addEventListener("click", async (ev) => {
           ev.preventDefault();
           clearTimeout(tmo); pendingGen = null;
@@ -2107,7 +2649,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
     },
   };
 
-  class TreasureGenerator extends foundry.applications.api.ApplicationV2 {
+  class TreasureGenerator extends (globalThis.AxecleftTools?.AppV2 ?? foundry.applications.api.ApplicationV2) {
     static DEFAULT_OPTIONS = {
       id: "axecleft-treasure-generator",
       classes: ["axecleft-treasure-generator"],
@@ -2311,6 +2853,9 @@ const AXECLEFT_TREASURE_HOST = (() => {
     registerSourceKind, sourceKinds, kindSources, setKindSources, kindItems,
     registerPriceCorrections, priceCorrections, correctionFor, correctedPrice, applyPriceCorrection, priceCheck, exportPriceCheck,
     generation, saveGeneration, resetGeneration, genChance, GEN_DEFAULTS, GEN_CATS,
+    // Version 9.96: cursed items (SRD tables); curse({ name, data, summary }, category, ctx, { force: "random" | type }) for the Forge and Workshop
+    curse: maybeCurse, rollCurse, curseData, curseChance, curseSettings, CURSE_LABELS, CURSE_TYPES: ["delusion", "reversed", "intermittent", "requirement", "drawback", "different", "specific"],
+    curseBuffData, allCurseBuffs, buildCurseCompendium, curseField, curseEntries, curseCategoryOf, curseRows, parsePenalties, builtinCurseRows, _onItemSheetCurse: onItemSheetCurse, _onItemUpdateCurse: onItemUpdateCurse, _onItemDeleteCurse: onItemDeleteCurse,
     // Version 9.5: campaign switches and epic/psionic item marks
     rules, registerItemMarks, isEpicItem, isPsionicItem, allowedByRules,
     enhanceDatalists,
@@ -2334,6 +2879,18 @@ const AXECLEFT_TREASURE_HOST = (() => {
         intro: /*t*/"Fix the price of compendium items without editing the compendium. <strong>Compendium</strong> is the compendium id (for example D35E.magicitems); leave it blank for any compendium. Corrections apply to generated treasure and merchant stock; an item whose compendium price already matches is left alone. Built-in corrections come from Axecleft's modules (switch one off on the Disabled Entries page).",
         cols: [["name", /*t*/"Item"], ["pack", /*t*/"Compendium", { type: "text", placeholder: /*t*/"blank: any compendium" }], ["price", /*t*/"Price (gp)", { type: "number", value: 0, min: 0, step: 0.01 }], ["note", /*t*/"Note"]],
         builtin: () => [...registry.corrections.values()].flat().map((c) => ({ name: c.name, pack: c.pack ?? "", price: c.price, note: c.note ?? "" })),
+      });
+      // Version 9.97: custom curses (the SRD tables are its built-in rows)
+      registerList({
+        module: CORR_MOD, key: "curses", page: /*t*/"Custom Curses", label: /*t*/"Curse", order: 910,
+        intro: /*t*/"Your own curses for random and crafted cursed items, rolled with the SRD's. <strong>Table</strong>: a curse of its own (rolled among delusion, opposite effect and the other common curses), a drawback, a dependent situation for intermittent functioning, a cursed psionic item's curse, or a specific cursed item (its name, from your item compendiums or the Items sidebar). <strong>Weight</strong> is its share of the d% table, as the SRD's rows have (01–05 = 5). <strong>Items</strong>: which magic items can get it (none ticked: any). <strong>Penalties</strong> go on the curse buff when the curse is active: -2 attack; -2 saves; -1 str; -4 spot; -5 hp (also melee, ranged, damage, ac, fort, ref, will, checks, skills, init, speed, any skill name). The SRD's own curses are listed as built-in rows; switch one off on the Disabled Entries page.",
+        cols: [["name", /*t*/"Curse"], ["table", /*t*/"Table", { type: "select", options: CURSE_TABLES }], ["weight", /*t*/"Weight", { type: "number", value: 5, min: 0, step: 1 }],
+          ["kinds", /*t*/"Items", { type: "checks", options: CURSE_KINDS }], ["text", /*t*/"What it does"], ["penalties", /*t*/"Penalties (buff)", { placeholder: /*t*/"-2 attack; -2 saves" }]],
+        normalize: (r) => ({ name: String(r.name ?? "").trim(), table: optionKey(CURSE_TABLES, r.table) ?? "common", weight: Math.max(0, Number(r.weight) || 0),
+          kinds: [...new Set((Array.isArray(r.kinds) ? r.kinds : String(r.kinds ?? "").split(/[,;/]/)).map((x) => optionKey(CURSE_KINDS, x)).filter(Boolean))],
+          text: String(r.text ?? "").trim(), penalties: String(r.penalties ?? "").trim() }),
+        format: (f, r) => (f === "table" ? t(CURSE_TABLES.find(([k]) => k === r.table)?.[1] ?? r.table) : f === "kinds" ? (r.kinds?.length ? r.kinds.map((k) => t(CURSE_KINDS.find(([x]) => x === k)?.[1] ?? k)).join(", ") : t("any")) : undefined),
+        builtin: () => builtinCurseRows(),
       });
       // Shared lists: build or migrate the journal and sync the library once the world is ready; save after the GM edits a list page.
       Hooks.once("ready", async () => { try { await globalThis.AxecleftTreasure._startLists(); } catch (err) { console.error("AxecleftTreasure | Treasure Lists start-up failed", err); } });
@@ -2385,7 +2942,11 @@ const AXECLEFT_TREASURE_HOST = (() => {
   // Hooks are added once (by the first copy) and always call the newest copy.
   if (!existing && globalThis.Hooks) {
     Hooks.once("init", () => globalThis.AxecleftTreasure._onInit());
-    Hooks.on("renderChatMessageHTML", (m, h) => globalThis.AxecleftTreasure._onChat(m, h));
+    globalThis.AxecleftTools?.onChatRender ? globalThis.AxecleftTools.onChatRender((m, h) => globalThis.AxecleftTreasure._onChat(m, h)) : Hooks.on("renderChatMessageHTML", (m, h) => globalThis.AxecleftTreasure._onChat(m, h));
     Hooks.on("renderItemDirectory", (a, h) => globalThis.AxecleftTreasure._onItemDirectory(a, h));
+    // Version 9.96: the curse on the item sheet (GM only), and in the description once the GM ticks "Curse Identified"
+    for (const h of ["renderItemSheet", "renderItemSheetV2"]) Hooks.on(h, (app, html) => globalThis.AxecleftTreasure._onItemSheetCurse?.(app, html));
+    Hooks.on("updateItem", (item, changes) => globalThis.AxecleftTreasure._onItemUpdateCurse?.(item, changes));
+    Hooks.on("deleteItem", (item) => globalThis.AxecleftTreasure._onItemDeleteCurse?.(item));
   }
 })();

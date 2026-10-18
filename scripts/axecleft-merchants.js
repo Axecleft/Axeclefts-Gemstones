@@ -1,5 +1,5 @@
 /**
- * Axecleft's Merchant Generator — shared script, version 7.7 (needs the Treasure Generator script version 9; 9.5 for the Epic campaign; 9.9 for epic stock).
+ * Axecleft's Merchant Generator — shared script, version 7.9 (needs the Treasure Generator script version 9; 9.5 for the Epic campaign; 9.9 for epic stock).
  *
  * Copy this same file into every Axecleft module and list it in module.json
  * "esmodules" AFTER scripts/axecleft-tools.js and scripts/axecleft-treasure.js,
@@ -15,7 +15,7 @@
  * Other modules can add shop types:
  *   AxecleftMerchants.registerMerchantType({ module, key, label, categories: { "mundane:weapon": 5, ... }, filter, tags });
  */
-const AXECLEFT_MERCHANTS_VERSION = 7.7; // 7.6: text in the world's language (Axecleft's Tools 8.2 language files); 7.7: shop names through the grammar and word files (Tools 8.4)
+const AXECLEFT_MERCHANTS_VERSION = 7.9; // 7.6: text in the world's language (Axecleft's Tools 8.2 language files); 7.7: shop names through the grammar and word files (Tools 8.4); 7.8: shop words have their own word-file lines (Shop: Anvil); 7.9: Foundry v11 (Tools 9 window and dialogs)
 const AXECLEFT_MERCHANTS_HOST = (() => {
   try { return decodeURIComponent(new URL(import.meta.url).pathname).match(/\/modules\/([^/]+)\//)?.[1] ?? null; } catch (e) { return null; }
 })();
@@ -168,6 +168,12 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
   /** A name from a pattern (Axecleft's Tools 8.4 grammar), and a word by its English (gender, forms from the word files). */
   const compose = (p, s) => globalThis.AxecleftTools?.compose?.(p, s) ?? String(p).replace(/\{(\w+)[^}]*\}/g, (m, k) => s[k]?.text ?? s[k] ?? "");
   const word = (en) => globalThis.AxecleftTools?.word?.(en) ?? en;
+  /** A shop-name word: its own line in the word file ("Shop: Shadow"), so it can differ from the same English word in item names; else the plain word. */
+  const shopWord = (en) => {
+    const T = globalThis.AxecleftTools;
+    if (T?.i18n?.words?.[`shop: ${String(en).toLowerCase()}`]) return { ...T.word(`Shop: ${en}`), en };
+    return word(en);
+  };
 
   /* ------------------------------------------ */
   /*  Helpers                                   */
@@ -284,8 +290,8 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
     if ((names === "mine" || (names === "both" && Math.random() < 0.3)) && mine.shops.length) shop = pick(mine.shops);
     else {
       const noun = pick(nouns);
-      shop = compose(pick(SHOP_PATTERNS), { adj: word(pick(SHOP_ADJ)), noun: word(noun), noun2: word(pick(nouns.filter((n) => n !== noun))),
-        first, last: last.startsWith("of ") || last.startsWith("the ") ? first : last, trade: word(tw.trade) });
+      shop = compose(pick(SHOP_PATTERNS), { adj: shopWord(pick(SHOP_ADJ)), noun: shopWord(noun), noun2: shopWord(pick(nouns.filter((n) => n !== noun))),
+        first, last: last.startsWith("of ") || last.startsWith("the ") ? first : last, trade: shopWord(tw.trade) });
     }
     return { race: r.label, raceKey: r.key, sex: sx, first, last, name: `${first} ${last}`, shop };
   }
@@ -323,7 +329,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
     if (!folder) return [];
     const key = `${source}|${folder}`;
     if (!force && portraitCache?.key === key) return portraitCache.files;
-    const FP = foundry.applications?.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
+    const FP = foundry.applications?.apps?.FilePicker?.implementation ?? (typeof FilePicker !== "undefined" ? FilePicker : globalThis.FilePicker);
     const files = [];
     const walk = async (dir, depth) => {
       let res;
@@ -623,7 +629,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
     "mundane:weapon", "mundane:armor", "magic:weapon", "magic:armor",
     "magic:potion", "magic:scroll", "magic:wand", "magic:ring", "magic:rod", "magic:staff", "magic:wondrous"];
 
-  class MerchantGenerator extends foundry.applications.api.ApplicationV2 {
+  class MerchantGenerator extends (globalThis.AxecleftTools?.AppV2 ?? foundry.applications.api.ApplicationV2) {
     static DEFAULT_OPTIONS = {
       id: "axecleft-merchant-generator",
       classes: ["axecleft-merchant-generator"],
@@ -891,7 +897,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         ui.notifications.info(`${p.name}, ${whoText(p)}: ${p.shop}`);
       });
       action("pickImg", () => {
-        const FP = foundry.applications?.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
+        const FP = foundry.applications?.apps?.FilePicker?.implementation ?? (typeof FilePicker !== "undefined" ? FilePicker : globalThis.FilePicker);
         new FP({ type: "imagevideo", current: el("img").value, callback: (path) => { el("img").value = path; } }).render(true);
       });
       action("generate", async () => {
@@ -1034,7 +1040,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         fit();
       };
       action("pickPortraitFolder", () => {
-        const FP = foundry.applications?.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
+        const FP = foundry.applications?.apps?.FilePicker?.implementation ?? (typeof FilePicker !== "undefined" ? FilePicker : globalThis.FilePicker);
         new FP({ type: "folder", current: el("p.folder").value, callback: (path, picker) => { el("p.folder").value = path; el("p.folder").dataset.source = picker?.activeSource ?? ""; } }).render(true);
       });
       action("savePortraits", async () => {
@@ -1178,7 +1184,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         const writes = ticked.map((r) => ({ id: r.id, ...parse(r.text) })).filter((w) => !same(w, this.tagRows.find((r) => r.id === w.id).current));
         if (!writes.length) { ticked.forEach((r) => { r.ticked = false; }); draw(); return ui.notifications.info(t("Nothing to change: the ticked items already have those tags.")); }
         const label = game.packs.get(this.tagPack)?.metadata?.label ?? this.tagPack;
-        const ok = await foundry.applications.api.DialogV2.confirm({
+        const ok = await (globalThis.AxecleftTools?.DialogV2 ?? foundry.applications.api.DialogV2).confirm({
           window: { title: t("Write Shop Tags") },
           content: `<p>${t(writes.length === 1 ? "Write Shop tags to <b>{n}</b> item in <b>{pack}</b>?" : "Write Shop tags to <b>{n}</b> items in <b>{pack}</b>?", { n: writes.length, pack: esc(label) })}</p><p><small>${esc(t("Only the items' Shop tags change; their other tags are kept."))}</small></p>`,
         });
