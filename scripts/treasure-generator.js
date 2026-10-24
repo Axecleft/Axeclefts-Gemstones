@@ -18,6 +18,13 @@ import * as C from "./treasure-core.js";
 const { MOD, esc, gp, t } = C;
 const H = (s, d) => esc(t(s, d));
 const T = () => globalThis.AxecleftTreasure;
+
+/** A name from this module's English data as shown in the world's language: the word file's entry, else the name given
+ *  (Babele's), else the English; first letter capitalised for lists. */
+const dn = (en, shown) => {
+  const s = String(globalThis.AxecleftTools?.word?.(en, { text: shown ?? null })?.text || shown || en || "");
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
 const opt = (v, label, sel) => `<option value="${esc(v)}"${String(v) === String(sel ?? "") ? " selected" : ""}>${esc(label)}</option>`;
 const fmtFormula = (f) => f.replace(/\*/g, " × ");
 const setting = (k) => game.settings.get(MOD, k);
@@ -27,16 +34,21 @@ const repeat = (n, fn) => Array.from({ length: Math.min(50, Math.max(1, Number(n
 /*  Data                                        */
 /* -------------------------------------------- */
 
-let GEMS = null, ART = null, CAT = null;
+let GEMS = null, ART = null, PREMADE = null, CAT = null;
 async function loadData() {
   GEMS ??= await (await fetch(`modules/${MOD}/data/gems.json`)).json();
   ART ??= await (await fetch(`modules/${MOD}/data/art.json`)).json();
+  // Premade art and books (contributed pieces, generated as they were made).
+  if (!PREMADE) {
+    try { PREMADE = (await (await fetch(`modules/${MOD}/data/premade-art.json`)).json()).items ?? []; }
+    catch (err) { console.warn(`${MOD} | data/premade-art.json could not be read`, err); PREMADE = []; }
+  }
 }
 export async function catalog() {
   await loadData();
   const hub = T();
   const custom = hub?.listRows ? { ...Object.fromEntries(LIST_KEYS.map((k) => [k, hub.listRows(MOD, k)])), disabled: hub.disabledEntries(MOD) } : {};
-  return (CAT = C.buildCatalog(GEMS, ART, custom));
+  return (CAT = C.buildCatalog(GEMS, ART, custom, PREMADE));
 }
 
 /** A generator entry for a rolled gem or art spec. */
@@ -56,7 +68,7 @@ function gemOptions(form) {
 }
 function artOptions(form, kind) {
   const el = (n) => form?.elements[n];
-  return { variations: el(`${kind}.variations`) ? el(`${kind}.variations`).checked : setting("artVariations") };
+  return { variations: el(`${kind}.variations`) ? el(`${kind}.variations`).checked : setting("artVariations"), premadeShare: setting("premadeShare") };
 }
 
 /* -------------------------------------------- */
@@ -74,7 +86,7 @@ export async function generateGems({ count = 1, dest = "items", ...opts } = {}) 
 export async function generateArt({ count = 1, dest = "items", kind = "art", ...opts } = {}) {
   const cat = await catalog();
   return T().runGeneration({ title: t(kind === "jewelry" ? "Jewelry" : Number(count) > 1 ? "Art Objects" : "Art Object"), dest,
-    rollFor: () => ({ entries: repeat(count, () => entry(cat, C.rollArt(cat, { kind, variations: setting("artVariations"), ...opts }))) }) });
+    rollFor: () => ({ entries: repeat(count, () => entry(cat, C.rollArt(cat, { kind, variations: setting("artVariations"), premadeShare: setting("premadeShare"), ...opts }))) }) });
 }
 
 /** Roll only the Goods column of the SRD Treasure table (gems and art). */
@@ -87,6 +99,16 @@ export async function generateGoods({ level = 1, times = 1, dest = "items" } = {
 /* -------------------------------------------- */
 
 const prepare = async () => { await catalog(); };
+/** The Object list: base objects, then each contributor's premade pieces in their own group. */
+function objectOptions(cat, kind) {
+  const list = C.objectsFor(cat, kind);
+  const base = list.filter((o) => !o.premade).map((o) => opt(o.name, `${dn(o.name)} (${t(cat.makes[o.make]?.label ?? o.make).toLowerCase()})${o.source === "custom" ? " *" : ""}`)).join("");
+  const byCreator = new Map();
+  for (const o of list.filter((x) => x.premade)) { const c = o.premade.creator || ""; if (!byCreator.has(c)) byCreator.set(c, []); byCreator.get(c).push(o); }
+  const groups = [...byCreator].map(([c, objs]) => `<optgroup label="${esc(c ? t("Premade by {creator}", { creator: c }) : t("Premade"))}">${objs
+    .sort((a, b) => dn(a.name).localeCompare(dn(b.name))).map((o) => opt(o.name, `${dn(o.name)} (${t(cat.makes[o.make]?.label ?? o.make).toLowerCase()})`)).join("")}</optgroup>`).join("");
+  return byCreator.size ? `<optgroup label="${esc(t("Objects"))}">${base}</optgroup>${groups}` : base;
+}
 const countField = (name) => `<div class="form-group"><label>${H("How many")}</label><input type="number" name="${name}" value="1" min="1" max="20" step="1"><span class="hint" style="flex:1">${H("for each target")}</span></div>`;
 
 const GEM_TAB = {
@@ -114,8 +136,8 @@ const GEM_TAB = {
       const keep = el("gem.gem").value;
       const pool = C.gemsFor(cat, { sources: gemSources(form), grade: el("gem.grade").value || null });
       const groups = gemSources(form).map((s) => {
-        const list = pool.filter((g) => g.source === s).sort((a, b) => a.grade - b.grade || a.name.localeCompare(b.name));
-        return list.length ? `<optgroup label="${esc(C.sourceName(s))}">${list.map((g) => opt(`${g.source}|${g.name}`, `${g.name} (${gp(g.grade)})`, keep)).join("")}</optgroup>` : "";
+        const list = pool.filter((g) => g.source === s).sort((a, b) => a.grade - b.grade || dn(a.name).localeCompare(dn(b.name)));
+        return list.length ? `<optgroup label="${esc(C.sourceName(s))}">${list.map((g) => opt(`${g.source}|${g.name}`, `${dn(g.name)} (${gp(g.grade)})`, keep)).join("")}</optgroup>` : "";
       }).join("");
       el("gem.gem").innerHTML = opt("", t("Random ({n} gems)", { n: pool.length }), keep) + groups;
     };
@@ -151,9 +173,9 @@ function artTab(kind, order) {
       const cat = CAT;
       return `
         <div class="form-group"><label>${H("Value")}</label><select name="${kind}.level">${opt("", t("Random (SRD odds)"))}${cat.levels.map((l) => opt(l.level, t("{level}: {formula} gp (about {value})", { level: l.level, formula: fmtFormula(l.formula), value: gp(l.avg) }))).join("")}</select></div>
-        <div class="form-group"><label>${H(kind === "jewelry" ? "Piece" : "Object")}</label><select name="${kind}.object">${opt("", t("Random"))}${C.objectsFor(cat, kind).map((o) => opt(o.name, `${o.name} (${t(cat.makes[o.make]?.label ?? o.make).toLowerCase()})${o.source === "custom" ? " *" : ""}`)).join("")}</select></div>
+        <div class="form-group"><label>${H(kind === "jewelry" ? "Piece" : "Object")}</label><select name="${kind}.object">${opt("", t("Random"))}${objectOptions(cat, kind)}</select></div>
         <div class="form-group"><label>${H("Material")}</label><select name="${kind}.material"></select></div>
-        <div class="form-group"><label>${H("Gemstone")}</label><select name="${kind}.gem">${opt("", t("Random (more likely at higher values)"))}${opt("none", t("None"))}${cat.embellishments.map((g) => opt(g.name, t("{name} (values {min}–{max})", { name: g.name, min: g.minLevel, max: g.maxLevel }))).join("")}</select></div>
+        <div class="form-group"><label>${H("Gemstone")}</label><select name="${kind}.gem">${opt("", t("Random (more likely at higher values)"))}${opt("none", t("None"))}${cat.embellishments.map((g) => opt(g.name, t("{name} (values {min}–{max})", { name: dn(g.name), min: g.minLevel, max: g.maxLevel }))).join("")}</select></div>
         <div class="form-group"><label>${H("Quality")}</label><div class="atg-checks"><label><input type="checkbox" name="${kind}.variations" ${setting("artVariations") ? "checked" : ""}> ${H("Use the homebrew quality variations")}</label></div></div>
         <div class="form-group" data-var="${kind}"><label>${H("Workmanship")}</label><select name="${kind}.quality">${opt("", t("Random (5/15/60/15/5)"))}${cat.artQualities.map((q) => opt(q.key, `${t(q.label)} (×${q.mult})`)).join("")}</select></div>
         <div class="atg-preview" data-preview="${kind}"></div>
@@ -167,22 +189,27 @@ function artTab(kind, order) {
         const obj = cat.objects.find((o) => o.name === el(`${kind}.object`).value);
         const level = Number(el(`${kind}.level`).value) || null;
         if (obj && obj.fixedMaterial !== undefined) {
-          sel.innerHTML = opt("", obj.fixedMaterial ? t("{material} (part of the object)", { material: obj.fixedMaterial }) : t("None (part of the object)"));
+          sel.innerHTML = opt("", obj.fixedMaterial ? t("{material} (part of the object)", { material: dn(obj.fixedMaterial) }) : t("None (part of the object)"));
           sel.disabled = true;
           return;
         }
         sel.disabled = false;
         const makes = obj ? [obj.make] : [...new Set(C.objectsFor(cat, kind).map((o) => o.make))];
         const fits = (m) => !level || (m.minLevel <= level && level <= m.maxLevel);
-        const group = (label, list) => (list.length ? `<optgroup label="${esc(label)}">${list.map((m) => opt(m.name, `${t("{name} (values {min}–{max})", { name: m.name, min: m.minLevel, max: m.maxLevel })}${m.source === "custom" ? " *" : ""}`, keep)).join("")}</optgroup>` : "");
+        const group = (label, list) => (list.length ? `<optgroup label="${esc(label)}">${list.map((m) => opt(m.name, `${t("{name} (values {min}–{max})", { name: dn(m.name), min: m.minLevel, max: m.maxLevel })}${m.source === "custom" ? " *" : ""}`, keep)).join("")}</optgroup>` : "");
         sel.innerHTML = opt("", t(level ? "Random (suits the value)" : "Random (suits the value rolled)"), keep) + makes.map((mk) => {
-          const list = cat.materials.filter((m) => (m.uses ?? []).includes(mk)).sort((a, b) => a.name.localeCompare(b.name));
+          const list = cat.materials.filter((m) => (m.uses ?? []).includes(mk)).sort((a, b) => dn(a.name).localeCompare(dn(b.name)));
           const label = t(cat.makes[mk]?.label ?? mk);
           return level ? group(t("{construction}: suits value {level}", { construction: label, level }), list.filter(fits)) + group(t("{construction}: other values", { construction: label }), list.filter((m) => !fits(m))) : group(label, list);
         }).join("");
       };
       const toggle = () => section.querySelectorAll(`[data-var="${kind}"] select`).forEach((s) => { s.disabled = !el(`${kind}.variations`).checked; });
       const preview = () => {
+        const pre = cat.objects.find((o) => o.name === el(`${kind}.object`).value)?.premade;
+        if (pre) {
+          section.querySelector(`[data-preview="${kind}"]`).innerHTML = H("Premade by {creator}: generated as it was made, with no material, gem or quality. True value: {formula} gp, rolled when it is added to a character.", { creator: pre.creator, formula: fmtFormula(pre.formula) });
+          return;
+        }
         const lv = cat.levels.find((l) => l.level === Number(el(`${kind}.level`).value));
         const q = cat.artQualities.find((x) => x.key === el(`${kind}.quality`).value);
         const m = el(`${kind}.variations`).checked ? q?.mult ?? null : 1;
@@ -226,6 +253,16 @@ const levelRange = (r) => { const lo = lvl(r.minLevel, 1), hi = lvl(r.maxLevel, 
 const makeOptions = () => Object.entries(ART?.makes ?? {}).map(([m, d]) => [m, d.label]);
 const levelInput = (value) => ({ type: "number", value, min: 1, max: 12, step: 1 });
 
+/** The SRD Art Objects table's 12 value rows (data/art.json has the same), for the lists' explanation. */
+const VALUE_LEVELS = [[1, "1d10*10", 55], [2, "3d6*10", 105], [3, "1d6*100", 350], [4, "1d10*100", 550], [5, "2d6*100", 700], [6, "3d6*100", 1050],
+  [7, "4d6*100", 1400], [8, "5d6*100", 1750], [9, "1d4*1000", 2500], [10, "1d6*1000", 3500], [11, "2d4*1000", 5000], [12, "2d6*1000", 7000]];
+/** What Min and Max Value Level mean, with the 12 levels (built when the page is shown, in the world's language). */
+function valueLevelsNote() {
+  const levels = (ART?.levels?.length ? ART.levels.map((l) => [l.level, l.formula, l.avg]) : VALUE_LEVELS)
+    .map(([level, formula, avg]) => `<li>${esc(t("{level}: {formula} gp (about {value})", { level, formula: fmtFormula(formula), value: gp(avg) }))}</li>`).join("");
+  return `<p>${t("<strong>Value levels</strong> are the 12 rows of the SRD Art Objects table, the same as the <strong>Value</strong> list on the Art objects and Jewelry tabs. Each random art object or piece of jewelry is rolled at one level, then only uses the materials and gems whose Min to Max range includes that level:")}</p><ul>${levels}</ul><p>${t("For example, Min 9 and Max 12 keep it for pieces worth about 2,500 gp and more; Min 1 and Max 4, for pieces up to about 1,000 gp.")}</p>`;
+}
+
 /** Gemstones' lists: same page names and columns as Gemstones 1.14, so existing journals keep working. */
 const LIST_DEFS = [
   {
@@ -233,7 +270,10 @@ const LIST_DEFS = [
     cols: [["name", /*t*/"Gem"], ["appraiseAs", /*t*/"Appraises As"], ["grade", /*t*/"Base Value (gp)", { type: "select", options: () => (GEMS?.grades ?? []).map((g) => [g.value, gp(g.value)]) }],
       ["img", /*t*/"Image", { placeholder: /*t*/"optional, e.g. icons/commodities/gems/gem-faceted-round-white.webp" }], ["desc", /*t*/"Description"]],
     scopes: [["srd", /*t*/"SRD gems only"], ["homebrew", /*t*/"Homebrew gems only"]],
-    intro: /*t*/"Gem types for the generator. <strong>Appraises As</strong> is the name shown before the gem is appraised (e.g. a \"Dragon's Eye Opal\" appraises as \"Opal\"). <strong>Base Value</strong> is one of the SRD gem values: 10, 50, 100, 500, 1000 or 5000. Image and Description are optional.",
+    intro: /*t*/"Gem types for the generator.",
+    help: { name: /*t*/"the gem's name once it is appraised.", appraiseAs: /*t*/"the name shown before the gem is appraised (a \"Dragon's Eye Opal\" appraises as \"Opal\"); blank: its own name.",
+      grade: /*t*/"one of the SRD gem values: 10, 50, 100, 500, 1000 or 5000.", img: /*t*/"optional: an image path.", desc: /*t*/"optional: a description for the item." },
+    example: { name: "Dragon's Eye Opal", appraiseAs: "Opal", grade: 500, img: "icons/commodities/gems/gem-faceted-round-white.webp", desc: "A milky opal with a slit of red fire at its center." },
     normalize: (r) => ({ name: r.name, appraiseAs: String(r.appraiseAs ?? "").trim() || r.name, grade: num(String(r.grade ?? "").replace(/[^\d.]/g, ""), 10),
       img: String(r.img ?? "").trim(), desc: r.desc ? (/^</.test(r.desc) ? r.desc : `<p>${esc(r.desc)}</p>`) : "" }),
     builtin: () => [...(GEMS?.srd ?? []).map((g) => ({ ...g, scope: "srd" })), ...(GEMS?.homebrew ?? []).map((g) => ({ ...g, scope: "homebrew" }))],
@@ -242,7 +282,10 @@ const LIST_DEFS = [
     key: "objects", page: /*t*/"Custom Art & Jewelry", label: /*t*/"Art object or jewelry", order: 20,
     cols: [["name", /*t*/"Object"], ["make", /*t*/"Construction", { type: "select", options: makeOptions }], ["kind", /*t*/"Art or Jewelry", { type: "select", options: [["art", /*t*/"Art object"], ["jewelry", /*t*/"Jewelry"]] }],
       ["weight", /*t*/"Weight (lb.)", { type: "number", value: 1, min: 0, step: 0.1 }], ["img", /*t*/"Image", { placeholder: /*t*/"optional" }], ["desc", /*t*/"Description"]],
-    intro: /*t*/"Base objects for art and jewelry. <strong>Construction</strong> decides which materials it can be made of: Molded (metals, glass, ceramic), Carved (wood, bone, ivory, stone), Clothing (cloth, fur, hide) or Book (paper, leather, silk). <strong>Art or Jewelry</strong> decides which tab it appears on.",
+    intro: /*t*/"Base objects for art and jewelry.",
+    help: { name: /*t*/"the object's name, without its material (\"Cloak\", not \"Wolf Fur Cloak\").", make: /*t*/"which materials it can be made of: Molded (metals, glass, ceramic), Carved (wood, bone, ivory, stone), Clothing (cloth, fur, hide) or Book (paper, leather, silk).",
+      kind: /*t*/"Art or Jewelry: which tab it appears on.", weight: /*t*/"its weight in pounds.", img: /*t*/"optional: an image path.", desc: /*t*/"optional: a description for the item." },
+    example: { name: "Hand Mirror", make: "Molded", kind: "art", weight: 1, img: "", desc: "A small mirror with an ornate handle." },
     normalize: (r) => ({ name: r.name, make: makeOf(r.make) ?? "Molded", kind: /jewel/i.test(r.kind) ? "jewelry" : "art",
       weight: num(r.weight, /jewel/i.test(r.kind) ? 0 : 1), img: String(r.img ?? "").trim(), desc: String(r.desc ?? "").trim() }),
     format: (f, r) => (f === "kind" ? (r.kind === "jewelry" ? "Jewelry" : "Art") : undefined),
@@ -251,7 +294,12 @@ const LIST_DEFS = [
   {
     key: "materials", page: /*t*/"Custom Materials", label: /*t*/"Material", order: 30,
     cols: [["name", /*t*/"Material"], ["uses", /*t*/"Used For", { type: "checks", options: makeOptions }], ["minLevel", /*t*/"Min Value Level", levelInput(1)], ["maxLevel", /*t*/"Max Value Level", levelInput(12)], ["adj", /*t*/"Name As"]],
-    intro: /*t*/"Materials for art and jewelry. <strong>Used For</strong> lists the constructions it suits (Molded, Carved, Clothing, Book; separate several with commas). Random rolls only use a material at art values between its <strong>Min</strong> and <strong>Max Value Level</strong> (1 to 12). <strong>Name As</strong> is optional: \"Wolf\" named as \"Wolf Fur\" gives \"Wolf Fur Cloak\".",
+    intro: /*t*/"Materials for art and jewelry.",
+    help: { name: /*t*/"the material's name.", uses: /*t*/"the constructions it suits: Molded, Carved, Clothing, Book (separate several with commas).",
+      minLevel: /*t*/"the lowest value level (1 to 12, see below) at which random art and jewelry can be made of it.", maxLevel: /*t*/"the highest value level (1 to 12, see below) at which random art and jewelry can be made of it.",
+      adj: /*t*/"optional: the word used in item names (\"Wolf\" named as \"Wolf Fur\" gives \"Wolf Fur Cloak\")." },
+    note: () => valueLevelsNote(),
+    example: { name: "Wolf", uses: ["Clothing"], minLevel: 1, maxLevel: 4, adj: "Wolf Fur" },
     normalize: (r) => {
       const uses = [...new Set((Array.isArray(r.uses) ? r.uses : String(r.uses ?? "").split(/[,;/]| and /)).map(makeOf).filter(Boolean))];
       const m = { name: r.name, uses: uses.length ? uses : ["Molded"], ...levelRange(r), group: "custom" };
@@ -263,11 +311,41 @@ const LIST_DEFS = [
   {
     key: "embellishments", page: /*t*/"Custom Embellishment Gems", label: /*t*/"Embellishment gem", order: 40,
     cols: [["name", /*t*/"Gem"], ["minLevel", /*t*/"Min Value Level", levelInput(1)], ["maxLevel", /*t*/"Max Value Level", levelInput(12)]],
-    intro: /*t*/"Gemstones that can decorate art and jewelry (\"set with ruby\", \"inlaid with jade\"). Random rolls use them at art values between Min and Max Value Level (1 to 12).",
+    intro: /*t*/"Gemstones that can decorate art and jewelry (\"set with ruby\", \"inlaid with jade\").",
+    help: { name: /*t*/"the gemstone's name, as it reads in \"set with …\".", minLevel: /*t*/"the lowest value level (1 to 12, see below) at which random art and jewelry can be set with it.", maxLevel: /*t*/"the highest value level (1 to 12, see below) at which random art and jewelry can be set with it." },
+    note: () => valueLevelsNote(),
+    example: { name: "moonstone", minLevel: 2, maxLevel: 8 },
     normalize: (r) => ({ name: r.name, ...levelRange(r) }),
     builtin: () => ART?.gemstones ?? [],
   },
 ];
+// Premade pieces (version 1.14.6.22): fixed items, generated as made: contributed ones (data/premade-art.json) and the GM's own,
+// such as treasure from a book they own. Each is rolled at the SRD value row nearest its average value.
+const levelForValue = (avg) => VALUE_LEVELS.reduce((best, [lv, , a]) => (Math.abs(a - avg) < Math.abs(best[1] - avg) ? [lv, a] : best), [1, 55])[0];
+const valueFormula = (v) => String(v ?? "").replace(/\s*gp\s*$/i, "").replace(/[×x]/g, "*").replace(/\s+/g, "").trim();
+LIST_DEFS.push({
+  key: "premade", page: /*t*/"Custom Premade Art", label: /*t*/"Premade piece", order: 50,
+  cols: [["name", /*t*/"Name"], ["kind", /*t*/"Art or Jewelry", { type: "select", options: [["art", /*t*/"Art object"], ["jewelry", /*t*/"Jewelry"]] }],
+    ["make", /*t*/"Construction", { type: "select", options: makeOptions }], ["value", /*t*/"Value (gp)", { placeholder: /*t*/"dice or a number, e.g. 3d6*10 or 250" }],
+    ["weight", /*t*/"Weight (lb.)", { type: "number", value: 1, min: 0, step: 0.1 }], ["img", /*t*/"Image", { placeholder: /*t*/"optional" }],
+    ["desc", /*t*/"Description"], ["creator", /*t*/"Created By", { placeholder: /*t*/"optional" }], ["source", /*t*/"Source", { placeholder: /*t*/"optional, e.g. the book it comes from" }]],
+  intro: /*t*/"Complete pieces that are generated exactly as written: no material, gem or quality is added. Random art includes them at their own value, as often as the \"Premade pieces in random art\" setting says (5% by default), and the Art Objects and Jewelry tabs list them to pick.",
+  help: { name: /*t*/"the item's full name.", kind: /*t*/"Art or Jewelry: which tab it appears on.", make: /*t*/"the construction shown next to it in the lists (Molded, Carved, Clothing or Book).",
+    value: /*t*/"its value in gp: dice (3d6*10) are rolled when the item is added to a character; a number is a fixed value.", weight: /*t*/"its weight in pounds.",
+    img: /*t*/"optional: an image path.", desc: /*t*/"the item's description.", creator: /*t*/"optional: who made it; the description ends with \"Created by …\".",
+    source: /*t*/"optional: where it comes from (the item's Source field)." },
+  example: { name: "Silver Chalice of the Dawn Choir", kind: "art", make: "Molded", value: "4d6*10", weight: 2, img: "", desc: "A temple chalice engraved with a ring of singing figures.", creator: "", source: "" },
+  normalize: (r) => {
+    const formula = valueFormula(r.value) || "1";
+    const avg = C.averageOf(formula) || 0;
+    const kind = /jewel/i.test(r.kind) ? "jewelry" : "art";
+    return { name: r.name, kind, make: makeOf(r.make) ?? "Molded", formula, avg, level: levelForValue(avg), weight: num(r.weight, kind === "jewelry" ? 0 : 1),
+      img: String(r.img ?? "").trim(), desc: r.desc ? (/^</.test(r.desc) ? r.desc : `<p>${esc(r.desc)}</p>`) : "", creator: String(r.creator ?? "").trim(),
+      source: String(r.source ?? "").trim(), tags: [], subType: "misc" };
+  },
+  format: (f, r) => (f === "kind" ? (r.kind === "jewelry" ? "Jewelry" : "Art") : f === "value" ? (r.formula ?? r.value) : undefined),
+  builtin: () => PREMADE ?? [],
+});
 const LIST_KEYS = LIST_DEFS.map((d) => d.key);
 
 /* -------------------------------------------- */
@@ -315,6 +393,7 @@ if (globalThis.Hooks) {
     const reg = (k, o) => game.settings.register(MOD, k, { scope: "world", config: true, ...o });
     reg("gemVariations", { name: /*t*/"Gem size & quality variations", hint: /*t*/"Random gems use the homebrew sizes (Tiny to Huge) and qualities (Flawed to Exceptional). Turn off to generate plain SRD-value gems. The generator has the same checkbox for one-off changes.", type: Boolean, default: true });
     reg("artVariations", { name: /*t*/"Art & jewelry quality variations", hint: /*t*/"Random art and jewelry use the homebrew workmanship qualities (Junk to Masterpiece). Turn off for plain SRD art values.", type: Boolean, default: true });
+    reg("premadeShare", { name: /*t*/"Premade pieces in random art (%)", hint: /*t*/"How often a random art object or piece of jewelry is a premade piece (Leo's art and books, and your own on the Custom Premade Art list) instead of one built from an object, material and gem. Premade pieces are rolled only at their own value. 0 = never; they can still be picked on the Art Objects tab.", type: Number, default: 5, range: { min: 0, max: 100, step: 1 } });
     // "Shared treasure lists library" and "Shared library folder" are registered by the shared script (axecleft-treasure.js).
   });
 

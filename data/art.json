@@ -139,6 +139,12 @@
  "jewelryImg": "modules/axecleft-gemstones/icons/jewelry.svg",
  "objects": [
   {
+   "name": "Almanac",
+   "make": "Book",
+   "kind": "art",
+   "weight": 1
+  },
+  {
    "name": "Altar Slab",
    "make": "Carved",
    "kind": "art",
@@ -167,6 +173,12 @@
    "make": "Molded",
    "kind": "jewelry",
    "weight": 0
+  },
+  {
+   "name": "Annals",
+   "make": "Book",
+   "kind": "art",
+   "weight": 5
   },
   {
    "name": "Armband",
@@ -235,6 +247,12 @@
    "weight": 1
   },
   {
+   "name": "Bestiary",
+   "make": "Book",
+   "kind": "art",
+   "weight": 4
+  },
+  {
    "name": "Blanket",
    "make": "Clothing",
    "kind": "art",
@@ -251,6 +269,12 @@
    "make": "Book",
    "kind": "art",
    "weight": 3
+  },
+  {
+   "name": "Bookends",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 8
   },
   {
    "name": "Boots",
@@ -429,6 +453,12 @@
    "weight": 0
   },
   {
+   "name": "Chronicle",
+   "make": "Book",
+   "kind": "art",
+   "weight": 4
+  },
+  {
    "name": "Cigar Box",
    "make": "Carved",
    "kind": "art",
@@ -493,6 +523,12 @@
    "make": "Molded",
    "kind": "art",
    "weight": 1
+  },
+  {
+   "name": "Concordance",
+   "make": "Book",
+   "kind": "art",
+   "weight": 5
   },
   {
    "name": "Crown",
@@ -676,6 +712,12 @@
    "weight": 1
   },
   {
+   "name": "Gazetteer",
+   "make": "Book",
+   "kind": "art",
+   "weight": 4
+  },
+  {
    "name": "Glove",
    "make": "Clothing",
    "kind": "art",
@@ -748,6 +790,12 @@
    "weight": 3
   },
   {
+   "name": "Herbal",
+   "make": "Book",
+   "kind": "art",
+   "weight": 3
+  },
+  {
    "name": "Holy Symbol",
    "make": "Molded",
    "kind": "art",
@@ -770,6 +818,13 @@
    "make": "Molded",
    "kind": "art",
    "weight": 2
+  },
+  {
+   "name": "Icon",
+   "make": "Carved",
+   "kind": "art",
+   "fixedMaterial": "",
+   "weight": 3
   },
   {
    "name": "Idol",
@@ -826,6 +881,12 @@
    "weight": 5
   },
   {
+   "name": "Ledger",
+   "make": "Book",
+   "kind": "art",
+   "weight": 4
+  },
+  {
    "name": "Lens",
    "make": "Molded",
    "kind": "art",
@@ -866,6 +927,12 @@
    "make": "Clothing",
    "kind": "art",
    "weight": 1
+  },
+  {
+   "name": "Manual",
+   "make": "Book",
+   "kind": "art",
+   "weight": 4
   },
   {
    "name": "Manuscript",
@@ -1021,6 +1088,13 @@
    "weight": 1
   },
   {
+   "name": "Painted Panel",
+   "make": "Carved",
+   "kind": "art",
+   "fixedMaterial": "",
+   "weight": 8
+  },
+  {
    "name": "Painting",
    "make": "Carved",
    "kind": "art",
@@ -1039,6 +1113,12 @@
    "kind": "art",
    "fixedMaterial": "",
    "weight": 15
+  },
+  {
+   "name": "Pattern Book",
+   "make": "Book",
+   "kind": "art",
+   "weight": 5
   },
   {
    "name": "Pendant",
@@ -1082,6 +1162,12 @@
    "make": "Molded",
    "kind": "art",
    "weight": 3
+  },
+  {
+   "name": "Plaque",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 10
   },
   {
    "name": "Plate",
@@ -1271,6 +1357,12 @@
    "weight": 1
   },
   {
+   "name": "Signboard",
+   "make": "Carved",
+   "kind": "art",
+   "weight": 12
+  },
+  {
    "name": "Skull",
    "make": "Molded",
    "kind": "art",
@@ -1311,6 +1403,12 @@
    "make": "Molded",
    "kind": "art",
    "weight": 250
+  },
+  {
+   "name": "Statuette",
+   "make": "Molded",
+   "kind": "art",
+   "weight": 2
   },
   {
    "name": "Suncatcher",
@@ -1413,6 +1511,13 @@
    "make": "Carved",
    "kind": "art",
    "weight": 1
+  },
+  {
+   "name": "Triptych",
+   "make": "Carved",
+   "kind": "art",
+   "fixedMaterial": "",
+   "weight": 12
   },
   {
    "name": "Trophy",
@@ -2017,6 +2122,51 @@
    "maxLevel": 12
   },
   {
+   "name": "Beech Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
+   "name": "Birch Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5
+  },
+  {
+   "name": "Boxwood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 2,
+   "maxLevel": 7
+  },
+  {
+   "name": "Elm Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5
+  },
+  {
+   "name": "Linden Wood",
+   "group": "wood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 6
+  },
+  {
    "name": "Ivory",
    "group": "nonwood",
    "uses": [
@@ -2285,6 +2435,33 @@
    ],
    "minLevel": 1,
    "maxLevel": 5
+  },
+  {
+   "name": "Limestone",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 1,
+   "maxLevel": 5
+  },
+  {
+   "name": "Marble",
+   "group": "nonwood",
+   "uses": [
+    "Carved"
+   ],
+   "minLevel": 2,
+   "maxLevel": 9
+  },
+  {
+   "name": "Terracotta",
+   "group": "nonwood",
+   "uses": [
+    "Molded"
+   ],
+   "minLevel": 1,
+   "maxLevel": 4
   },
   {
    "name": "Silk",

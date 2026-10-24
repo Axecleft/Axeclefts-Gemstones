@@ -3,6 +3,34 @@
 
 Changelog:
 
+v1.14.6.22:
+
+- Ships Axecleft's Tools 9.3: **Support on Patreon**. Configure Settings → Axecleft's Gemstones has a new **Open Patreon** button, and the GM's Axecleft's Tools menu has a **Support on Patreon** button; both open [Axecleft's Patreon](https://www.patreon.com/Axecleft) in your web browser. The modules stay free; patrons get new releases two weeks early. The manifest lists the Patreon page as the author's link.
+- **Join the Discord**: Configure Settings → Axecleft's Gemstones and the Axecleft's Tools menu (for everyone) have a button that opens [Axecleft's Tool Suite Discord server](https://discord.gg/FRhPPwDWta), for help, news and ideas.
+- Translations: the Treasure Generator's gem, art object, jewelry, embellishment gemstone and material lists show the names from the language's word file (lang/fr.words.json) instead of the English ones, sorted by the translated name (reported by Gilgalad).
+- New: premade pieces, generated exactly as written. A new setting, Premade pieces in random art (%), sets how often random art is one (5% by default; 0 = never), and the new Custom Premade Art page of the Treasure Lists journal lets you add your own, such as treasure from a book you own (value as dice or a number, optional creator and source).
+- 200 premade pieces contributed by Leo, 100 art objects and 100 books. They are generated exactly as he made them (his name, description, picture, weight and value dice; no material, gem or quality), with "Created by Leo." in the description. Random art rolls include them at their own value (SRD rows 1 and 2), and the Art Objects tab lists them in their own "Premade by Leo" group. Their kinds of object and materials are new base entries for random art: Statuette, Plaque, Icon, Triptych, Painted Panel, Signboard, Bookends; the books Chronicle, Bestiary, Herbal, Ledger, Gazetteer, Almanac, Annals, Manual, Concordance and Pattern Book; and Marble, Limestone, Terracotta, Elm, Boxwood, Linden, Birch and Beech wood.
+
+v1.14.6.21:
+
+- Ships the Treasure Generator 9.994 and Merchant Generator 7.93: a new **Your item compendiums** row in Generation settings sets how much treasure (default 0%) and merchant stock (default 50%, as before) comes from your own Item compendiums instead of the SRD tables, and a `Treasure weight: n` item tag makes an item more or less likely (suggested by Gilgalad).
+
+v1.14.6.20:
+
+- Ships the Treasure Generator 9.993: in Generation settings, the Sizes of arms, Poisons and Cursed items rows start with their checkbox at the left like the other rows; the Shared treasure lists library setting no longer says the lists hold weapons.
+
+v1.14.6.19:
+
+- Treasure Lists: the Custom Materials and Custom Embellishment Gems pages (and the Lists tab) explain Min and Max Value Level: the value levels are the 12 rows of the SRD Art Objects table, the same as the Value list on the Art objects and Jewelry tabs, listed with their values and an example (asked by Gilgalad). Ships the Treasure Generator 9.992: on the Lists tab, hovering a column label explains it, and a list's notes show under its fields.
+
+v1.14.6.18:
+
+- Number boxes in the Treasure Generator, Merchant Generator and Crafting windows are right-aligned, so a value sits next to the % or unit after it (suggested by Gilgalad). Axecleft's Treasure Lists journal is written entirely in the world's language and is rewritten when the language changes, keeping your rows; each page lists its columns one per line, warns to keep the column headings as they are, and shows an example row. Ships the Treasure Generator 9.991, the Merchant Generator 7.92. The Custom Gems, Custom Art & Jewelry, Custom Materials and Custom Embellishment Gems pages explain each column and show an example row.
+
+v1.14.6.17:
+
+- Ships the Treasure Generator 9.99 and Merchant Generator 7.91: on the Merchant Generator's Item Sources tab, every source list (Enhancements, Special materials, Spells, Psionic powers…) now shows how many items each compendium it uses supplies, next to the compendium, as the Item compendiums list already did. Each heading reads "n of m used", like the Item compendiums heading. Rescan and Save and Rescan read these lists again too.
+
 v1.14.6.16:
 
 - Ships Axecleft's Tools 9.2: the User Guide button opens the Tool Suite's wiki in Foundry's language: French, Spanish, Brazilian Portuguese or European Portuguese when you play in one of them, English otherwise.

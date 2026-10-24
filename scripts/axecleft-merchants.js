@@ -15,7 +15,7 @@
  * Other modules can add shop types:
  *   AxecleftMerchants.registerMerchantType({ module, key, label, categories: { "mundane:weapon": 5, ... }, filter, tags });
  */
-const AXECLEFT_MERCHANTS_VERSION = 7.9; // 7.6: text in the world's language (Axecleft's Tools 8.2 language files); 7.7: shop names through the grammar and word files (Tools 8.4); 7.8: shop words have their own word-file lines (Shop: Anvil); 7.9: Foundry v11 (Tools 9 window and dialogs)
+const AXECLEFT_MERCHANTS_VERSION = 7.93; // 7.93: the Item Sources tab points to the Item compendiums share in Generation settings; 7.92: numbers right-aligned in their boxes; 7.91: Item Sources show the items found in each compendium of every source list, not only Item compendiums; 7.6: text in the world's language (Axecleft's Tools 8.2 language files); 7.7: shop names through the grammar and word files (Tools 8.4); 7.8: shop words have their own word-file lines (Shop: Anvil); 7.9: Foundry v11 (Tools 9 window and dialogs)
 const AXECLEFT_MERCHANTS_HOST = (() => {
   try { return decodeURIComponent(new URL(import.meta.url).pathname).match(/\/modules\/([^/]+)\//)?.[1] ?? null; } catch (e) { return null; }
 })();
@@ -583,6 +583,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
   const STYLE = `<style>
     #axecleft-merchant-generator { max-height: calc(100vh - 16px); }
     #axecleft-merchant-generator .window-content { overflow-y: auto; }
+    .amg input[type=number] { text-align: right; }
     .amg .amg-footer.sticky { position: sticky; bottom: -1rem; z-index: 2; margin: 8px 0 0; padding: 6px 0 calc(1rem + 4px); background: var(--background, var(--color-cool-5, #1b1d24)); }
     .amg details.amg-sec { border: 1px solid var(--color-border-light-tertiary, #888); border-radius: 4px; margin: 8px 0 4px; padding: 2px 8px 4px; }
     .amg details.amg-sec > summary { cursor: pointer; font-weight: bold; padding: 2px 0; }
@@ -758,21 +759,28 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         return `${t(st.total === 1 ? "{n} item:" : "{n} items:", { n: st.total })} ${Object.entries(groups).sort((a, b) => b[1] - a[1]).map(([g, n]) => `${n} ${g.toLowerCase()}`).join(", ")}${st.corrected ? `; ${t(st.corrected === 1 ? "{n} price corrected" : "{n} prices corrected", { n: st.corrected })}` : ""}`;
       };
       // Extra source kinds registered by modules (Armory: enhancements, special materials...)
+      const kindStatText = (k, ks, id) => {
+        const st = hub?.kindStats?.(k.id)?.[id];
+        if (!st) return ks.packs.includes(id) ? t("not scanned yet") : "";
+        const by = Object.entries(st.by ?? {}).sort((a, b) => b[1] - a[1]);
+        if (!by.length) return t(st.total === 1 ? "{n} item" : "{n} items", { n: st.total });
+        return `${t(st.total === 1 ? "{n} item:" : "{n} items:", { n: st.total })} ${by.map(([g, n]) => `${n} ${t(g).toLowerCase()}`).join(", ")}`;
+      };
       const kindsHtml = (hub?.sourceKinds?.() ?? []).map((k) => {
         const ks = hub.kindSources(k.id);
         const auto = (p) => { try { return [p.en ?? p.label, p.label].some((l) => (typeof k.match === "function" ? !!k.match(l, p.id) : k.match instanceof RegExp && k.match.test(l))); } catch (e) { return false; } }; // English labels (Babele)
         const secKey = `kind-${k.id.replace(/[^\w-]/g, "-")}`;
-        return `<details class="amg-sec" data-sec="${esc(secKey)}" ${r(`sec.${secKey}`, "0") === "1" ? "open" : ""}><summary>${esc(t(k.label))} <small>(${esc(game.modules.get(k.module)?.title ?? k.module)}: ${esc(t(ks.packs.length === 1 ? "{n} compendium" : "{n} compendiums", { n: ks.packs.length }))}, ${esc(ks.mode === "auto" ? t("automatic") : t("your choice"))})</small></summary>
+        return `<details class="amg-sec" data-sec="${esc(secKey)}" ${r(`sec.${secKey}`, "0") === "1" ? "open" : ""}><summary>${esc(t(k.label))} <small>(${esc(game.modules.get(k.module)?.title ?? k.module)}: ${esc(t("{n} of {m} used, {how}", { n: ks.packs.length, m: packs.length, how: ks.mode === "auto" ? t("automatic") : t("your choice") }))})</small></summary>
           <div data-kind="${esc(k.id)}">
           ${k.hint ? `<p class="hint">${esc(t(k.hint))}</p>` : ""}
           <div class="form-group"><label>${esc(t("Compendiums"))}</label><select name="kind.${esc(k.id)}.mode">${opt("auto", t("Automatic (matching names)"), ks.mode)}${opt("custom", t("My choice (tick below)"), ks.mode)}</select></div>
           <table class="amg-packs">${packs.map((p) => `<tr><td><input type="checkbox" name="kind.${esc(k.id)}.pack" value="${esc(p.id)}" data-auto="${auto(p) ? 1 : 0}" ${ks.packs.includes(p.id) ? "checked" : ""}></td>
-            <td>${esc(p.label)}<br><small>${esc(t(p.source))}${auto(p) ? ` · ${esc(t("matches"))}` : ""}</small></td></tr>`).join("")}</table></div></details>`;
+            <td>${esc(p.label)}<br><small>${esc(t(p.source))}${auto(p) ? ` · ${esc(t("matches"))}` : ""}</small></td><td><small>${esc(kindStatText(k, ks, p.id))}</small></td></tr>`).join("")}</table></div></details>`;
       }).join("");
       /*t*/"System"; /*t*/"World"; /*t*/"Module"; // compendium sources
       const nCorr = (hub?.priceCorrections?.() ?? []).length;
       const sourcesTab = `<section data-tab="sources">
-        <p class="hint">${esc(t("Besides the SRD lists and Axecleft's modules, merchants (and treasure, where no module covers a category) draw items from Item compendiums. Each item is sorted by its own data: standard, masterwork or magic weapons, armor and shields, ammunition, gear, alchemical items, potions, scrolls, wands, rings, rods, staffs and wondrous items. Magic items are graded by price (minor up to 4,000 gp, medium up to 25,000 gp). Mounts, services and epic items are left out."))}</p>
+        <p class="hint">${esc(t("Besides the SRD lists and Axecleft's modules, merchants and treasure draw items from Item compendiums: wherever no module covers a category, and otherwise the share set in Generation settings (Treasure Generator → Treasure by Level → Your item compendiums). Each item is sorted by its own data: standard, masterwork or magic weapons, armor and shields, ammunition, gear, alchemical items, potions, scrolls, wands, rings, rods, staffs and wondrous items. Magic items are graded by price (minor up to 4,000 gp, medium up to 25,000 gp). Mounts, services and epic items are left out."))}</p>
         <div class="form-group"><label>${esc(t("Compendiums"))}</label><select name="src.mode">
           ${opt("auto", t("Automatic: D35E's item compendiums and any with a matching name"), src.mode)}${opt("custom", t("My choice (tick below)"), src.mode)}</select></div>
         <p class="hint">${esc(t("Automatic matching picks compendiums named like D35E's (Items, Weapons and Ammo, Armor and Shields, Magic Items), with Gear, Equipment, Weapons, Ammo, Armor, Shields or Magic Items in their name, and Poison Consumables (Axecleft's Traps, Poisons, and Diseases). Poisons are found by their own data in any of your sources."))}${globalThis.game?.babele ? ` ${esc(t("Translated compendiums are matched by their English names."))}` : ""}</p>

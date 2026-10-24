@@ -82,7 +82,7 @@ export const esc = (v) => String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "
  * Merge the module's data with the GM's custom lists.
  * custom = { gems, objects, materials, embellishments, disabled } (rows from the Treasure Lists journal)
  */
-export function buildCatalog(gemData, artData, custom = {}) {
+export function buildCatalog(gemData, artData, custom = {}, premade = []) {
   const off = new Set((custom.disabled ?? []).map((d) => `${norm(d.list)}|${norm(d.name)}`));
   const on = (list, name) => !off.has(`${list}|${norm(name)}`) && !off.has(`any|${norm(name)}`);
   const gradeOf = (v) => gemData.grades.reduce((best, g) => (Math.abs(g.value - v) < Math.abs(best.value - v) ? g : best)).value;
@@ -98,6 +98,10 @@ export function buildCatalog(gemData, artData, custom = {}) {
 
   const objects = [
     ...artData.objects.map((o) => ({ ...o, source: "module" })),
+    // Premade pieces (data/premade-art.json and the Custom Premade Art list): generated exactly as made, with no material, gem or quality.
+    ...[...(premade ?? []).map((p) => ({ p, source: "module" })), ...(custom.premade ?? []).map((p) => ({ p, source: "custom" }))]
+      .filter(({ p }) => on("premade", p.name))
+      .map(({ p, source }) => ({ name: p.name, make: p.make, kind: p.kind ?? "art", fixedMaterial: "", weight: p.weight, premade: p, source })),
     ...(custom.objects ?? []).map((o) => ({ ...o, source: "custom" })),
   ].filter((o) => on("objects", o.name));
   const materials = [
@@ -220,14 +224,20 @@ export function artName(obj, material, gem, { quality = "", en = false } = {}) {
 export function rollArt(cat, opts = {}, rng = Math.random) {
   const kind = opts.kind ?? "any";
   const level = cat.levels.find((l) => l.level === Number(opts.level)) ?? weighted(cat.levels, rng);
-  let pool = objectsFor(cat, kind);
+  // Premade pieces: a random pick takes one only at its own value row, and only premadeShare % of the time (default 5).
+  const all = objectsFor(cat, kind);
+  let pool = all.filter((o) => !o.premade);
+  const premades = all.filter((o) => o.premade && o.premade.level === level.level);
   const chosenMat = opts.material ? cat.materials.find((m) => m.name === opts.material) : null;
   if (chosenMat && !opts.object) {
     const fit = pool.filter((o) => o.fixedMaterial === undefined && (chosenMat.uses ?? []).includes(o.make));
     if (fit.length) pool = fit;
   }
-  const obj = opts.object ? cat.objects.find((o) => o.name === opts.object) : pickOne(pool, rng);
+  const share = Math.min(100, Math.max(0, Number(opts.premadeShare ?? 5)));
+  const takePremade = !opts.object && !chosenMat && premades.length && share > 0 && (!pool.length || rng() * 100 < share);
+  const obj = opts.object ? cat.objects.find((o) => o.name === opts.object) : pickOne(takePremade ? premades : pool, rng);
   if (!obj) throw new Error(opts.object ? t("Object \"{object}\" is not in the lists", { object: opts.object }) : t("No objects in the lists."));
+  if (obj.premade) return premadeSpec(cat, obj.premade);
   const make = cat.makes[obj.make] ?? cat.makes.Molded;
 
   let material = null;
@@ -254,6 +264,21 @@ export function rollArt(cat, opts = {}, rng = Math.random) {
     level: level.level, base: level.avg, formula: level.formula, mult, range: [lo, hi],
     priceFormula: mult === 1 ? `((${level.formula}))` : `(((${level.formula}))*${mult})`,
     img: obj.img || (obj.kind === "jewelry" ? cat.jewelryImg : make.img), weight: Number(obj.weight) || 0, objDesc: obj.desc ?? "",
+  };
+}
+
+/** A premade piece, as it was made: its own name, description, picture, weight and value (no material, gem or quality). */
+export function premadeSpec(cat, p) {
+  const dice = String(p.formula);
+  const lo = averageOf(dice.replace(/(\d*)d(\d+)/gi, (_, n) => String(+n || 1)));
+  const hi = averageOf(dice.replace(/(\d*)d(\d+)/gi, (_, n, s) => String((+n || 1) * +s)));
+  const name = tw(p.name)?.text || p.name;
+  return {
+    kind: p.kind ?? "art", name, nameEn: p.name, core: name, coreEn: p.name, object: p.name, make: p.make, material: null, gem: null,
+    quality: "average", qualityLabel: "Average", qualityText: "", variations: false,
+    level: p.level, base: Math.round(Number(p.avg) || averageOf(dice)), formula: dice, mult: 1, range: [lo, hi], priceFormula: `((${dice}))`,
+    img: p.img || (cat.makes[p.make] ?? cat.makes.Molded).img, weight: Number(p.weight) || 0, objDesc: "",
+    premade: true, creator: p.creator ?? "", premadeDesc: p.desc ?? "", tags: p.tags ?? [], sourceText: p.source ?? "", subType: p.subType ?? "misc",
   };
 }
 
@@ -292,7 +317,7 @@ export function rollGoods(cat, el, { gem = {}, art = {} } = {}, rng = Math.rando
   for (let i = 0; i < count; i++) {
     items.push(type === "gems"
       ? rollGem(cat, { sources: gem.sources, variations: gem.variations }, rng)
-      : rollArt(cat, { kind: art.kind ?? "any", variations: art.variations }, rng));
+      : rollArt(cat, { kind: art.kind ?? "any", variations: art.variations, premadeShare: art.premadeShare }, rng));
   }
   return { level: row.level, roll, type, dice, count, items };
 }
@@ -308,6 +333,7 @@ export function rollGoods(cat, el, { gem = {}, art = {} } = {}, rng = Math.rando
  * rollNow = true: the value is rolled here (used when creating straight onto a character).
  */
 export function itemData(cat, spec, { rollNow = false, rng = Math.random } = {}) {
+  if (spec.premade) return premadeItemData(spec, { rollNow, rng });
   let desc, unid, weight;
   if (spec.kind === "gem") {
     desc = spec.desc + (spec.variations ? multiplierTable(cat, spec) : "");
@@ -337,12 +363,38 @@ export function itemData(cat, spec, { rollNow = false, rng = Math.random } = {})
     flags: { [MOD]: { generated: { ...strip(spec), price: rollNow ? price : null } }, world: { axecleftEn: spec.nameEn ?? spec.name } },
   };
 }
-const strip = (s) => { const { desc, unid, objDesc, qualityText, ...rest } = s; return rest; };
+const strip = (s) => { const { desc, unid, objDesc, qualityText, premadeDesc, ...rest } = s; return rest; };
+
+/** Item data for a premade piece: identified, in its original form, with its creator credited in the description. */
+function premadeItemData(spec, { rollNow = false, rng = Math.random } = {}) {
+  const credit = spec.creator ? `<p><em>${esc(t("Created by {name}.", { name: spec.creator }))}</em></p>` : "";
+  const price = rollNow ? round2(rollDice(spec.priceFormula, rng)) : 0;
+  return {
+    name: spec.name,
+    type: "loot",
+    img: spec.img,
+    system: {
+      description: { value: `${spec.premadeDesc}${credit}`, unidentified: "", chat: "" },
+      subType: spec.subType || "misc",
+      tags: [...(spec.tags ?? [])],
+      source: spec.sourceText ?? "",
+      quantity: 1,
+      weight: spec.weight,
+      price,
+      identified: true,
+      carried: true,
+      identifiedName: spec.name,
+      unidentified: { price: spec.base, name: spec.name },
+      creationChanges: rollNow ? [] : [["price", spec.priceFormula]],
+    },
+    flags: { [MOD]: { generated: { ...strip(spec), price: rollNow ? price : null } }, world: { axecleftEn: spec.nameEn ?? spec.name } },
+  };
+}
 
 /** One-line summary for chat cards. */
 export function summary(spec, price = null) {
   const value = price != null ? t("true value {value}", { value: gp(price) }) : t("true value {low}–{high}, rolled when added to a character", { low: gp(spec.range[0]), high: gp(spec.range[1]) });
-  const what = spec.kind === "gem" ? t("{list} gem, base {value}", { list: sourceName(spec.source), value: gp(spec.base) })
+  const what = spec.premade ? t("Art by {creator}, base {value}", { creator: spec.creator, value: gp(spec.base) }) : spec.kind === "gem" ? t("{list} gem, base {value}", { list: sourceName(spec.source), value: gp(spec.base) })
     : t(spec.kind === "jewelry" ? "Jewelry, value {level}, base {value}" : "Art, value {level}, base {value}", { level: spec.level, value: gp(spec.base) });
   return `${what}; ${value}`;
 }

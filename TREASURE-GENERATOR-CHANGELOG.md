@@ -3,6 +3,34 @@
 File: scripts/axecleft-treasure.js. Ship the same copy in every Axecleft treasure module; the highest version runs.
 
 
+## Version 9.994
+
+- **Your item compendiums** (Generation settings, new row): how much treasure and merchant stock comes from your Item compendiums where an Axecleft module also supplies the kind of item (asked by Gilgalad).
+  - **% of treasure** (default 0, the SRD tables only): Treasure by Level and token loot take this share of their magic arms, potions, scrolls and other items from your Item compendiums instead of the modules' SRD tables, picking an item of the same kind and grade (when there is none, the SRD tables are used).
+  - **% of merchant stock** (default 50): merchants draw this share of their stock from your Item compendiums. Before, a merchant picked evenly among the sources, which is the same 50% where a module and your compendiums both supply a kind.
+  - Unticked: nothing comes from your compendiums where a module supplies the kind. Kinds no module covers still come from your compendiums.
+- **Treasure weight tags**: an item tagged `Treasure weight: 3` comes up three times as often as the other items it is rolled with from your compendiums; `Treasure weight: 0` keeps it out of random treasure and stock (it can still be chosen by hand in the Forge and Crafting). Items without the tag weigh 1. The tag isn't a Shop tag, so the Shop Tags tool leaves it alone.
+
+## Version 9.993
+
+- Generation settings: the Sizes of arms, Poisons and Cursed items rows start with their checkbox at the left, like the other rows.
+- The Shared treasure lists library setting no longer says the Treasure Lists hold weapons: they hold custom gems, art objects, materials, curses, price corrections and so on.
+
+## Version 9.992
+
+- A list's closing note can be built when the page is shown (Gemstones uses it to list the 12 value levels). On the Lists tab, hovering a column's label shows what goes in it, and the list's note is shown under the fields. Treasure Lists pages are rewritten once more to pick this up (rows kept).
+
+## Version 9.991
+
+- **Numbers right-aligned**: number boxes in the Treasure Generator (and the Forge, Workshop and other tabs in it) show their value against the right edge, next to the % or unit after them. The light distances in Generation settings keep their alignment.
+- **Treasure Lists in the world's language**: every page of Axecleft's Treasure Lists journal, its name included, is written in the world's language. A page written in another language (or by an older version) is rewritten the next time the GM loads the world, keeping its rows. Before, only pages whose rows had changed since the language was switched were translated. A page whose column headings were changed by hand is left alone (the console says which).
+- **Clearer pages**: each page explains its columns one per line (the heading as written in the table, with its translation), says to keep the column headings as they are, and ends with an example row in a separate table that is never read. The Custom Curses page now explains the What it does column.
+- Lists can give **help** (a line per column), a closing **note** and an **example** row (registerList).
+
+## Version 9.99
+
+- **Item Sources counts for every list**: the extra source lists that modules add (the Armory's Enhancements and Special materials, Curios' Spells and Psionic powers…) now show how many items each chosen compendium supplies, as the Item compendiums list does. A module can count them by kind (the Armory's enhancements show "weapon" and "armor"). The lists are read again with Rescan and Save and Rescan.
+
 ## Version 9.98
 
 - **Cursed light only while the curse is active**: a cursed item that sheds light keeps its own light while it's unidentified or its curse is dormant, so the light no longer gives the curse away. Ticking "Curse Active" swaps in the curse's eerie light (saving the item's own); unticking it restores the item's own light.

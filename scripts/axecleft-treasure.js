@@ -27,7 +27,7 @@
  *
  * Register at load time (top level of your script). See README "For module authors".
  */
-const AXECLEFT_TREASURE_VERSION = 9.98; // 9.98: a cursed item's eerie light only while the curse is active (D35E sheet animations); 9.97: custom curses (Treasure Lists); 9.96: cursed items (SRD tables, Generation settings, Forge/Workshop option); 9.94: text in the world's language (Axecleft's Tools 8.2 language files); 9.95: Foundry v11 (Tools 9 window, chat), no intelligent items before D35E 3.1
+const AXECLEFT_TREASURE_VERSION = 9.994; // 9.994: a share of treasure and merchant stock from your Item compendiums (Generation settings), Treasure weight tags; 9.993: Generation settings: Sizes of arms, Poisons and Cursed items start with their checkbox, like the other rows; 9.992: a list's note can be built when shown (Gemstones' value levels), column help as tooltips on the Lists tab; 9.991: numbers right-aligned in their boxes; Treasure Lists pages in the world's language (rewritten when it changes), a line per column, an example row and a warning to keep the headings; 9.99: Item Sources show the items found in each compendium of an extra source kind (enhancements, materials, spells…); 9.98: a cursed item's eerie light only while the curse is active (D35E sheet animations); 9.97: custom curses (Treasure Lists); 9.96: cursed items (SRD tables, Generation settings, Forge/Workshop option); 9.94: text in the world's language (Axecleft's Tools 8.2 language files); 9.95: Foundry v11 (Tools 9 window, chat), no intelligent items before D35E 3.1
 const AXECLEFT_TREASURE_HOST = (() => {
   try { return decodeURIComponent(new URL(import.meta.url).pathname).match(/\/modules\/([^/]+)\//)?.[1] ?? null; } catch (e) { return null; }
 })();
@@ -241,6 +241,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
     // Cursed items (version 9.96): a flat rate, or a rate by grade (the SRD gives no frequency)
     curse: { enabled: true, method: "flat", flat: 1, minor: 3, medium: 2, major: 1, merchants: false, specific: true, mechanics: true },
     size: { enabled: true, small: 30, medium: 60, large: 10 },
+    // Version 9.994: how much treasure and merchant stock comes from the GM's Item compendiums where a module also supplies the category
+    sources: { enabled: true, treasure: 0, merchants: 50 },
     // Campaign switches (version 9.5), shared by every Axecleft module: psionic items and powers, and epic items
     rules: { psionics: true, epic: false, epicShare: 25 },
     // Token loot (version 9.7): each NPC token's own treasure by its CR
@@ -796,13 +798,13 @@ const AXECLEFT_TREASURE_HOST = (() => {
   /** The Generation settings fieldset on the Treasure by Level tab. */
   function generationSection() {
     const g = generation();
-    const num = (name, v, max = 100, step = 1) => `<input type="number" name="${name}" value="${esc(v)}" min="0" max="${max}" step="${step}">`;
+    const num = (name, v, max = 100, step = 1, cls = "") => `<input type="number"${cls ? ` class="${cls}"` : ""} name="${name}" value="${esc(v)}" min="0" max="${max}" step="${step}">`;
     const cb = (name, v, label = "") => `<label class="atg-cb"><input type="checkbox" name="${name}" ${v ? "checked" : ""}>${label ? ` ${esc(t(label))}` : ""}</label>`;
     const H = (s) => `<span class="hint">${esc(t(s))}</span>`;
     const IQ = globalThis.AxecleftTools?.intelligentItems?.() !== false; // D35E before 3.1.0 has no intelligent items
     const rows = GEN_CATS.map(([k, label]) => `<tr><td>${esc(t(label))}</td>
         <td>${cb(`gen.light.${k}.on`, g.light[k].on)} ${num(`gen.light.${k}.chance`, g.light[k].chance)}%</td>
-        <td>${num(`gen.light.${k}.bright`, g.light[k].bright, 120, 5)} / ${num(`gen.light.${k}.dim`, g.light[k].dim, 240, 5)} ${esc(t("ft"))}</td>
+        <td>${num(`gen.light.${k}.bright`, g.light[k].bright, 120, 5, "atg-ft")} / ${num(`gen.light.${k}.dim`, g.light[k].dim, 240, 5, "atg-ft")} ${esc(t("ft"))}</td>
         ${IQ ? `<td>${cb(`gen.intelligence.${k}.on`, g.intelligence[k].on)} ${num(`gen.intelligence.${k}.chance`, g.intelligence[k].chance)}%</td>` : ""}
         <td>${g.hints[k] ? `${cb(`gen.hints.${k}.on`, g.hints[k].on)} ${num(`gen.hints.${k}.chance`, g.hints[k].chance)}%` : "—"}</td></tr>`).join("");
     const changed = JSON.stringify(g) !== JSON.stringify(GEN_DEFAULTS);
@@ -817,10 +819,12 @@ const AXECLEFT_TREASURE_HOST = (() => {
       <p class="hint">${esc(t("The SRD lists special purposes and dedicated powers but doesn't say how often they occur; this is Axecleft's default (the most capable items, with greater powers, have one)."))}</p>` : ""}
       <div class="atg-checks">${cb("gen.light.themes", g.light.themes, /*t*/"Light color and animation follow the item's abilities")}${cb("gen.light.powerBrightness", g.light.powerBrightness, /*t*/"Stronger items glow brighter")}</div>
       <div class="atg-checks">${cb("gen.light.scaleRadii", g.light.scaleRadii, /*t*/"Stronger items shine farther:")} ${num("gen.light.scaleFeet", g.light.scaleFeet, 30, 5)} ${H("ft per +1 above +2")}</div>
-      <div class="form-group"><label>${esc(t("Sizes of arms"))}</label>${cb("gen.size.enabled", g.size.enabled)} ${num("gen.size.small", g.size.small)}${H("% Small")} ${num("gen.size.medium", g.size.medium)}${H("% Medium")} ${num("gen.size.large", g.size.large)}${H("% Large")}</div>
+      <div class="atg-checks">${cb("gen.size.enabled", g.size.enabled, /*t*/"Sizes of arms")} <span>${num("gen.size.small", g.size.small)}${H("% Small")}</span> <span>${num("gen.size.medium", g.size.medium)}${H("% Medium")}</span> <span>${num("gen.size.large", g.size.large)}${H("% Large")}</span></div>
       <p class="hint">${esc(t("SRD: random armor and weapons are Small 30%, Medium 60% and another size 10% (Large here). Small arms cost the same and weigh half; Large cost twice as much and weigh twice as much. Untick for all Medium."))}</p>
-      <div class="form-group"><label>${esc(t("Poisons"))}</label>${cb("gen.poison.enabled", g.poison.enabled)} ${num("gen.poison.chance", g.poison.chance, 100, 0.5)}<span class="hint" style="flex:1">${esc(t("% of mundane item rolls become a poison from your item sources (house rule; raise it where poison is common)"))}</span></div>
-      <div class="form-group"><label>${esc(t("Cursed items"))}</label>${cb("gen.curse.enabled", g.curse.enabled)} <select name="gen.curse.method">${[["flat", /*t*/"Flat rate"], ["grade", /*t*/"Rate by grade"]].map(([v, l]) => `<option value="${v}" ${g.curse.method === v ? "selected" : ""}>${esc(t(l))}</option>`).join("")}</select>
+      <div class="atg-checks">${cb("gen.poison.enabled", g.poison.enabled, /*t*/"Poisons")} <span style="flex:1">${num("gen.poison.chance", g.poison.chance, 100, 0.5)}<span class="hint">${esc(t("% of mundane item rolls become a poison from your item sources (house rule; raise it where poison is common)"))}</span></span></div>
+      <div class="atg-checks">${cb("gen.sources.enabled", g.sources.enabled, /*t*/"Your item compendiums:")} <span>${num("gen.sources.treasure", g.sources.treasure)}${H("% of treasure")}</span> <span>${num("gen.sources.merchants", g.sources.merchants)}${H("% of merchant stock")}</span></div>
+      <p class="hint">${t("Treasure by Level and token loot roll magic arms, potions, scrolls and the rest on the SRD tables of Axecleft's modules (Armory, Curios); this share of those items comes from your Item compendiums instead (same kind and grade, when one exists), so your own items turn up in treasure. Merchants draw this share of their stock from your Item compendiums wherever a module also supplies the kind (50%: half and half). An item tagged <code>Treasure weight: 3</code> comes up three times as often as the others in its compendium pool; <code>Treasure weight: 0</code>, never at random. Unticked: nothing from your compendiums where a module supplies the kind.")}</p>
+      <div class="atg-checks">${cb("gen.curse.enabled", g.curse.enabled, /*t*/"Cursed items")} <select name="gen.curse.method" style="flex:0 0 auto; width:auto">${[["flat", /*t*/"Flat rate"], ["grade", /*t*/"Rate by grade"]].map(([v, l]) => `<option value="${v}" ${g.curse.method === v ? "selected" : ""}>${esc(t(l))}</option>`).join("")}</select>
         <span data-curse="flat">${num("gen.curse.flat", g.curse.flat, 100, 0.5)}${H("% of magic items")}</span>
         <span data-curse="grade">${num("gen.curse.minor", g.curse.minor, 100, 0.5)}${H("% minor")} ${num("gen.curse.medium", g.curse.medium, 100, 0.5)}${H("% medium")} ${num("gen.curse.major", g.curse.major, 100, 0.5)}${H("% major and epic")}</span></div>
       <div class="atg-checks">${cb("gen.curse.specific", g.curse.specific, /*t*/"Specific cursed items (SRD table)")}${cb("gen.curse.mechanics", g.curse.mechanics, /*t*/"Apply simple effects (penalties, reversed bonuses)")}${cb("gen.curse.merchants", g.curse.merchants, /*t*/"Merchant stock can be cursed")}<button type="button" data-curse-pack><i class="fas fa-skull"></i> ${esc(t("Create the curse buffs compendium"))}</button></div>
@@ -1171,6 +1175,14 @@ const AXECLEFT_TREASURE_HOST = (() => {
   const HINTS = ["Book", "Clothing", "Jewelry"];
   const tagText = (x) => `${TAG_PREFIX} ${TAG_LABELS[x] ?? x}`;
   /** Read Shop tags from an item's system.tags ([[tag], ...]). */
+  /** An item's "Treasure weight: n" tag (version 9.994): how likely it is among the compendium items it is rolled with (default 1; 0: never at random). */
+  function treasureWeight(tags) {
+    for (const tg of Array.isArray(tags) ? tags : []) {
+      const m = String(Array.isArray(tg) ? tg[0] : tg ?? "").trim().match(/^treasure\s+weight\s*:?\s*(\d+(?:[.,]\d+)?)$/i);
+      if (m) return Math.max(0, Number(m[1].replace(",", ".")) || 0);
+    }
+    return 1;
+  }
   function readShopTags(tags) {
     const cats = new Set(), hints = new Set();
     for (const t of Array.isArray(tags) ? tags : []) {
@@ -1370,7 +1382,9 @@ const AXECLEFT_TREASURE_HOST = (() => {
    *     match: /enhancement/i,                        // automatic: compendium labels (or a function(label, id))
    *     accept: (e) => e.type === "enhancement",       // which index entries count
    *     fields: ["system.enhancementType"],            // extra index fields to read
+   *     group: (e) => e.system.enhancementType,        // optional (version 9.99): Item Sources counts the items by this ("12 weapon, 8 armor")
    *     hint: "Special abilities for magic arms" });
+   *   T.kindStats("axeclefts-armory.enhancements")    // { [pack id]: { total, by: { weapon: 12, armor: 8 } } } once read
    *   await T.kindItems("axeclefts-armory.enhancements")   // [{ pack, id, name, entry }]
    * Choices are saved per world with the item sources.
    */
@@ -1381,6 +1395,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
     globalThis.AxecleftMerchants?.refresh?.();
   }
   const kindCache = new Map(); // kind id -> Promise of [{ pack, id, name, entry }]
+  const kindStatMap = new Map(); // kind id -> { [pack id]: { total, by } } (version 9.99: shown on the Item Sources tab)
+  const kindStats = (kindId) => kindStatMap.get(kindId) ?? null;
   const sourceKinds = () => [...registry.sourceKinds.values()].filter(isActive);
   // Compendium labels are matched in English (Babele translates the labels; metadata.originalLabel keeps the English one)
   const kindMatches = (k, p) => [...new Set([p.en ?? p.label, p.label])].some((l) => (typeof k.match === "function" ? !!k.match(l, p.id) : k.match instanceof RegExp ? k.match.test(l) : false));
@@ -1406,18 +1422,24 @@ const AXECLEFT_TREASURE_HOST = (() => {
     const k = registry.sourceKinds.get(kindId);
     const p = (async () => {
       if (!k) return [];
-      const out = [];
+      const out = [], stats = {};
       for (const id of kindSources(kindId).packs) {
         const pack = game.packs.get(id);
         if (!pack) continue;
         let index;
         try { index = await enIndex(pack, { fields: [...new Set([...INDEX_FIELDS, ...(k.fields ?? [])])] }); } catch (err) { console.warn(`AxecleftTreasure | could not read ${id}`, err); continue; }
+        const st = stats[id] = { total: 0, by: {} };
         for (const e of index) {
           if (e.type === "Folder") continue;
           try { if (k.accept && !k.accept(e)) continue; } catch (err) { continue; }
           out.push({ pack: id, packLabel: pack.metadata?.label ?? id, id: e._id, name: e.name, display: e.display ?? e.name, entry: e });
+          st.total++;
+          let g = null;
+          try { g = typeof k.group === "function" ? k.group(e) : null; } catch (err) { /* no group */ }
+          if (g) st.by[g] = (st.by[g] ?? 0) + 1;
         }
       }
+      kindStatMap.set(kindId, stats);
       return out;
     })();
     kindCache.set(kindId, p);
@@ -1448,7 +1470,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
           const tags = readShopTags(e.system?.tags);
           if (!cat && !(tags.cats.length && price > 0)) continue;
           if (corrected) st.corrected = (st.corrected ?? 0) + 1;
-          const entry = { pack: id, id: e._id, name: e.name, display: e.display ?? e.name, price, ranged: e.system?.weaponSubtype === "ranged" || e.system?.subType === "ammo", label, hints: tags.hints, epic: isEpicItem(e), psionic: isPsionicItem(e) };
+          const entry = { pack: id, id: e._id, name: e.name, display: e.display ?? e.name, price, ranged: e.system?.weaponSubtype === "ranged" || e.system?.subType === "ammo", label, hints: tags.hints, epic: isEpicItem(e), psionic: isPsionicItem(e), weight: treasureWeight(e.system?.tags) };
           for (const c of new Set([cat, ...tags.cats].filter(Boolean))) {
             (pools[c] ??= []).push(entry);
             st.byCategory[c] = (st.byCategory[c] ?? 0) + 1;
@@ -1459,6 +1481,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
       }
       compPools = pools; compStats = stats;
       kindCache.clear();
+      // Extra source kinds are read again too, so the Item Sources tab can show what each compendium supplies (version 9.99)
+      await Promise.all(sourceKinds().map((k) => kindItems(k.id, { force: true }).catch(() => [])));
       api.refresh?.();
       globalThis.AxecleftMerchants?.refresh?.();
       return stats;
@@ -1467,20 +1491,27 @@ const AXECLEFT_TREASURE_HOST = (() => {
   }
 
   const gradeOf = (price) => (price <= MINOR_MAX ? "minor" : price <= MEDIUM_MAX ? "medium" : "major");
+  /** The compendium items a roll can pick from (Treasure weight 0 left out). strictGrade: no other grade when none fits. */
+  function compPool(category, { grade, tags = [], hints = {}, epic = false } = {}, strictGrade = false) {
+    let pool = allowedByRules(compPools[category] ?? [], { epic }).filter((x) => (x.weight ?? 1) > 0).map((x) => (x.weight === undefined ? { ...x, weight: 1 } : x));
+    // A specialty shop's limit for this category (e.g. a bookseller's wondrous items: only those tagged Book)
+    const want = hints?.[category];
+    if (want?.length) pool = pool.filter((x) => x.hints?.some((h) => want.includes(h)));
+    if (tags.includes("ranged") && /weapon$/.test(category)) pool = pool.filter((x) => x.ranged); // a bowyer sells no swords
+    if (tags.includes("psionic")) pool = pool.filter((x) => x.psionic); // a psionic shop sells only psionic items (version 9.5)
+    if (grade && category.startsWith("magic:")) { const g = pool.filter((x) => gradeOf(x.price) === grade); if (g.length || strictGrade) pool = g; }
+    return pool;
+  }
   registry.providers.set("axecleft-treasure.compendiums", {
     module: null, name: "compendiums", label: /*t*/"Item compendiums", builtin: true, compendium: true, hints: true,
     categories: Object.keys(CATEGORIES).filter((c) => c !== "gem" && c !== "art"),
     available: (category, hints) => allowedByRules(compPools[category] ?? []).some((x) => !hints?.length || x.hints?.some((h) => hints.includes(h))),
     async roll({ category, grade, tags = [], merchant, hints = {}, epic = false }) {
-      let pool = allowedByRules(compPools[category] ?? [], { epic });
-      // A specialty shop's limit for this category (e.g. a bookseller's wondrous items: only those tagged Book)
-      const want = hints?.[category];
-      if (want?.length) pool = pool.filter((x) => x.hints?.some((h) => want.includes(h)));
-      if (tags.includes("ranged") && /weapon$/.test(category)) pool = pool.filter((x) => x.ranged); // a bowyer sells no swords
-      if (tags.includes("psionic")) pool = pool.filter((x) => x.psionic); // a psionic shop sells only psionic items (version 9.5)
-      if (grade && category.startsWith("magic:")) { const g = pool.filter((x) => gradeOf(x.price) === grade); if (g.length) pool = g; }
+      const pool = compPool(category, { grade, tags, hints, epic });
       if (!pool.length) return [placeholder(category, grade)];
-      const pick = pool[Math.floor(Math.random() * pool.length)];
+      // Version 9.994: "Treasure weight: n" tags make an item more (or less) likely than the others
+      let r = Math.random() * pool.reduce((a, x) => a + x.weight, 0), pick = pool[pool.length - 1];
+      for (const x of pool) { r -= x.weight; if (r < 0) { pick = x; break; } }
       const doc = await game.packs.get(pick.pack)?.getDocument(pick.id);
       if (!doc) return [placeholder(category, grade)];
       const data = doc.toObject();
@@ -1510,8 +1541,16 @@ const AXECLEFT_TREASURE_HOST = (() => {
   /** ctx.mix: pick at random among every source for the category (merchants), instead of the preferred one. */
   async function fromCategory(category, ctx) {
     const hints = ctx.hints?.[category] ?? null;
-    const all = ctx.mix ? providersFor(category, hints) : [];
-    const p = all.length ? all[Math.floor(Math.random() * all.length)] : providerFor(category, hints);
+    const all = providersFor(category, hints);
+    let p = providerFor(category, hints);
+    // Version 9.994: the GM's share from Item compendiums (Generation settings) where a module also supplies the category
+    const comp = all.find((x) => x.compendium), others = all.filter((x) => !x.compendium);
+    const src = generation().sources ?? {};
+    if (ctx.mix && all.length) {
+      if (comp && others.length) p = src.enabled !== false && Math.random() * 100 < (Number(src.merchants) || 0) ? comp : others[Math.floor(Math.random() * others.length)];
+      else p = all[Math.floor(Math.random() * all.length)];
+    } else if (comp && p && p !== comp && src.enabled !== false && Number(src.treasure) > 0 && Math.random() * 100 < Number(src.treasure)
+      && compPool(category, { ...ctx, hints: ctx.hints ?? {} }, true).length) p = comp;
     if (!p) return [placeholder(category, ctx.grade)];
     try {
       const out = await p.roll({ ...ctx, category });
@@ -1971,7 +2010,9 @@ const AXECLEFT_TREASURE_HOST = (() => {
    *
    * A module declares its lists at load time:
    *   T.registerList({ module, key, page, label, cols: [[field, header, input?], ...], intro,
-   *                    normalize?, format?, builtin?, names?, scopes?, prepare?, order? })
+   *                    help?, note?, example?, normalize?, format?, builtin?, names?, scopes?, prepare?, order? })
+   *   help: { field: "what goes in this column" } (version 9.991: a line per column on the page);
+   *   note: a closing sentence, or a function returning HTML blocks (version 9.992); example: { field: value } (an example row, shown in a table that isn't read)
    *   input: { type: "text" | "number" | "select" | "checks", options: [[value, label]] | () => [...],
    *            value, min, max, step, placeholder }
    * and reads them with T.customList(module, key) (built-in rows minus the
@@ -2001,9 +2042,11 @@ const AXECLEFT_TREASURE_HOST = (() => {
   const disableTargets = (m) => [...activeLists().filter((s) => s.module === m).flatMap((s) => [[s.key, s.label], ...(s.scopes ?? [])]), ["any", /*t*/"Any list"]];
   function disabledSpec(m) {
     return {
-      module: m, key: DISABLED, id: `${m}|${DISABLED}`, page: `Disabled Entries (${modTitle(m)})`, label: /*t*/"Disabled entry",
+      module: m, key: DISABLED, id: `${m}|${DISABLED}`, page: t("Disabled Entries ({module})", { module: t(modTitle(m)) }), label: /*t*/"Disabled entry",
       cols: [{ field: "name", header: /*t*/"Name" }, { field: "list", header: /*t*/"List" }],
-      intro: t("Built-in entries of {module} that should never be used. <strong>List</strong> is one of: {lists}.", { module: esc(modTitle(m)), lists: disableTargets(m).map(([v]) => esc(v)).join(", ") }),
+      intro: t("Built-in entries of {module} that should never be used.", { module: esc(t(modTitle(m))) }),
+      help: { name: t("the built-in entry's name, as the module lists it."), list: t("which list it is switched off in: {lists}.", { lists: disableTargets(m).map(([v]) => esc(v)).join(", ") }) },
+      example: { name: "Example entry", list: "any" },
       normalize: (r) => ({ name: String(r.name).trim(), list: String(r.list ?? "any").trim().toLowerCase() || "any" }),
     };
   }
@@ -2050,12 +2093,29 @@ const AXECLEFT_TREASURE_HOST = (() => {
       return normalizeRow(spec, r);
     }).filter(Boolean);
   }
+  // Version 9.991: the page text in the world's language, a line per column (its heading as written in the table, and translated),
+  // a warning to keep the headings, and an example row in a second table (only the first table is read)
+  const TEXT_VERSION = 3;
+  /** A list's closing note as HTML blocks: a function's own HTML, or a sentence in a paragraph. */
+  const noteHtml = (spec) => { try { return typeof spec.note === "function" ? String(spec.note() ?? "") : spec.note ? `<p>${t(spec.note)}</p>` : ""; } catch (e) { return ""; } };
+  const helpText = (spec, field) => (spec.help?.[field] ? decodeCell(t(spec.help[field])) : "");
+  const textStamp = () => `${game.i18n?.lang ?? "en"}|${TEXT_VERSION}`;
+  const headerShown = (h) => { const tr = t(h); return tr !== h ? `<strong>${esc(h)}</strong> (${esc(tr)})` : `<strong>${esc(h)}</strong>`; };
   function tableHtml(spec, rows) {
     const head = spec.cols.map((c) => `<th>${esc(c.header)}</th>`).join("");
     const body = [...rows].sort((a, b) => a.name.localeCompare(b.name)).map((r) => `<tr>${spec.cols.map((c) => `<td>${esc(cellText(spec, c.field, r))}</td>`).join("")}</tr>`).join("");
     const blank = `<tr>${spec.cols.map(() => "<td></td>").join("")}</tr>`;
-    return `<p>${spec.intro ? t(spec.intro) : ""}</p><p><em>${esc(t("Add a row to the table (or use the Lists tab of the Treasure Generator). Rows without a name are ignored."))}</em></p>`
+    const help = spec.cols.filter((c) => spec.help?.[c.field]).map((c) => `<li>${headerShown(c.header)}: ${t(spec.help[c.field])}</li>`).join("");
+    let out = `<p>${spec.intro ? t(spec.intro) : ""}</p>${help ? `<ul>${help}</ul>` : ""}${noteHtml(spec)}`
+      + `<p><em>${esc(t("Add a row to the table (or use the Lists tab of the Treasure Generator). Rows without a name are ignored."))}</em></p>`
+      + `<p><strong>${esc(t("Keep the column headings exactly as they are (in English), even in a translated world: the modules find the columns by them."))}</strong></p>`
       + `<table><thead><tr>${head}</tr></thead><tbody>${body}${blank}</tbody></table>`;
+    if (spec.example) {
+      const ex = normalizeRow(spec, spec.example) ?? spec.example;
+      out += `<h3>${esc(t("Example"))}</h3><p><em>${esc(t("A filled-in row, for reference. This table is never read: add your rows to the table above."))}</em></p>`
+        + `<table><thead><tr>${head}</tr></thead><tbody><tr>${spec.cols.map((c) => `<td>${esc(cellText(spec, c.field, ex))}</td>`).join("")}</tr></tbody></table>`;
+    }
+    return out;
   }
   /** Add rows from extra that base doesn't have (by name). Returns { rows, added }. */
   function mergeRows(spec, base = [], extra = []) {
@@ -2085,7 +2145,27 @@ const AXECLEFT_TREASURE_HOST = (() => {
     return all.find((j) => j.flags?.world?.[J_FLAG]) ?? all.find((j) => j.flags?.[LEGACY_MOD]?.lists) ?? null;
   }
   const pageFor = (j, spec) => j?.pages?.find((p) => pageId(p) === spec.id) ?? null;
-  const newPage = (spec, rows, sort) => ({ name: spec.page, type: "text", text: { content: tableHtml(spec, rows) }, sort, flags: { world: { [P_FLAG]: spec.id } } });
+  const T_FLAG = "axecleftListText"; // the language and text version a page was written in (version 9.991)
+  const newPage = (spec, rows, sort) => ({ name: t(spec.page), type: "text", text: { content: tableHtml(spec, rows) }, sort, flags: { world: { [P_FLAG]: spec.id, [T_FLAG]: textStamp() } } });
+  /** Pages written in another language or an older text version are written again in the world's language (their rows are kept). */
+  async function refreshTexts(j) {
+    const stamp = textStamp(), updates = [];
+    for (const p of j.pages ?? []) {
+      if (p.flags?.world?.[T_FLAG] === stamp) continue;
+      const id = pageId(p);
+      if (id === "howto") { updates.push({ _id: p.id, name: t("How to Use"), "text.content": HOW_TO(), [`flags.world.${T_FLAG}`]: stamp }); continue; }
+      const [m, k] = String(id ?? "").split("|");
+      const spec = m && k ? listSpec(m, k) : null;
+      if (!spec || !isActive(spec)) continue; // pages of inactive modules stay as they are
+      const html = p.text?.content ?? "", rows = parseTable(spec, html);
+      // A table the modules can't fully read (a heading renamed by hand) is left alone, so no row is lost
+      const table = String(html).match(/<table[\s\S]*?<\/table>/i)?.[0] ?? "";
+      const heads = [...(table.match(/<tr[\s\S]*?<\/tr>/i)?.[0] ?? "").matchAll(/<t([hd])[^>]*>([\s\S]*?)<\/t\1>/gi)].map((c) => headKey(c[2]));
+      if (table && spec.cols.some((c) => !heads.includes(headKey(c.header)))) { console.warn(`AxecleftTreasure | Treasure Lists: "${p.name}" has rows the modules can't read (a column heading changed?); its text was not updated.`); continue; }
+      updates.push({ _id: p.id, name: t(spec.page), "text.content": tableHtml(spec, rows), [`flags.world.${T_FLAG}`]: stamp });
+    }
+    if (updates.length) await j.updateEmbeddedDocuments("JournalEntryPage", updates);
+  }
   const specsFor = (m) => [...activeLists().filter((s) => s.module === m), disabledSpec(m)];
 
   /** Gemstones 1.14 journal: flags under its module scope, and a plain "Disabled Entries" page. Move them to the shared layout. */
@@ -2114,7 +2194,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
         const specs = listModules().flatMap(specsFor);
         j = await JournalEntry.create({
           name: JOURNAL_NAME, ownership: { default: 0 }, flags: { world: { [J_FLAG]: true } },
-          pages: [{ name: "How to Use", type: "text", text: { content: HOW_TO() }, sort: 0, flags: { world: { [P_FLAG]: "howto" } } },
+          pages: [{ name: t("How to Use"), type: "text", text: { content: HOW_TO() }, sort: 0, flags: { world: { [P_FLAG]: "howto", [T_FLAG]: textStamp() } } },
             ...specs.map((s, i) => newPage(s, [], (i + 1) * 1000))],
         });
         return j;
@@ -2125,6 +2205,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
         const top = Math.max(0, ...(j.pages ?? []).map((p) => p.sort ?? 0));
         await j.createEmbeddedDocuments("JournalEntryPage", missing.map((s, i) => newPage(s, [], top + (i + 1) * 1000)));
       }
+      await refreshTexts(j);
       return j;
     } finally { suppressSave--; }
   }
@@ -2149,7 +2230,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
         for (const s of specsFor(m)) {
           if (!lists?.[s.key] || JSON.stringify(current[m]?.[s.key]) === JSON.stringify(lists[s.key])) continue;
           const page = pageFor(j, s), content = tableHtml(s, lists[s.key]);
-          if (page) await page.update({ "text.content": content });
+          if (page) await page.update({ name: t(s.page), "text.content": content, [`flags.world.${T_FLAG}`]: textStamp() });
           else await j.createEmbeddedDocuments("JournalEntryPage", [newPage(s, lists[s.key])]);
         }
       }
@@ -2208,7 +2289,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
     for (const ns of [host(), "world"].filter(Boolean)) {
       try {
         const reg = (k, o) => { if (!game.settings.settings?.has?.(`${ns}.${k}`)) game.settings.register(ns, k, { scope: "world", config: true, ...o }); };
-        reg("librarySync", { name: /*t*/"Shared treasure lists library", hint: /*t*/"Automatic: your Treasure Lists (custom gems, art, weapons and so on, for every Axecleft module) are saved to a file in the Foundry Data folder whenever you change them, and every world loads them at start-up, so they survive module updates and follow you between worlds. Manual: only when you press Save / Load on the Treasure Generator's Lists tab.", type: String, default: "auto", choices: { auto: /*t*/"Automatic", manual: /*t*/"Manual" } });
+        reg("librarySync", { name: /*t*/"Shared treasure lists library", hint: /*t*/"Automatic: your Treasure Lists (custom gems, art objects, materials, curses, price corrections and so on, for every Axecleft module) are saved to a file in the Foundry Data folder whenever you change them, and every world loads them at start-up, so they survive module updates and follow you between worlds. Manual: only when you press Save / Load on the Treasure Generator's Lists tab.", type: String, default: "auto", choices: { auto: /*t*/"Automatic", manual: /*t*/"Manual" } });
         reg("libraryFolder", { name: /*t*/"Shared library folder", hint: /*t*/"Folder inside your Foundry Data folder that holds treasure-lists.json.", type: String, default: "axecleft-treasure" });
         libNs = ns;
         return;
@@ -2319,7 +2400,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
     if (!j || !(j.flags?.world?.[J_FLAG] || j.flags?.[LEGACY_MOD]?.lists)) return;
     Hooks.callAll("axecleftTreasure.listsChanged");
     corrIndex = null;
-    if (game.user?.isGM && /price corrections/i.test(page?.name ?? "")) { clearTimeout(rescanTimer); rescanTimer = setTimeout(() => scanCompendiums(), 1500); }
+    if (game.user?.isGM && (pageId(page) === `${CORR_MOD}|prices` || /price corrections/i.test(page?.name ?? ""))) { clearTimeout(rescanTimer); rescanTimer = setTimeout(() => scanCompendiums(), 1500); }
     api.refresh();
     if (suppressSave || userId !== game.user?.id || !game.user?.isGM || librarySync() !== "auto") return;
     clearTimeout(saveTimer);
@@ -2362,7 +2443,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
         try { names = s.names?.() ?? (typeof s.builtin === "function" ? s.builtin() : s.builtin ?? []).map((r) => r.name); } catch (e) { /* none */ }
         return `<div data-list-form="${esc(s.id)}" data-i="${i}">
           <fieldset><legend>${esc(t("Add to {list}", { list: t(s.page) }))}</legend>
-            ${s.cols.map((c) => `<div class="form-group"><label>${esc(t(c.header))}</label>${listInput(s, c, `ladd.${i}.${c.field}`)}</div>`).join("")}
+            ${s.cols.map((c) => `<div class="form-group"><label${helpText(s, c.field) ? ` title="${esc(helpText(s, c.field))}"` : ""}>${esc(t(c.header))}</label>${listInput(s, c, `ladd.${i}.${c.field}`)}</div>`).join("")}
+            ${noteHtml(s) ? `<div class="hint">${noteHtml(s)}</div>` : ""}
             <div class="atg-footer"><button type="button" data-lists="addRow" data-i="${i}"><i class="fas fa-plus"></i> ${esc(t("Add to List"))}</button></div>
             <details class="atg-sec" data-sec="mine"><summary>${esc(t("Your entries"))} <small>(${mine.length})</small></summary>${chips(mine, s.module, s.key, (r) => r.name)}</details>
           </fieldset>
@@ -2479,8 +2561,11 @@ const AXECLEFT_TREASURE_HOST = (() => {
     .atg .form-group > label { flex: 0 0 9em; }
     .atg .form-group select, .atg .form-group input[type=text] { flex: 1; min-width: 0; }
     .atg .form-group input[type=number] { flex: 0 0 5em; }
+    .atg input[type=number] { text-align: right; }
+    .atg input[type=number].atg-ft { text-align: start; }
     .atg .atg-checks { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
     .atg .atg-checks label { display: flex; gap: 4px; align-items: center; flex: none; }
+    .atg .atg-checks .hint { margin: 0; }
     .atg .hint { font-size: 0.85em; opacity: 0.85; margin: 2px 0 6px; }
     .atg fieldset { margin: 8px 0 4px; padding: 4px 8px 6px; }
     .atg .atg-footer { display: flex; gap: 6px; margin-top: 8px; }
@@ -2850,7 +2935,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
     sourcesFor: (category) => providersFor(category).map((p) => p.label),
     listItemPacks, itemSources, setItemSources, scanCompendiums, classifyItem, isDisease,
     // Version 9: extra source kinds, price corrections, generation settings
-    registerSourceKind, sourceKinds, kindSources, setKindSources, kindItems,
+    registerSourceKind, sourceKinds, kindSources, setKindSources, kindItems, kindStats,
     registerPriceCorrections, priceCorrections, correctionFor, correctedPrice, applyPriceCorrection, priceCheck, exportPriceCheck,
     generation, saveGeneration, resetGeneration, genChance, GEN_DEFAULTS, GEN_CATS,
     // Version 9.96: cursed items (SRD tables); curse({ name, data, summary }, category, ctx, { force: "random" | type }) for the Forge and Workshop
@@ -2876,14 +2961,27 @@ const AXECLEFT_TREASURE_HOST = (() => {
       registerGenerationSetting();
       registerList({
         module: CORR_MOD, key: "prices", page: /*t*/"Price Corrections", label: /*t*/"Price correction", order: 900,
-        intro: /*t*/"Fix the price of compendium items without editing the compendium. <strong>Compendium</strong> is the compendium id (for example D35E.magicitems); leave it blank for any compendium. Corrections apply to generated treasure and merchant stock; an item whose compendium price already matches is left alone. Built-in corrections come from Axecleft's modules (switch one off on the Disabled Entries page).",
+        intro: /*t*/"Fix the price of compendium items without editing the compendium. Corrections apply to generated treasure and merchant stock; an item whose compendium price already matches is left alone.",
+        help: { name: /*t*/"the item's name, as in its compendium.", pack: /*t*/"the compendium id (for example D35E.magicitems); leave it blank for any compendium.", price: /*t*/"the right price, in gp.", note: /*t*/"optional: where the price comes from." },
+        note: /*t*/"Built-in corrections come from Axecleft's modules (switch one off on the Disabled Entries page).",
+        example: { name: "Flame Tongue", pack: "D35E.magicitems", price: 20715, note: "SRD price" },
         cols: [["name", /*t*/"Item"], ["pack", /*t*/"Compendium", { type: "text", placeholder: /*t*/"blank: any compendium" }], ["price", /*t*/"Price (gp)", { type: "number", value: 0, min: 0, step: 0.01 }], ["note", /*t*/"Note"]],
         builtin: () => [...registry.corrections.values()].flat().map((c) => ({ name: c.name, pack: c.pack ?? "", price: c.price, note: c.note ?? "" })),
       });
       // Version 9.97: custom curses (the SRD tables are its built-in rows)
       registerList({
         module: CORR_MOD, key: "curses", page: /*t*/"Custom Curses", label: /*t*/"Curse", order: 910,
-        intro: /*t*/"Your own curses for random and crafted cursed items, rolled with the SRD's. <strong>Table</strong>: a curse of its own (rolled among delusion, opposite effect and the other common curses), a drawback, a dependent situation for intermittent functioning, a cursed psionic item's curse, or a specific cursed item (its name, from your item compendiums or the Items sidebar). <strong>Weight</strong> is its share of the d% table, as the SRD's rows have (01–05 = 5). <strong>Items</strong>: which magic items can get it (none ticked: any). <strong>Penalties</strong> go on the curse buff when the curse is active: -2 attack; -2 saves; -1 str; -4 spot; -5 hp (also melee, ranged, damage, ac, fort, ref, will, checks, skills, init, speed, any skill name). The SRD's own curses are listed as built-in rows; switch one off on the Disabled Entries page.",
+        intro: /*t*/"Your own curses for random and crafted cursed items, rolled with the SRD's.",
+        help: {
+          name: /*t*/"the curse's name (for a specific cursed item: the item's name, from your item compendiums or the Items sidebar).",
+          table: /*t*/"a curse of its own (rolled among delusion, opposite effect and the other common curses), a drawback, a dependent situation for intermittent functioning, a cursed psionic item's curse, or a specific cursed item.",
+          weight: /*t*/"its share of the d% table, as the SRD's rows have (01–05 = 5).",
+          kinds: /*t*/"which magic items can get it, separated by commas (blank: any).",
+          text: /*t*/"what the curse does, in a sentence. It goes in the cursed item's description and on its curse buff.",
+          penalties: /*t*/"optional: what the curse buff applies while the curse is active, separated by semicolons: -2 attack; -2 saves; -1 str; -4 spot; -5 hp (also melee, ranged, damage, ac, fort, ref, will, checks, skills, init, speed, or a skill's English name).",
+        },
+        note: /*t*/"The SRD's own curses are listed as built-in rows; switch one off on the Disabled Entries page.",
+        example: { name: "Leaden Hands", table: "drawback", weight: 5, kinds: ["arms", "wondrous"], text: "The bearer's hands feel heavy and clumsy.", penalties: "-2 attack; -2 sleight of hand" },
         cols: [["name", /*t*/"Curse"], ["table", /*t*/"Table", { type: "select", options: CURSE_TABLES }], ["weight", /*t*/"Weight", { type: "number", value: 5, min: 0, step: 1 }],
           ["kinds", /*t*/"Items", { type: "checks", options: CURSE_KINDS }], ["text", /*t*/"What it does"], ["penalties", /*t*/"Penalties (buff)", { placeholder: /*t*/"-2 attack; -2 saves" }]],
         normalize: (r) => ({ name: String(r.name ?? "").trim(), table: optionKey(CURSE_TABLES, r.table) ?? "common", weight: Math.max(0, Number(r.weight) || 0),

@@ -2,6 +2,18 @@
 
 File: scripts/axecleft-merchants.js. Ship the same copy in every Axecleft module, listed in module.json "esmodules" after axecleft-tools.js and axecleft-treasure.js (version 9 or later for this version). The highest version runs.
 
+## Version 7.93
+
+- Item Sources: the explanation says merchants and treasure take items from your Item compendiums where no module covers a kind, and otherwise by the share set in Generation settings (Your item compendiums). Needs the Treasure Generator 9.994.
+
+## Version 7.92
+
+- Number boxes in the Merchant Generator show their value against the right edge.
+
+## Version 7.91
+
+- **Item Sources**: each source list (Enhancements, Special materials, Spells, Psionic powers…) shows the items found in every compendium it uses, next to the compendium, as the Item compendiums list does. Its heading reads "n of m used", like the Item compendiums heading.
+
 ## Version 7.9
 
 - **Foundry v11**: the Merchant Generator window and its dialogs work on Foundry v11 (with Axecleft's Tools 9).

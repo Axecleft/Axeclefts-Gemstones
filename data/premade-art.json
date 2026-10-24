@@ -1,0 +1,3705 @@
+{
+ "_about": "Premade art objects and books, generated exactly as they were made (no material, gem or quality variations). Contributed by Leo. Each entry: name, creator, make (Molded/Carved/Clothing/Book), level (the SRD art value row it is rolled with), formula (its value in gp), avg, weight, img, desc (HTML), tags, source, subType.",
+ "items": [
+  {
+   "name": "Bronze Statuette of a Hunting Hound",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "6d10",
+   "avg": 33.0,
+   "weight": 2.0,
+   "img": "icons/commodities/treasure/figurine-dog.webp",
+   "desc": "<p>A palm-sized bronze hound frozen mid-stride, every rib and tendon carefully modeled. The base bears the maker's tiny crescent stamp.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Bust of a Stern Magistrate",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 18.0,
+   "img": "icons/commodities/treasure/statue-bust-stone-grey.webp",
+   "desc": "<p>A finely carved white marble bust of a severe middle-aged magistrate in layered robes. The sculptor captured a deep crease between the brows and an unmistakable air of judgment.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Panel of the Harvest Dance",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 8.0,
+   "img": "icons/environment/people/group.webp",
+   "desc": "<p>A bright wooden panel depicting villagers dancing beneath sheaves of wheat and autumn garlands. The pigments remain vivid despite light cracking along the edges.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Horse and Rider Figurine",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 3.0,
+   "img": "icons/environment/people/cavalry.webp",
+   "desc": "<p>A compact bronze cavalry figure showing a rider turning sharply in the saddle. The horse's mane is deeply incised and polished by years of handling.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Oak Relief of the Green Man",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 7.0,
+   "img": "icons/commodities/treasure/plaque-wood-leaves.webp",
+   "desc": "<p>A heavy oak plaque depicting a bearded face emerging from leaves and vines. The carving is deep, expressive, and darkened by age.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Silvered Icon of the Dawn Saint",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 4.0,
+   "img": "icons/commodities/treasure/token-gold-cross.webp",
+   "desc": "<p>A devotional panel with a silvered halo and painted robes, showing the saint raising one hand in blessing over a sunrise.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Terracotta Figurine of a Laughing Child",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "4d10",
+   "avg": 22.0,
+   "weight": 1.5,
+   "img": "icons/commodities/treasure/figurine-idol.webp",
+   "desc": "<p>A small fired-clay figurine of a child clutching a hoop. Its charm comes from lively expression rather than expensive material.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Battle Standard Panel",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 10.0,
+   "img": "icons/sundries/flags/banner-standard-tattered-red.webp",
+   "desc": "<p>A framed painted scene of infantry forming a shield wall beneath a red-and-black banner. Smoke curls across the distant hills.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Alabaster Dove Sculpture",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 6.0,
+   "img": "icons/creatures/birds/dove-pigeon-flying-white.webp",
+   "desc": "<p>A smooth alabaster dove with folded wings and delicately drilled eyes. The stone is translucent at the feather tips.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Bust of a Guild Founder",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 12.0,
+   "img": "icons/commodities/treasure/bust-carved-stone.webp",
+   "desc": "<p>A compact bronze portrait bust showing an elderly artisan with measuring tools tucked into his belt. The base records his guild title in neat lettering.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Triptych of the Three Virtues",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "22d10",
+   "avg": 121.0,
+   "weight": 14.0,
+   "img": "icons/environment/settlement/church.webp",
+   "desc": "<p>Three hinged panels depict Charity, Courage, and Wisdom as richly dressed figures. Fine gold paint highlights halos, jewelry, and decorative borders.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Walnut Hunting Scene",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 9.0,
+   "img": "icons/creatures/mammals/deer-antlers-green.webp",
+   "desc": "<p>A rectangular walnut relief showing riders, hounds, and a stag threading through dense woodland. Tiny antlers and leaves are carved with remarkable precision.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Cat Figurine",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "5d10",
+   "avg": 27.5,
+   "weight": 1.0,
+   "img": "icons/creatures/mammals/cat-hunched-glowing-red.webp",
+   "desc": "<p>A sleek bronze cat seated upright with tail curled neatly around its paws. The ears and whisker lines are sharply defined.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Hand of Victory",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 11.0,
+   "img": "icons/commodities/treasure/statue-gold-laurel-wreath.webp",
+   "desc": "<p>A life-sized marble hand gripping a laurel branch, apparently broken from a larger statue and later mounted on a small black base.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Portrait of a Merchant Matron",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "19d10",
+   "avg": 104.5,
+   "weight": 12.0,
+   "img": "icons/commodities/treasure/goblet-coins-gold.webp",
+   "desc": "<p>A dignified oil portrait of a prosperous merchant woman seated beside a ledger and imported porcelain cup. Fine brushwork emphasizes fabric and jewelry.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Ivory-Toned Bone Relief of Sea Serpents",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 3.0,
+   "img": "icons/creatures/reptiles/serpent-horned-green.webp",
+   "desc": "<p>A polished bone plaque carved with intertwining sea serpents and ships. Despite the dramatic subject, it is entirely mundane craftsmanship.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Ram's Head Wall Ornament",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 8.0,
+   "img": "icons/creatures/mammals/goat-horned-blue.webp",
+   "desc": "<p>A hollow-cast bronze ram's head with curling horns intended for mounting above a doorway or hearth.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Miniature of Twin Princes",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 0.5,
+   "img": "icons/commodities/treasure/crown-blue-gold.webp",
+   "desc": "<p>A paired portrait miniature showing two young princes in matching blue coats. The likenesses are remarkably lifelike for such a small work.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Garden Nymph",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "24d10",
+   "avg": 132.0,
+   "weight": 45.0,
+   "img": "icons/commodities/treasure/figurine-goddess.webp",
+   "desc": "<p>A knee-high marble figure of a smiling nymph holding a wreath of carved ivy. Weathering suggests it once stood outdoors.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Gilded Wooden Angel Figure",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "17d10",
+   "avg": 93.5,
+   "weight": 7.0,
+   "img": "icons/commodities/treasure/trinket-wing-white.webp",
+   "desc": "<p>A carved wooden angel with folded wings, painted robes, and thin gold leaf over the halo and feather tips.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Falcon on Perch",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 3.0,
+   "img": "icons/creatures/birds/raptor-hawk-flying.webp",
+   "desc": "<p>A detailed bronze falcon perched with one wing half-open. The talons grip a tiny branch cast as part of the base.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Seascape of the Storm Coast",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 11.0,
+   "img": "icons/environment/settlement/lighthouse-rock-blue.webp",
+   "desc": "<p>A dramatic coastal painting showing black cliffs, white surf, and a merchant vessel struggling under torn canvas.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Lion Cub",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 15.0,
+   "img": "icons/creatures/abilities/lion-roar-yellow.webp",
+   "desc": "<p>A small marble sculpture of a lion cub pawing at a carved ball. The face is playful rather than regal.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Elm Mask of Winter",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 3.0,
+   "img": "icons/commodities/treasure/mask-wood-tan.webp",
+   "desc": "<p>A ceremonial wall mask with elongated cheeks, closed eyes, and a crown of carved bare branches.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Dancing Girl",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 5.0,
+   "img": "icons/commodities/treasure/figurine-goddess.webp",
+   "desc": "<p>A graceful bronze figure captured mid-turn, one arm raised and garments flowing around the legs.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Icon of Saint Orrel",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 2.0,
+   "img": "icons/commodities/treasure/lantern-stone-grey.webp",
+   "desc": "<p>A small religious panel depicting Saint Orrel holding a lantern before a dark cave. The halo is picked out in gold paint.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Scholar at His Desk",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "21d10",
+   "avg": 115.5,
+   "weight": 22.0,
+   "img": "icons/commodities/treasure/statue-bust-stone-grey.webp",
+   "desc": "<p>A compact marble sculpture of a seated scholar hunched over an open book, with tiny scrolls stacked beside him.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Boar Figurine",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "7d10",
+   "avg": 38.5,
+   "weight": 2.5,
+   "img": "icons/commodities/treasure/figurine-boar.webp",
+   "desc": "<p>A sturdy little bronze boar with bristled back and lowered tusks, likely commissioned as a hunting trophy or family emblem.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Noble Family Portrait",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "28d10",
+   "avg": 154.0,
+   "weight": 20.0,
+   "img": "icons/environment/settlement/house-manor.webp",
+   "desc": "<p>A large formal portrait depicting six members of a noble household posed beneath ancestral banners.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Cedar Shrine Panel",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 6.0,
+   "img": "icons/environment/settlement/temple-night.webp",
+   "desc": "<p>A fragrant cedar panel carved with nested arches, stars, and stylized flames. Traces of old blue paint remain in recesses.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Griffin Statuette",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "20d10",
+   "avg": 110.0,
+   "weight": 18.0,
+   "img": "icons/creatures/magical/construct-gargoyle-stone-gray.webp",
+   "desc": "<p>A finely carved marble griffin seated alertly, with individually cut feathers and a sharply defined beak.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Fishmonger Figure",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 4.0,
+   "img": "icons/creatures/fish/fish-carp-green.webp",
+   "desc": "<p>A humorous bronze sculpture of a fishmonger holding up an oversized carp while a cat reaches toward his basket.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Landscape of the Silver Vale",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 10.0,
+   "img": "icons/environment/wilderness/terrain-river-road-gray.webp",
+   "desc": "<p>A serene landscape of rolling fields, a distant manor, and a pale river winding through morning mist.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Boxwood Saint Figurine",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 1.0,
+   "img": "icons/environment/people/cleric-grey.webp",
+   "desc": "<p>A slender boxwood saint carved with prayer beads, layered robes, and a tiny book at the waist.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Sleeping Hound",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "17d10",
+   "avg": 93.5,
+   "weight": 20.0,
+   "img": "icons/commodities/treasure/figurine-dog.webp",
+   "desc": "<p>A low marble sculpture of a curled sleeping hound, with folded ears and a paw tucked beneath its muzzle.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Twin Serpents",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 4.0,
+   "img": "icons/creatures/reptiles/snake-poised-white.webp",
+   "desc": "<p>A decorative bronze piece showing two serpents coiled around one another in a balanced spiral.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Tavern Signboard",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "6d10",
+   "avg": 33.0,
+   "weight": 14.0,
+   "img": "icons/environment/settlement/sign-wood.webp",
+   "desc": "<p>A richly painted signboard showing a golden stag beneath a crescent moon. The edges are reinforced for hanging outdoors.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Pine Nativity Scene",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 5.0,
+   "img": "icons/environment/settlement/stable.webp",
+   "desc": "<p>A small multi-figure devotional carving arranged beneath an arched wooden shelter. The figures are simple but expressive.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Bust of an Unknown Poet",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 17.0,
+   "img": "icons/commodities/treasure/statue-bust-stone-grey.webp",
+   "desc": "<p>An elegant marble bust of a youthful poet with loose hair and a thoughtful downward gaze. The inscription on the base has been worn away.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Owl Statuette",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "7d10",
+   "avg": 38.5,
+   "weight": 2.0,
+   "img": "icons/commodities/treasure/figurine-owl.webp",
+   "desc": "<p>A squat bronze owl with wide incised eyes and neatly layered feathers, often used as a scholar's desk ornament.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Scene of a Royal Procession",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "24d10",
+   "avg": 132.0,
+   "weight": 18.0,
+   "img": "icons/environment/people/cavalry-heavy.webp",
+   "desc": "<p>A long horizontal painting filled with banners, mounted guards, musicians, courtiers, and cheering townsfolk.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Ashwood Relief of River Spirits",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 8.0,
+   "img": "icons/environment/creatures/fish-iridescent-green-yellow.webp",
+   "desc": "<p>A flowing relief of three river spirits emerging from waves and reeds, with fish and lilies worked into the border.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Cherub with Garland",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 16.0,
+   "img": "icons/commodities/treasure/trinket-wing-white.webp",
+   "desc": "<p>A small marble cherub carrying a garland of carved flowers over one shoulder.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Miner with Pick",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 4.0,
+   "img": "icons/environment/settlement/mine-cart-rocks-red.webp",
+   "desc": "<p>A sturdy bronze figure of a miner leaning on a pickaxe, boots planted wide and lamp hanging from his belt.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Portrait of a Court Musician",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 9.0,
+   "img": "icons/tools/instruments/lute-gold-brown.webp",
+   "desc": "<p>A half-length portrait of a musician holding a lute, dressed in deep green velvet with silver braid.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Bone Plaque of the Zodiac",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 2.0,
+   "img": "icons/environment/cosmos/astronomy-planetary-orbits.webp",
+   "desc": "<p>A circular bone plaque divided into twelve zodiac signs, each rendered as a tiny engraved figure.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Wolf Head",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "19d10",
+   "avg": 104.5,
+   "weight": 25.0,
+   "img": "icons/creatures/mammals/wolf-howl-moon-gray.webp",
+   "desc": "<p>A marble wall sculpture of a snarling wolf's head with deeply drilled fur and bared teeth.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Mother and Child",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 5.0,
+   "img": "icons/commodities/treasure/figurine-goddess.webp",
+   "desc": "<p>A tender bronze statuette of a mother lifting a laughing child onto one hip.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Mountain Monastery",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 10.0,
+   "img": "icons/environment/settlement/watchtower-cliff.webp",
+   "desc": "<p>A vertical landscape depicting a monastery clinging to snowy cliffs above a winding pilgrim road.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Oak Dragon Panel",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 12.0,
+   "img": "icons/creatures/reptiles/dragon-winged-blue.webp",
+   "desc": "<p>A heavy oak panel showing a dragon coiled around a tower, with smoke and clouds cut into deep relief.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Laurel Wreath Plaque",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 14.0,
+   "img": "icons/commodities/treasure/crown-gold-laurel-wreath.webp",
+   "desc": "<p>A circular marble plaque carved with overlapping laurel leaves and a blank central cartouche.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Stag Figurine",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 3.0,
+   "img": "icons/commodities/treasure/figurine-elk.webp",
+   "desc": "<p>A slender bronze stag with branching antlers and one foreleg raised as though listening.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Harvest Madonna",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 8.0,
+   "img": "icons/consumables/grains/wheat-yellow.webp",
+   "desc": "<p>A rural devotional painting of a maternal saint figure surrounded by wheat, apples, and kneeling villagers.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Cherrywood Dancer",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 2.0,
+   "img": "icons/commodities/treasure/figurine-goddess.webp",
+   "desc": "<p>A polished cherrywood figure of a dancer balancing on one foot, skirt carved into sweeping folds.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Pair of Doves",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 12.0,
+   "img": "icons/creatures/birds/dove-pigeon-flying-white.webp",
+   "desc": "<p>Two small marble doves touching beaks atop a shared base, often given as a wedding gift.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Ship Model",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 2,
+   "formula": "23d10",
+   "avg": 126.5,
+   "weight": 9.0,
+   "img": "icons/environment/settlement/ship.webp",
+   "desc": "<p>A detailed bronze model of a three-masted merchant ship, complete with rails, rigging lines, and tiny deck fittings.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted City Gate at Dusk",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 9.0,
+   "img": "icons/environment/settlement/city-gate.webp",
+   "desc": "<p>A warm-toned urban painting showing carts and pedestrians passing beneath a fortified city gate as lamps are lit.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Limestone Pilgrim",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 20.0,
+   "img": "icons/environment/people/commoner.webp",
+   "desc": "<p>A weathered limestone figure of a cloaked pilgrim holding a staff and shell token.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Scholar's Hand",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 3.0,
+   "img": "icons/sundries/documents/document-writing-brown.webp",
+   "desc": "<p>A bronze study of a human hand holding a quill above a small tablet, likely intended as a desk ornament.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Portrait of a Naval Captain",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 11.0,
+   "img": "icons/tools/nautical/steering-wheel.webp",
+   "desc": "<p>A formal portrait of a broad-shouldered captain standing beside a chart table with a storm visible beyond the window.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Birchwood Swan",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "7d10",
+   "avg": 38.5,
+   "weight": 2.0,
+   "img": "icons/creatures/birds/duck-green.webp",
+   "desc": "<p>A smooth birchwood swan with extended neck and subtle feather carving along the wings.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Child with Flute",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 14.0,
+   "img": "icons/tools/instruments/flute-simple-wood.webp",
+   "desc": "<p>A small marble figure of a child seated cross-legged while playing a simple flute.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Rooster Figure",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "6d10",
+   "avg": 33.0,
+   "weight": 2.0,
+   "img": "icons/creatures/birds/chicken-hen-white.webp",
+   "desc": "<p>A proud bronze rooster with tail feathers fanned upward, commonly used as a household or guild ornament.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Orchard in Spring",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 8.0,
+   "img": "icons/consumables/fruit/apple-red-tree-green.webp",
+   "desc": "<p>A delicate painting of flowering orchard rows beneath pale clouds, with workers carrying ladders in the distance.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Oak Ancestral Plaque",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 10.0,
+   "img": "icons/commodities/treasure/plaque-wood-tree.webp",
+   "desc": "<p>A heraldic plaque bearing a deeply carved family crest, motto ribbon, and decorative oak leaves.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Falcon",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "17d10",
+   "avg": 93.5,
+   "weight": 16.0,
+   "img": "icons/creatures/birds/raptor-hawk-flying.webp",
+   "desc": "<p>A poised marble falcon with folded wings and head turned sharply to one side.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Shepherd and Lamb",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 4.0,
+   "img": "icons/creatures/mammals/livestock-sheep-green.webp",
+   "desc": "<p>A small pastoral bronze showing a shepherd kneeling to lift a lamb from brambles.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Scene of the First Snow",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 9.0,
+   "img": "icons/environment/settlement/house-city.webp",
+   "desc": "<p>A quiet winter scene of rooftops, smoke, and children running through the first snowfall of the season.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Walnut Bust of a Sailor",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 5.0,
+   "img": "icons/commodities/treasure/bust-carved-stone.webp",
+   "desc": "<p>A dark walnut bust of an older sailor with braided beard and heavy coat, polished smooth at the nose and shoulders.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Serpent Coil",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 19.0,
+   "img": "icons/commodities/treasure/token-engraved-spiral-grey-white.webp",
+   "desc": "<p>An abstract marble sculpture of a serpent curled into a tight spiral, scales picked out with shallow chisel marks.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Harvest Maiden",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 5.0,
+   "img": "icons/consumables/grains/wheat-gold.webp",
+   "desc": "<p>A bronze maiden carrying a sheaf of wheat over one shoulder, with a sickle hanging at her side.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Portrait of a Young Heir",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 10.0,
+   "img": "icons/sundries/documents/document-symbol-person-brown.webp",
+   "desc": "<p>A carefully executed portrait of a noble child standing beside a carved chair and holding a small hunting falcon glove.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Lindenwood Angel Choir",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 7.0,
+   "img": "icons/sundries/lights/candle-lit-angelic.webp",
+   "desc": "<p>A wall relief of five singing angels, each with distinct expressions and tiny open songbooks.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Turtle Fountain Figure",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 28.0,
+   "img": "icons/creatures/reptiles/turtle-shell-glowing-green.webp",
+   "desc": "<p>A decorative marble turtle intended to sit in a fountain basin, its open mouth drilled to carry a water pipe.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Bear Cub",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "7d10",
+   "avg": 38.5,
+   "weight": 3.0,
+   "img": "icons/commodities/treasure/figurine-bear.webp",
+   "desc": "<p>A charming bronze bear cub standing on hind legs with paws raised.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted River Market",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 12.0,
+   "img": "icons/environment/settlement/market-stall.webp",
+   "desc": "<p>A lively market painting filled with barges, fish stalls, porters, awnings, and riverside warehouses.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Oak Saint's Head",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 4.0,
+   "img": "icons/commodities/treasure/totem-wood-face-brown.webp",
+   "desc": "<p>A devotional carving of a serene saint's head with traces of red and blue paint in the hair and collar.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Dog with Game Bird",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "22d10",
+   "avg": 121.0,
+   "weight": 35.0,
+   "img": "icons/creatures/mammals/dog-husky-white-blue.webp",
+   "desc": "<p>A hunting-themed marble sculpture of a hound standing over a retrieved bird.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Fox Figurine",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 2.0,
+   "img": "icons/creatures/abilities/paw-print-orange.webp",
+   "desc": "<p>A small bronze fox crouched low with its tail wrapped around its feet, eyes picked out in polished brass.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Vineyard at Sunset",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 10.0,
+   "img": "icons/consumables/fruit/grapes-bunch-purple.webp",
+   "desc": "<p>A richly colored landscape of vineyard rows glowing beneath a low red sun, with workers carrying baskets toward a press house.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Cedar Moon Goddess",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 2.5,
+   "img": "icons/environment/cosmos/planet-moon-blue.webp",
+   "desc": "<p>A graceful cedar figurine of a moon goddess with a crescent headdress and folded hands.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Ram",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "17d10",
+   "avg": 93.5,
+   "weight": 24.0,
+   "img": "icons/creatures/mammals/goat-horned-blue.webp",
+   "desc": "<p>A compact marble ram with curled horns, often displayed as a symbol of stubborn courage and prosperity.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Two-Horse Chariot",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 2,
+   "formula": "26d10",
+   "avg": 143.0,
+   "weight": 12.0,
+   "img": "icons/environment/creatures/horses.webp",
+   "desc": "<p>A detailed bronze chariot group with two rearing horses and a cloaked driver leaning forward.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Scholar's Study",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 9.0,
+   "img": "icons/sundries/lights/candle-pillar-lit-yellow.webp",
+   "desc": "<p>An intimate interior scene showing a scholar at night surrounded by books, candles, instruments, and rolled maps.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Oak Mermaid Figure",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 6.0,
+   "img": "icons/commodities/treasure/statue-carved-figurehead.webp",
+   "desc": "<p>A decorative oak mermaid carved for a ship's cabin or tavern wall, with flowing hair and a curling fish tail.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Vine Maiden",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "21d10",
+   "avg": 115.5,
+   "weight": 32.0,
+   "img": "icons/consumables/fruit/grapes-bunch-green.webp",
+   "desc": "<p>A classical marble maiden with grapes and vine leaves draped across one arm.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Hound Pair",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 7.0,
+   "img": "icons/commodities/treasure/figurine-dog.webp",
+   "desc": "<p>A matched pair of bronze hunting hounds mounted together on one rectangular base.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Coronation Scene",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "30d10",
+   "avg": 165.0,
+   "weight": 22.0,
+   "img": "icons/commodities/treasure/crown-gold-satin-gems-red.webp",
+   "desc": "<p>A formal historical painting showing a kneeling monarch receiving a crown before clergy, nobles, and banners.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Beechwood Falconer",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 3.0,
+   "img": "icons/creatures/birds/raptor-hawk-flying.webp",
+   "desc": "<p>A standing wooden figure of a falconer with hooded bird perched on one gloved hand.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Swan Fountain Head",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "19d10",
+   "avg": 104.5,
+   "weight": 21.0,
+   "img": "icons/environment/settlement/well.webp",
+   "desc": "<p>A carved marble swan neck and head designed to spout water from its beak.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Temple Dancer",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 2,
+   "formula": "17d10",
+   "avg": 93.5,
+   "weight": 4.0,
+   "img": "icons/commodities/treasure/figurine-idol.webp",
+   "desc": "<p>A slim bronze dancer with bracelets, layered skirt, and one foot raised in a formal pose.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Winter Hunt",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 13.0,
+   "img": "icons/environment/wilderness/tree-spruce.webp",
+   "desc": "<p>A broad landscape showing mounted hunters and hounds crossing snow beneath bare trees.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Walnut Scholar Relief",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 8.0,
+   "img": "icons/environment/settlement/columned-forum.webp",
+   "desc": "<p>A rectangular walnut panel depicting a scholar teaching three students beneath an arched colonnade.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Eagle with Spread Wings",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "27d10",
+   "avg": 148.5,
+   "weight": 40.0,
+   "img": "icons/creatures/birds/raptor-hawk-flying.webp",
+   "desc": "<p>A dramatic marble eagle standing with wings half-spread and talons gripping a rocky base.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Dolphin Pair",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 5.0,
+   "img": "icons/creatures/fish/fish-marlin-swordfight-blue.webp",
+   "desc": "<p>Two stylized bronze dolphins leap in opposite directions from a shared wave-shaped base.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Harbor at Morning",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 10.0,
+   "img": "icons/environment/vehicles/boat-fishing-masted.webp",
+   "desc": "<p>A bright harbor scene of fishing boats, gulls, dockworkers, and pale sunlight reflecting off calm water.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Carved Elmwood Knight",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 4.0,
+   "img": "icons/environment/people/infantry-armored.webp",
+   "desc": "<p>A painted wooden knight in ceremonial armor, standing with both hands resting on the pommel of a sword.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Marble Mourning Woman",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "20d10",
+   "avg": 110.0,
+   "weight": 30.0,
+   "img": "icons/sundries/misc/tombstone.webp",
+   "desc": "<p>A small funerary sculpture of a veiled woman seated with head bowed and hands folded in her lap.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Bronze Griffin Bookend Pair",
+   "creator": "Leo",
+   "make": "Molded",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 10.0,
+   "img": "icons/commodities/treasure/statuette-gargoyle-green-gold.webp",
+   "desc": "<p>A matched pair of bronze griffins designed as heavy bookends, each crouched with wings raised.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "Painted Feast of Lanterns",
+   "creator": "Leo",
+   "make": "Carved",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 12.0,
+   "img": "icons/sundries/lights/lantern-iron-lit-yellow.webp",
+   "desc": "<p>A festive night scene crowded with lanterns, musicians, food stalls, and families gathered around a town square.</p>",
+   "tags": [
+    "Treasure",
+    "Artwork",
+    "Sculpture",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Artwork and Sculptures",
+   "subType": "misc"
+  },
+  {
+   "name": "The Ashen Crown Chronicle",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-black-grey.webp",
+   "desc": "<p>A soot-darkened calfskin chronicle recounting the rise and ruin of the Ashen Crown dynasty. Marginal notes in three hands argue over which king first betrayed the old northern compact.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Bestiary of the Reed Marsh",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-reye-reptile-brown.webp",
+   "desc": "<p>A waxed-leather field bestiary filled with precise sketches of marsh beasts, spoor, feeding habits, and folk remedies for their bites. Several pages bear brown water stains and pressed reeds.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Brass Navigator",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-symbol-anchor.webp",
+   "desc": "<p>A compact sailor's manual bound with brass corners, describing currents, stars, coastal hazards, and the traditional signals of merchant fleets. Its foldout charts are hand-colored and carefully annotated.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Songs Beneath the Barrow",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-worn-brown-grey.webp",
+   "desc": "<p>A collection of old burial songs copied onto thick vellum. The verses describe forgotten chiefs, oath rings, winter feasts, and the proper gifts owed to honored dead.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Orchard Keeper's Year",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "6d10",
+   "avg": 33.0,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-symbol-tree-silver-green.webp",
+   "desc": "<p>A practical seasonal guide to pruning, grafting, preserving fruit, and judging soil. Fine woodcuts show dozens of orchard pests and the damage each leaves behind.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Letters from the Sapphire Road",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-rounded-blue.webp",
+   "desc": "<p>A bound collection of correspondence written by a caravan factor traveling the eastern trade route. The letters mix business accounts with vivid descriptions of inns, toll houses, and desert cities.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Quiet Art of Locks",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-symbol-link-brown.webp",
+   "desc": "<p>A discreet artisan's treatise on wards, keys, tumblers, hidden catches, and locksmithing etiquette. Diagrams are exact enough to interest both honest craftsmen and less reputable readers.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Lives of the Twelve Abbots",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 5.0,
+   "img": "icons/sundries/books/book-symbol-canterbury-cross.webp",
+   "desc": "<p>An illuminated religious history presenting twelve abbots as models of patience, charity, learning, and stern discipline. Each chapter opens with a painted portrait framed in gold leaf.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "On the Breeding of Warhorses",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-tooled-brass-brown.webp",
+   "desc": "<p>A noble stablemaster's manual covering bloodlines, temperament, feeding, training, hoof care, and the selection of mounts for cavalry. Pedigree tables fill the final third of the book.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Copper Kitchen",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 4.5,
+   "img": "icons/sundries/books/book-plain-orange.webp",
+   "desc": "<p>A richly illustrated cookbook devoted to sauces, pies, roasts, preserved meats, and banquet presentation. Grease marks suggest it was prized in an actual noble kitchen rather than kept merely for display.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Annals of Blackwater Keep",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "17d10",
+   "avg": 93.5,
+   "weight": 6.0,
+   "img": "icons/sundries/books/book-embossed-steel-brown.webp",
+   "desc": "<p>A fortress ledger turned local history, recording sieges, repairs, births, deaths, taxes, and notable visitors over nearly two centuries. Several entries hint at tunnels omitted from later maps.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Falconer's Companion",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-tooled-gold-brown.webp",
+   "desc": "<p>A practical volume on raptor training, mews construction, quarry selection, and treatment of common injuries. Delicate feather studies are painted beside the text.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Seven Courtesies",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 1.5,
+   "img": "icons/sundries/books/book-backed-silver-gold.webp",
+   "desc": "<p>A slim etiquette book outlining greetings, introductions, gift-giving, precedence, mourning customs, and conduct at table. The prose is polished, severe, and widely quoted among lesser nobles.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Red Ledger of Kars",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "20d10",
+   "avg": 110.0,
+   "weight": 5.0,
+   "img": "icons/sundries/books/book-rounded-red.webp",
+   "desc": "<p>A merchant house account book preserving decades of prices, debts, routes, and favored clients. Although old, it offers valuable insight into historic trade patterns and family rivalries.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "An Herbal of Winter Remedies",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-symbol-leaf-green.webp",
+   "desc": "<p>A healer's compendium focused on coughs, frostbite, fever, chilblains, and hunger sickness. Each remedy includes substitutions for remote villages with poor access to imported ingredients.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Tales of the Moonlit Ford",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "7d10",
+   "avg": 38.5,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-turquoise-moon.webp",
+   "desc": "<p>A beautifully penned collection of ghost stories set around a famous river crossing. The tales are unsettling without being crude, and the closing story ends with a page intentionally left blank.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Mason's Measure",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 5.5,
+   "img": "icons/sundries/books/book-symbol-triangle-silver-brown.webp",
+   "desc": "<p>A technical handbook on foundations, arches, walls, lime, drainage, and quarry stone. Foldout diagrams show the proportions used in bridges, towers, and vaulted halls.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Book of Little Oaths",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-simple-brown.webp",
+   "desc": "<p>A legal clerk's reference compiling minor contracts, household vows, apprenticeship terms, and common formulas of sworn service. Blank spaces allow names and dates to be entered.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Pearl Coast Gazetteer",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-symbol-anchor-brown.webp",
+   "desc": "<p>A coastal geography describing ports, reefs, customs duties, local rulers, fisheries, and seasonal winds. Tiny painted ships mark safe anchorages along the margins.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Reflections on Just Rule",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-embossed-jewel-gold-purple.webp",
+   "desc": "<p>A philosophical dialogue between a queen and her imprisoned tutor concerning law, mercy, taxation, rebellion, and the obligations of rulers to the poor.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Miller's Reckoning",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "5d10",
+   "avg": 27.5,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-worn-brown.webp",
+   "desc": "<p>A trade manual explaining grain grades, millstones, waterwheels, toll customs, flour fraud, and basic bookkeeping. Tables make it especially useful to rural stewards.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Hidden Saints of Valmere",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-symbol-cross-blue.webp",
+   "desc": "<p>A devotional book describing obscure local saints, roadside shrines, relic customs, and miracle tales. Pilgrim notes crowd many margins in different inks.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Duke's Book of Hounds",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "22d10",
+   "avg": 121.0,
+   "weight": 6.0,
+   "img": "icons/sundries/books/book-embossed-gold-red.webp",
+   "desc": "<p>A lavish kennel record and hunting manual featuring painted portraits of famous hounds. Notes cover breeding, scent training, pack hierarchy, and treatment after a hard chase.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Glassmaker's Flame",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-symbol-fire-gold-orange.webp",
+   "desc": "<p>An artisan text on furnace construction, sand selection, pigments, annealing, blowing, cutting, and gilding glass. Some formulas are written in a private workshop cipher.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Ballads of the Iron Hills",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-symbol-axe-brown.webp",
+   "desc": "<p>A sturdy songbook of mining chants, clan laments, drinking songs, and work rhythms. Musical notation is simple enough for tavern performers.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "A Survey of River Tolls",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-backed-silver-red.webp",
+   "desc": "<p>A bureaucratic compilation of bridges, ferries, toll rates, exemptions, and charter rights along three major rivers. Official seals authenticate many copied decrees.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Physician's Gray Manual",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "20d10",
+   "avg": 110.0,
+   "weight": 4.5,
+   "img": "icons/sundries/books/book-tooled-grey.webp",
+   "desc": "<p>A sober medical handbook on wounds, fractures, fevers, childbirth, diet, and convalescence. Its author repeatedly warns against heroic treatments and unnecessary bloodletting.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Lantern Guild Almanac",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "4d10",
+   "avg": 22.0,
+   "weight": 1.0,
+   "img": "icons/sundries/books/book-symbol-yellow-grey.webp",
+   "desc": "<p>An annual guild publication listing festivals, market days, moon phases, road conditions, shipping notices, and tables for common measures and exchange rates.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Chronicle of the White Stag",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-embossed-gold-green.webp",
+   "desc": "<p>A courtly romance following generations of knights bound by a mysterious white stag. The manuscript is popular, finely copied, and decorated with vine-work initials.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Steward's Household Book",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 5.0,
+   "img": "icons/sundries/books/book-backed-wood-tan.webp",
+   "desc": "<p>A comprehensive guide to provisioning, servant ranks, wages, inventories, feast planning, linen care, and the orderly running of a wealthy estate.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Amber Apiary",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "7d10",
+   "avg": 38.5,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-embossed-clasp-gold-brown.webp",
+   "desc": "<p>A beekeeper's treatise covering hive design, swarming, winter feeding, wax rendering, honey grading, and the medicinal use of propolis.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Sea-Wolf Captains",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-worn-blue.webp",
+   "desc": "<p>A dramatic history of notorious privateers, their ships, tactics, betrayals, and final fates. Several captains are depicted with questionable admiration.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Weaver's Pattern Book",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "17d10",
+   "avg": 93.5,
+   "weight": 6.0,
+   "img": "icons/sundries/books/book-tooled-blue-yellow.webp",
+   "desc": "<p>A broad folio filled with colored textile patterns, border designs, loom settings, and notes on regional dyes. Loose scraps of thread remain tucked between pages.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Book of Festival Tables",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-embossed-jewel-blue-red.webp",
+   "desc": "<p>A ceremonial household guide listing appropriate foods, colors, decorations, songs, and seating arrangements for holidays throughout the year.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Journeys Beyond the Salt Gate",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-worn-teal.webp",
+   "desc": "<p>A travel narrative describing distant bazaars, caravanserais, temples, mountain passes, and strange local laws. The author has a keen eye for prices and practical hazards.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Sable Company's Articles",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 2.5,
+   "img": "icons/sundries/books/symbol-axe-gold-grey.webp",
+   "desc": "<p>A copied mercenary charter covering pay, shares, discipline, ransoms, battlefield salvage, and obligations to wounded comrades. Corrections reflect years of hard experience.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Cartwright's Wheel",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-embossed-bound-brown.webp",
+   "desc": "<p>A craftsman's manual on hubs, spokes, rims, axles, suspension, wagon balance, and road repair. Smudged diagrams show measurements for several common vehicle sizes.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Honeyed Tongue",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-eye-pink.webp",
+   "desc": "<p>A rhetoric primer teaching persuasion, public speaking, negotiation, flattery, and the graceful refusal of unreasonable demands.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Book of Eastern Spices",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "19d10",
+   "avg": 104.5,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-symbol-plant-brown.webp",
+   "desc": "<p>An illustrated merchant's guide describing the appearance, origin, storage, adulteration, and culinary use of rare spices. Sample packets once attached to several pages are now empty.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Abbey Fishponds",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "6d10",
+   "avg": 33.0,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-worn-green.webp",
+   "desc": "<p>A monastic handbook on breeding carp, managing ponds, controlling weeds, feeding stocks, and calculating sustainable harvests for fast days.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The King's Roads",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "24d10",
+   "avg": 132.0,
+   "weight": 5.0,
+   "img": "icons/sundries/books/book-tooled-silver-blue.webp",
+   "desc": "<p>An official road survey naming milestones, bridges, inns, patrol posts, and seasonal hazards. The maps are unusually accurate for a privately owned copy.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Crimson Midwife",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-red-cross.webp",
+   "desc": "<p>A respected manual on pregnancy, childbirth, infant care, and women's health. Practical experience is recorded plainly, with many warnings against superstition.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Lore of Old Wells",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-symbol-spiral-silver-blue.webp",
+   "desc": "<p>A folklore collection concerning sacred springs, poisoned wells, drowned bells, village taboos, and spirits said to dwell beneath still water.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Goldsmith's Small Secrets",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "25d10",
+   "avg": 137.5,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-embossed-jewel-gold-green.webp",
+   "desc": "<p>A guarded workshop text describing alloying, soldering, filigree, repoussé work, polishing, weighing, and methods for detecting false coin and plated metal.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Winter Court Masques",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 5.5,
+   "img": "icons/sundries/books/book-open-red.webp",
+   "desc": "<p>A folio of scripts, costume notes, dances, stage devices, and songs performed at a famous royal winter court. The illustrations are bright and theatrical.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "A Concordance of Heraldic Beasts",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "21d10",
+   "avg": 115.5,
+   "weight": 6.0,
+   "img": "icons/sundries/books/book-backed-blue-gold.webp",
+   "desc": "<p>A reference matching heraldic animals to virtues, families, regions, and traditional color combinations. Hundreds of tiny painted shields fill the margins.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Shepherd's Moon",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "5d10",
+   "avg": 27.5,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-symbol-leaf-gold-green.webp",
+   "desc": "<p>A rural guide to lambing, pasture rotation, fleece grading, sheep diseases, predators, and weather signs observed by hill shepherds.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Ivory Tower Disputations",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "17d10",
+   "avg": 93.5,
+   "weight": 4.5,
+   "img": "icons/sundries/books/book-open-brown-black.webp",
+   "desc": "<p>A collection of formal academic debates on logic, natural philosophy, theology, and law. Dense marginal commentary records later scholars' objections.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Book of Painted Doors",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "20d10",
+   "avg": 110.0,
+   "weight": 7.0,
+   "img": "icons/sundries/books/book-purple-detail.webp",
+   "desc": "<p>An architectural survey of famous carved and painted doors from temples, guildhalls, palaces, and tombs. Each plate is rendered in painstaking detail.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Quiet Graveyard",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "7d10",
+   "avg": 38.5,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-symbol-skull-grey.webp",
+   "desc": "<p>A cemetery keeper's manual on plot records, funerary customs, monument care, grave drainage, and respectful handling of unclaimed remains.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Siege of Dun Avar",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-embossed-steel-green.webp",
+   "desc": "<p>An eyewitness military account of a famous siege, including diagrams of walls, engines, camps, supply lines, and daily troop losses.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Perfumer's Garden",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-symbol-square-blue-green.webp",
+   "desc": "<p>A delicate handbook on fragrant flowers, oils, resins, distillation, blending, storage, and the social meanings attached to particular scents.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Blacksmith's Temper",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-worn-red.webp",
+   "desc": "<p>A workshop treatise on forge heat, charcoal, quenching media, hammer technique, tool maintenance, and the treatment of common iron flaws.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "Pilgrim Roads of the West",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-purple-cross.webp",
+   "desc": "<p>A devotional travel guide listing shrines, relics, hospices, dangerous crossings, customary offerings, and prayers used at each stage of a western pilgrimage.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Book of Minor Poisons",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "22d10",
+   "avg": 121.0,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-symbol-potion-blue.webp",
+   "desc": "<p>A cautious apothecary's reference describing household toxins, spoiled foods, venomous creatures, symptoms, and emergency treatments. Preparation details are intentionally incomplete.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Sapphire Chess Problems",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-embossed-blue.webp",
+   "desc": "<p>A luxury puzzle book containing one hundred composed chess positions, each followed by elegant analysis and commentary on strategy.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Noble Art of Brewing",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-tooled-green.webp",
+   "desc": "<p>A brewer's manual on malt, yeast, water, herbs, cask care, fermentation, and the judging of ales. Several recipes bear guild approval marks.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The City Beneath Bells",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "19d10",
+   "avg": 104.5,
+   "weight": 5.0,
+   "img": "icons/sundries/books/book-symbol-triangle-silver-blue.webp",
+   "desc": "<p>A history and street-by-street description of an ancient cathedral city famed for its towers and bell foundries. Foldout views depict the skyline from four directions.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Forester's Boundary Book",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-embossed-roots-green.webp",
+   "desc": "<p>A practical guide to woodland law, boundary marks, coppicing, charcoal burning, poaching signs, and sustainable timber cutting.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "A Merchant's Book of Measures",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-red-square.webp",
+   "desc": "<p>A comparative reference for weights, volumes, coinage, cloth lengths, and grain measures used across many realms. Conversion tables are heavily thumbed.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Rose and the Raven",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-rounded-clasp-red.webp",
+   "desc": "<p>A tragic courtly play about forbidden love, dynastic duty, and political murder. The copy includes performance notes from a well-known acting company.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Monastery Vineyard",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-embossed-jewel-silver-green.webp",
+   "desc": "<p>A vintner's handbook covering pruning, grafting, soil, harvest timing, pressing, fermentation, cask selection, and cellar management.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The House of Seven Keys",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "6d10",
+   "avg": 33.0,
+   "weight": 1.5,
+   "img": "icons/sundries/books/book-clasp-spiral-green.webp",
+   "desc": "<p>A popular mystery tale involving a locked manor, a vanished inheritance, and seven keys that each open the wrong door.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Emerald Physician",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "26d10",
+   "avg": 143.0,
+   "weight": 7.0,
+   "img": "icons/sundries/books/book-symbol-leaf-gold-green.webp",
+   "desc": "<p>A richly illustrated medical herbal organized by leaf shape, flower color, habitat, and traditional use. Many plant images are heightened with green pigment.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Royal Menagerie",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "20d10",
+   "avg": 110.0,
+   "weight": 5.5,
+   "img": "icons/sundries/books/book-tooled-eye-gold-red.webp",
+   "desc": "<p>A court record describing exotic animals gifted to the crown, including their origins, diets, handlers, illnesses, and occasional escapes.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Clerk's Perfect Hand",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-notes-ragged-green.webp",
+   "desc": "<p>A calligraphy and document-copying manual with alphabets, abbreviations, spacing guides, ink recipes, and exercises for formal legal scripts.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Black Orchard",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "7d10",
+   "avg": 38.5,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-face-black.webp",
+   "desc": "<p>A grim collection of rural tales about cursed trees, bitter harvests, family feuds, and bargains made during famine years.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Captain's Tidebook",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-notebook-spiral-blue.webp",
+   "desc": "<p>A mariner's notebook of tides, shoals, moon phases, harbor approaches, and coastal landmarks, copied from generations of shipmasters.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Architect of Gardens",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 5.0,
+   "img": "icons/sundries/books/book-symbol-leaf-green.webp",
+   "desc": "<p>A noble landscape manual on terraces, fountains, hedges, orchards, sightlines, pavilions, and symbolic planting schemes.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Bronze Bell Foundry",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "21d10",
+   "avg": 115.5,
+   "weight": 5.5,
+   "img": "icons/sundries/books/book-symbol-triangle-blue.webp",
+   "desc": "<p>A technical history and practical guide to bell casting, tuning, inscriptions, molds, alloy ratios, and tower installation.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Linen Mistress",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "6d10",
+   "avg": 33.0,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-worn-purple.webp",
+   "desc": "<p>A household reference on spinning, bleaching, starching, mending, storing, and counting linens for a large estate.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Thousand-Mile Caravan",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-symbol-triangle-silver-purple.webp",
+   "desc": "<p>A trader's narrative of a year-long caravan journey, emphasizing bargaining customs, water discipline, guards, pack animals, and desert storms.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Court of Foxes",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "10d10",
+   "avg": 55.0,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-eye-purple.webp",
+   "desc": "<p>A satirical beast fable in which foxes, wolves, stags, and hares mirror the scandals of an unnamed royal court.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Book of Civic Fountains",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "17d10",
+   "avg": 93.5,
+   "weight": 5.0,
+   "img": "icons/sundries/books/book-symbol-reverse-blue.webp",
+   "desc": "<p>An engineering and civic-planning treatise on wells, cisterns, aqueducts, drainage, public fountains, and the laws governing shared water.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Astronomer's Red Tables",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "24d10",
+   "avg": 132.0,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-symbol-hexagram-silver-red.webp",
+   "desc": "<p>A set of calculation tables for tracking planets, eclipses, conjunctions, and calendar drift. Red ruling lines make the dense figures easier to follow.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Baker's Dawn",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 3.0,
+   "img": "icons/sundries/books/book-plain-orange.webp",
+   "desc": "<p>A practical baker's book of breads, rolls, pastries, ovens, starters, flour grades, and methods for feeding large households efficiently.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Wolf Banner Campaigns",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 5.0,
+   "img": "icons/sundries/books/book-embossed-steel-brown.webp",
+   "desc": "<p>A military history of three campaigns fought under the Wolf Banner, with maps, orders of battle, supply notes, and candid assessments of commanders.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Book of Quiet Prayers",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 1.0,
+   "img": "icons/sundries/books/book-purple-gem.webp",
+   "desc": "<p>A small, beautifully bound prayer book meant for private devotion. Its worn silk marker rests at a prayer for travelers far from home.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Porcelain Roads",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-rounded-teal.webp",
+   "desc": "<p>A merchant geography tracing the long trade routes by which porcelain, silk, tea, and lacquer reach western markets.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Tallow Chandler's Guide",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "5d10",
+   "avg": 27.5,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-symbol-fire-gold-orange.webp",
+   "desc": "<p>A trade manual on rendering fats, grading wax, making candles, preparing wicks, controlling smoke, and estimating burn time.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Orchard of Kings",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-symbol-tree-silver-green.webp",
+   "desc": "<p>An allegorical poem in which fruit trees represent royal virtues, failures, heirs, and the changing fortunes of dynasties.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Harbor Master's Book",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-symbol-anchor-brown.webp",
+   "desc": "<p>A working reference on berths, pilots, quarantine, cargo inspection, mooring fees, tides, fire rules, and ship identification.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Silver Thread",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "8d10",
+   "avg": 44.0,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-embossed-spiral-purple-white.webp",
+   "desc": "<p>A romance about a seamstress who uncovers a conspiracy through coded embroidery commissioned by rival noble houses.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Bookbinder's Bench",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "13d10",
+   "avg": 71.5,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-stack.webp",
+   "desc": "<p>An artisan manual on sewing gatherings, preparing boards, tooling leather, making clasps, repairing spines, and protecting books from damp and insects.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The House Physician's Cases",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "19d10",
+   "avg": 104.5,
+   "weight": 4.5,
+   "img": "icons/sundries/books/book-worn-brown.webp",
+   "desc": "<p>A private physician's anonymized casebook describing illnesses among wealthy households, treatments attempted, and long-term outcomes.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Gray Friar's Sermons",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "7d10",
+   "avg": 38.5,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-worn-brown-grey.webp",
+   "desc": "<p>A collection of plainspoken sermons on greed, hospitality, violence, debt, and the duties owed to strangers.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Festival of Masks",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 5.0,
+   "img": "icons/sundries/books/book-face-blue.webp",
+   "desc": "<p>An illustrated account of masked festivals across several regions, detailing costumes, dances, taboos, processions, and the meanings of traditional disguises.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Iron Coast Pilot",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "17d10",
+   "avg": 93.5,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-symbol-lightning-silver-blue.webp",
+   "desc": "<p>A rugged nautical guide to cliffs, reefs, storms, anchorages, wreck sites, and lighthouse signals along a notoriously dangerous coast.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Book of Noble Funerals",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "12d10",
+   "avg": 66.0,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-black-grey.webp",
+   "desc": "<p>A ceremonial manual on mourning periods, funeral processions, heraldic display, grave goods, memorial feasts, and precedence among grieving families.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Common Law of Inns",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 2.5,
+   "img": "icons/sundries/books/book-simple-brown.webp",
+   "desc": "<p>A legal guide for innkeepers and travelers covering theft, damaged property, stabling, debts, brawls, guest privacy, and local licensing.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Song of Ardent Vale",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "16d10",
+   "avg": 88.0,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-tooled-gold-purple.webp",
+   "desc": "<p>A celebrated heroic epic about a valley kingdom resisting invasion through courage, sacrifice, and a final winter campaign.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Painted Mapmaker",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "14d10",
+   "avg": 77.0,
+   "weight": 3.5,
+   "img": "icons/sundries/books/book-open-brown.webp",
+   "desc": "<p>A cartographic manual on surveying, scale, pigments, symbols, coastlines, road notation, and decorative borders.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Distiller's Copper Book",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "18d10",
+   "avg": 99.0,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-tooled-brass-brown.webp",
+   "desc": "<p>A technical volume on stills, fermentation, cuts, flavoring, storage, and excise customs. Several recipes are marked as guild secrets.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Red Falcon Tournament",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "20d10",
+   "avg": 110.0,
+   "weight": 6.0,
+   "img": "icons/sundries/books/book-red-exclamation.webp",
+   "desc": "<p>An illustrated record of a famous tournament, listing competitors, coats of arms, bouts, injuries, prizes, and court gossip.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Book of Village Charters",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "11d10",
+   "avg": 60.5,
+   "weight": 4.0,
+   "img": "icons/sundries/books/book-backed-wood-tan.webp",
+   "desc": "<p>A clerk's compilation of model charters covering mills, grazing rights, commons, markets, local courts, and village obligations to a lord.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Emerald Sea Poems",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "9d10",
+   "avg": 49.5,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-open-turquoise.webp",
+   "desc": "<p>A refined poetry collection inspired by storms, sailors, sea birds, distant islands, and the grief of those waiting ashore.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Palace Kitchens",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "26d10",
+   "avg": 143.0,
+   "weight": 7.5,
+   "img": "icons/sundries/books/book-embossed-clasp-gold-brown.webp",
+   "desc": "<p>A grand culinary and household volume recording menus, staffing, storerooms, feast logistics, and favored dishes from a royal palace.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Stonecutter's Flowers",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "15d10",
+   "avg": 82.5,
+   "weight": 5.5,
+   "img": "icons/sundries/books/book-leaves-circle.webp",
+   "desc": "<p>An artisan pattern book of carved leaves, vines, blossoms, capitals, borders, and memorial motifs used in fine stonework.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Book of Winter Games",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 1,
+   "formula": "6d10",
+   "avg": 33.0,
+   "weight": 2.0,
+   "img": "icons/sundries/books/book-purple-glyph.webp",
+   "desc": "<p>A social guide to indoor games, riddles, dice diversions, storytelling contests, and forfeits suitable for long winter evenings.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  },
+  {
+   "name": "The Queen's Aviary",
+   "creator": "Leo",
+   "make": "Book",
+   "level": 2,
+   "formula": "22d10",
+   "avg": 121.0,
+   "weight": 6.0,
+   "img": "icons/sundries/books/book-rounded-blue.webp",
+   "desc": "<p>A luxurious record of songbirds, doves, parrots, and rare fowl kept in a royal aviary, with painted plates and notes from keepers.</p>",
+   "tags": [
+    "Treasure",
+    "Book",
+    "Mundane"
+   ],
+   "source": "Mundane Treasure: Books",
+   "subType": "misc"
+  }
+ ]
+}
