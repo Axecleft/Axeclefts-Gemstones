@@ -42,22 +42,36 @@ export const DATA_WORDS = [/*t*/"Tiny", /*t*/"Small", /*t*/"Standard", /*t*/"Lar
 /*  Dice and random picks                       */
 /* -------------------------------------------- */
 
-/** Roll a simple formula such as "2d4*10", "((4d4)*10)*2.5" or "3". */
+/** Functions a value formula may use (as Foundry's dice rolls do): "max(10, 4d4)" is never below 10. */
+const FNS = ["max", "min", "floor", "ceil", "round", "abs"];
+/** Evaluate a formula whose dice are already numbers: digits, + - * / ( ) . , and the functions above. */
+function evalFormula(expr, formula) {
+  const bare = expr.replace(new RegExp(`\\b(${FNS.join("|")})\\(`, "g"), "(");
+  if (!/^[\d+\-*/().,]+$/.test(bare)) throw new Error(t("Can't roll \"{formula}\"", { formula }));
+  return Function(...FNS, `"use strict"; return (${expr});`)(...FNS.map((f) => Math[f]));
+}
+/** Roll a simple formula such as "2d4*10", "((4d4)*10)*2.5", "max(10, 4d4)" or "3". */
 export function rollDice(formula, rng = Math.random) {
   const expr = String(formula).replace(/\s+/g, "").replace(/(\d*)d(\d+)/gi, (_, n, s) => {
     let sum = 0;
     for (let i = 0; i < (+n || 1); i++) sum += 1 + Math.floor(rng() * +s);
     return String(sum);
   });
-  if (!/^[\d+\-*/().]+$/.test(expr)) throw new Error(t("Can't roll \"{formula}\"", { formula }));
-  return Function(`"use strict"; return (${expr});`)();
+  return evalFormula(expr, formula);
 }
 
 /** Average of a simple formula (used for previews). */
 export function averageOf(formula) {
   const expr = String(formula).replace(/\s+/g, "").replace(/(\d*)d(\d+)/gi, (_, n, s) => String((+n || 1) * (+s + 1) / 2));
-  return Function(`"use strict"; return (${expr});`)();
+  return evalFormula(expr, formula);
 }
+/** Lowest and highest a formula can roll. */
+export function rangeOf(formula) {
+  const f = String(formula).replace(/\s+/g, "");
+  return [evalFormula(f.replace(/(\d*)d(\d+)/gi, (_, n) => String(+n || 1)), formula), evalFormula(f.replace(/(\d*)d(\d+)/gi, (_, n, s) => String((+n || 1) * +s)), formula)];
+}
+/** A value formula with the GM's rule that the roll is never below the base value. */
+export const withMinBase = (formula, base, on) => (on ? `max(${Number(base) || 0}, (${formula}))` : formula);
 
 /** Pick from [{w, ...}] by weight; entries without w count as 1. */
 export function weighted(list, rng = Math.random) {
@@ -82,7 +96,7 @@ export const esc = (v) => String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "
  * Merge the module's data with the GM's custom lists.
  * custom = { gems, objects, materials, embellishments, disabled } (rows from the Treasure Lists journal)
  */
-export function buildCatalog(gemData, artData, custom = {}, premade = []) {
+export function buildCatalog(gemData, artData, custom = {}, premade = [], values = {}) {
   const off = new Set((custom.disabled ?? []).map((d) => `${norm(d.list)}|${norm(d.name)}`));
   const on = (list, name) => !off.has(`${list}|${norm(name)}`) && !off.has(`any|${norm(name)}`);
   const gradeOf = (v) => gemData.grades.reduce((best, g) => (Math.abs(g.value - v) < Math.abs(best.value - v) ? g : best)).value;
@@ -119,9 +133,14 @@ export function buildCatalog(gemData, artData, custom = {}, premade = []) {
     for (const e of list) { const k = `${e.source === "srd" ? "srd" : "x"}|${norm(e.name)}`; if (!m.has(k) || e.source === "custom") m.set(k, e); }
     return [...m.values()];
   };
+  // The GM's value rolls and base values (Gemstones settings: Gem and art values): blank keeps the SRD's
+  const ov = (list, key) => (values?.[list]?.[key] ?? {});
+  const grades = gemData.grades.map((g) => { const o = ov("gems", g.value); return { ...g, srdFormula: g.formula, formula: String(o.formula ?? "").trim() || g.formula, base: Number(o.base) > 0 ? Number(o.base) : g.value }; });
+  const levels = artData.levels.map((l) => { const o = ov("art", l.level); return { ...l, srdFormula: l.formula, srdAvg: l.avg, formula: String(o.formula ?? "").trim() || l.formula, avg: Number(o.base) > 0 ? Number(o.base) : l.avg }; });
   return {
-    grades: gemData.grades, sizes: gemData.sizes, gemQualities: gemData.qualities,
-    levels: artData.levels, artQualities: artData.qualities, makes: artData.makes, jewelryImg: artData.jewelryImg,
+    minBase: !!values?.minBase, fullResale: values?.fullResale !== false,
+    grades, sizes: gemData.sizes, gemQualities: gemData.qualities,
+    levels, artQualities: artData.qualities, makes: artData.makes, jewelryImg: artData.jewelryImg,
     goodsByLevel: artData.goodsByLevel,
     gems: dedupe(gems), objects: dedupe(objects), materials: dedupe(materials), embellishments: dedupe(embellishments),
   };
@@ -170,12 +189,15 @@ export function rollGem(cat, opts = {}, rng = Math.random) {
   const nameEn = N(GEM_NAME, parts(true), { lang: "en" });
   return {
     kind: "gem", name, nameEn, gem: gem.name, source: gem.source, appraiseAs: gem.appraiseAs, img: gem.img,
-    base: grade.value, formula: grade.formula, size: size.key, quality: quality.key, mult, variations: vary,
-    priceFormula: mult === 1 ? `((${grade.formula}))` : `(((${grade.formula}))*${mult})`,
-    range: [averageOf(grade.formula.replace(/(\d*)d(\d+)/gi, (_, n) => String(+n || 1))) * mult, averageOf(grade.formula.replace(/(\d*)d(\d+)/gi, (_, n, s) => String((+n || 1) * +s))) * mult],
+    base: grade.base ?? grade.value, formula: grade.formula, size: size.key, quality: quality.key, mult, variations: vary,
+    priceFormula: mult === 1 ? `((${valueOf(cat, grade.formula, grade.base ?? grade.value)}))` : `(((${valueOf(cat, grade.formula, grade.base ?? grade.value)}))*${mult})`,
+    range: rangeOf(valueOf(cat, grade.formula, grade.base ?? grade.value)).map((v) => v * mult),
     desc: gem.desc, unid: gem.unid,
   };
 }
+
+/** The formula an item's value is rolled with: the grade's or level's, never below its base value when the GM says so. */
+const valueOf = (cat, formula, base) => withMinBase(formula, base, cat.minBase);
 
 /** The size × quality multiplier table, with this gem's cell marked. */
 export function multiplierTable(cat, spec) {
@@ -256,13 +278,13 @@ export function rollArt(cat, opts = {}, rng = Math.random) {
   const name = quality.key === "average" ? core : artName(obj, material, gem, { quality: quality.label });
   const nameEn = quality.key === "average" ? coreEn : artName(obj, material, gem, { quality: quality.label, en: true });
   const mult = quality.mult;
-  const lo = averageOf(level.formula.replace(/(\d*)d(\d+)/gi, (_, n) => String(+n || 1))) * mult;
-  const hi = averageOf(level.formula.replace(/(\d*)d(\d+)/gi, (_, n, s) => String((+n || 1) * +s))) * mult;
+  const vf = valueOf(cat, level.formula, level.avg);
+  const [lo, hi] = rangeOf(vf).map((v) => v * mult);
   return {
     kind: obj.kind, name, nameEn, core, coreEn, object: obj.name, make: obj.make, material: material?.name ?? null, gem: gem?.name ?? null,
     quality: quality.key, qualityLabel: quality.label, qualityText: quality.text, variations: vary,
     level: level.level, base: level.avg, formula: level.formula, mult, range: [lo, hi],
-    priceFormula: mult === 1 ? `((${level.formula}))` : `(((${level.formula}))*${mult})`,
+    priceFormula: mult === 1 ? `((${vf}))` : `(((${vf}))*${mult})`,
     img: obj.img || (obj.kind === "jewelry" ? cat.jewelryImg : make.img), weight: Number(obj.weight) || 0, objDesc: obj.desc ?? "",
   };
 }
@@ -333,7 +355,7 @@ export function rollGoods(cat, el, { gem = {}, art = {} } = {}, rng = Math.rando
  * rollNow = true: the value is rolled here (used when creating straight onto a character).
  */
 export function itemData(cat, spec, { rollNow = false, rng = Math.random } = {}) {
-  if (spec.premade) return premadeItemData(spec, { rollNow, rng });
+  if (spec.premade) return premadeItemData(spec, { rollNow, rng, fullResale: cat.fullResale !== false });
   let desc, unid, weight;
   if (spec.kind === "gem") {
     desc = spec.desc + (spec.variations ? multiplierTable(cat, spec) : "");
@@ -357,6 +379,7 @@ export function itemData(cat, spec, { rollNow = false, rng = Math.random } = {})
       identified: false,
       carried: true,
       identifiedName: spec.name,
+      fullResalePrice: cat.fullResale !== false, // trade goods: merchants buy and sell them at their full value (D35E)
       unidentified: { price: spec.base, name: spec.kind === "gem" ? (tw(spec.appraiseAs)?.text ?? spec.appraiseAs) : spec.core },
       creationChanges: rollNow ? [] : [["price", spec.priceFormula]],
     },
@@ -366,7 +389,7 @@ export function itemData(cat, spec, { rollNow = false, rng = Math.random } = {})
 const strip = (s) => { const { desc, unid, objDesc, qualityText, premadeDesc, ...rest } = s; return rest; };
 
 /** Item data for a premade piece: identified, in its original form, with its creator credited in the description. */
-function premadeItemData(spec, { rollNow = false, rng = Math.random } = {}) {
+function premadeItemData(spec, { rollNow = false, rng = Math.random, fullResale = true } = {}) {
   const credit = spec.creator ? `<p><em>${esc(t("Created by {name}.", { name: spec.creator }))}</em></p>` : "";
   const price = rollNow ? round2(rollDice(spec.priceFormula, rng)) : 0;
   return {
@@ -384,6 +407,7 @@ function premadeItemData(spec, { rollNow = false, rng = Math.random } = {}) {
       identified: true,
       carried: true,
       identifiedName: spec.name,
+      fullResalePrice: fullResale,
       unidentified: { price: spec.base, name: spec.name },
       creationChanges: rollNow ? [] : [["price", spec.priceFormula]],
     },

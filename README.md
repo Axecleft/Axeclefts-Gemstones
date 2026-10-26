@@ -3,6 +3,12 @@
 
 Changelog:
 
+v1.14.6.23:
+
+- **Full Resale Price** (D35E) for gems, jewelry and art objects: they are trade goods, so merchants buy and sell them at their full value (reported by Gilgalad). On by default with the new setting **Full resale price for gems, jewelry and art**; it applies to generated pieces and to gems taken from this module's compendiums, whose SRD gems now have it on too. Off: merchants buy them at half price, like other items.
+- **Gem and art values** (Configure Settings → Axecleft's Gemstones → Value rolls and base values): your own value roll and base value for each of the 6 gem values and the 12 art values; a blank box keeps the SRD's. A roll can use dice and max(), min(), floor(), ceil() and round(), so max(10, 4d4) is never below 10. **A rolled value is never below the base value** applies that to every gem, art object and piece of jewelry (Gilgalad's rule). The compendium gems roll with the same formulas.
+- Ships Axecleft's Tools 9.6: the Discord and Patreon buttons are now in a welcome window at startup (it can be turned off in the new Axecleft's Tool Suite settings), and the Lightning Bolt dice fix.
+
 v1.14.6.22:
 
 - Ships Axecleft's Tools 9.3: **Support on Patreon**. Configure Settings → Axecleft's Gemstones has a new **Open Patreon** button, and the GM's Axecleft's Tools menu has a **Support on Patreon** button; both open [Axecleft's Patreon](https://www.patreon.com/Axecleft) in your web browser. The modules stay free; patrons get new releases two weeks early. The manifest lists the Patreon page as the author's link.

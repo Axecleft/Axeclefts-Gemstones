@@ -48,7 +48,15 @@ export async function catalog() {
   await loadData();
   const hub = T();
   const custom = hub?.listRows ? { ...Object.fromEntries(LIST_KEYS.map((k) => [k, hub.listRows(MOD, k)])), disabled: hub.disabledEntries(MOD) } : {};
-  return (CAT = C.buildCatalog(GEMS, ART, custom, PREMADE));
+  return (CAT = C.buildCatalog(GEMS, ART, custom, PREMADE, valueSettings()));
+}
+/** The GM's value rolls and base values, the "never below the base value" rule and Full Resale Price (world settings). */
+function valueSettings() {
+  let v = {};
+  try { v = foundry.utils.deepClone(setting("valueRolls") ?? {}); } catch (e) { v = {}; }
+  let full = true;
+  try { full = setting("fullResale") !== false; } catch (e) { /* default */ }
+  return { gems: v.gems ?? {}, art: v.art ?? {}, minBase: !!v.minBase, fullResale: full };
 }
 
 /** A generator entry for a rolled gem or art spec. */
@@ -378,6 +386,79 @@ const lists = {
 };
 export const API = { generateGems, generateArt, generateGoods, catalog, lists, core: C, open: (tab) => T()?.open(tab) };
 
+/* -------------------------------------------- */
+/*  Gem and art values (settings)               */
+/* -------------------------------------------- */
+
+/** The GM's value rolls and base values: one row for each SRD gem value and each SRD art value. Blank: the SRD's. */
+async function openValues() {
+  if (!game.user.isGM) return;
+  await loadData();
+  const v = valueSettings();
+  const row = (list, key, label, srdF, srdB) => {
+    const o = v[list]?.[key] ?? {};
+    return `<tr><th>${esc(label)}</th><td class="hint">${esc(fmtFormula(srdF))}</td>
+      <td><input type="text" name="${list}.${key}.formula" value="${esc(o.formula ?? "")}" placeholder="${esc(srdF)}" autocomplete="off" spellcheck="false"></td>
+      <td class="hint">${esc(C.num(srdB))}</td><td><input type="text" inputmode="decimal" name="${list}.${key}.base" value="${esc(o.base ?? "")}" placeholder="${esc(srdB)}" style="width:6em"></td></tr>`;
+  };
+  const head = `<tr><th></th><th>${H("SRD roll")}</th><th>${H("Your roll")}</th><th>${H("SRD base")}</th><th>${H("Your base (gp)")}</th></tr>`;
+  const gems = (GEMS?.grades ?? []).map((g) => row("gems", g.value, t("{value} gems", { value: gp(g.value) }), g.formula, g.value)).join("");
+  const art = (ART?.levels ?? []).map((l) => row("art", l.level, t("Art value {level}", { level: l.level }), l.formula, l.avg)).join("");
+  const content = `<p class="hint">${H("Each gem, art object and piece of jewelry has a base value (what it looks to be worth, until it is appraised) and a value roll (its true value, rolled when it reaches a character). Leave a box blank for the SRD's. A roll can use dice and max(), min(), floor(), ceil() and round(): max(10, 4d4) is never below 10.")}</p>
+    <label class="atg-cb"><input type="checkbox" name="minBase" ${v.minBase ? "checked" : ""}> ${H("A rolled value is never below the base value")}</label>
+    <div style="max-height:55vh;overflow-y:auto"><table class="atg-sources"><thead>${head}</thead><tbody>
+      <tr><th colspan="5">${H("Gems")}</th></tr>${gems}<tr><th colspan="5">${H("Art objects and jewelry")}</th></tr>${art}</tbody></table></div>
+    <p class="hint">${H("Size and quality variations multiply the value rolled. Pieces already made keep their values.")}</p>`;
+  const Dlg = globalThis.AxecleftTools?.DialogV2 ?? foundry.applications.api.DialogV2;
+  const res = await Dlg.wait({
+    window: { title: t("Gem and art values"), icon: "fas fa-coins" }, position: { width: 640 }, content,
+    buttons: [
+      { action: "save", label: t("Save"), icon: "fas fa-floppy-disk", default: true, callback: (ev, btn) => {
+        const f = btn.form?.elements ?? {};
+        const out = { gems: {}, art: {}, minBase: !!f.minBase?.checked };
+        const errors = [];
+        const read = (list, key) => {
+          const formula = String(f[`${list}.${key}.formula`]?.value ?? "").trim(), base = String(f[`${list}.${key}.base`]?.value ?? "").trim();
+          if (formula) { try { C.rollDice(formula); } catch (e) { errors.push(formula); } }
+          if (base && !(Number(base) > 0)) errors.push(base);
+          if (formula || base) out[list][key] = { ...(formula ? { formula } : {}), ...(base ? { base: Number(base) } : {}) };
+        };
+        for (const g of GEMS?.grades ?? []) read("gems", g.value);
+        for (const l of ART?.levels ?? []) read("art", l.level);
+        return errors.length ? { errors } : out;
+      } },
+      { action: "reset", label: t("SRD values"), icon: "fas fa-rotate-left" },
+    ],
+  });
+  if (res === "reset") { await game.settings.set(MOD, "valueRolls", {}); CAT = null; return ui.notifications.info(t("Gem and art values are the SRD's again.")); }
+  if (!res || typeof res !== "object") return;
+  if (res.errors) { ui.notifications.error(t("Not saved: these can't be rolled or aren't values: {list}", { list: res.errors.join(", ") })); return openValues(); }
+  await game.settings.set(MOD, "valueRolls", res);
+  CAT = null;
+  ui.notifications.info(t("Gem and art values saved."));
+}
+
+/**
+ * The SRD gems in this module's compendiums are trade goods: Full Resale Price on (D35E). The compendiums are brought in
+ * step once, by the GM, when an older copy still has it off (the module's own compendiums, unlocked for the change and
+ * locked again). Taking a gem from a compendium follows the world's setting either way (preCreateItem above).
+ */
+async function packsFullResale() {
+  if (!game.user.isGM || (game.users.activeGM && !game.users.activeGM.isSelf)) return;
+  for (const pack of game.packs) {
+    if (pack.metadata?.packageName !== MOD || pack.documentName !== "Item" || !/^gems-\d+-gp$/.test(pack.metadata?.name ?? "")) continue;
+    const index = await pack.getIndex({ fields: ["system.fullResalePrice"] });
+    const updates = [...index].filter((e) => e.system?.fullResalePrice !== true).map((e) => ({ _id: e._id, "system.fullResalePrice": true }));
+    if (!updates.length) continue;
+    const locked = pack.locked;
+    try {
+      if (locked) await pack.configure({ locked: false });
+      await Item.implementation.updateDocuments(updates, { pack: pack.collection });
+      console.log(`${MOD} | ${pack.title}: Full Resale Price on for ${updates.length} gem(s)`);
+    } finally { if (locked) await pack.configure({ locked: true }); }
+  }
+}
+
 if (globalThis.Hooks) {
   const hub = T();
   if (hub) {
@@ -394,11 +475,52 @@ if (globalThis.Hooks) {
     reg("gemVariations", { name: /*t*/"Gem size & quality variations", hint: /*t*/"Random gems use the homebrew sizes (Tiny to Huge) and qualities (Flawed to Exceptional). Turn off to generate plain SRD-value gems. The generator has the same checkbox for one-off changes.", type: Boolean, default: true });
     reg("artVariations", { name: /*t*/"Art & jewelry quality variations", hint: /*t*/"Random art and jewelry use the homebrew workmanship qualities (Junk to Masterpiece). Turn off for plain SRD art values.", type: Boolean, default: true });
     reg("premadeShare", { name: /*t*/"Premade pieces in random art (%)", hint: /*t*/"How often a random art object or piece of jewelry is a premade piece (Leo's art and books, and your own on the Custom Premade Art list) instead of one built from an object, material and gem. Premade pieces are rolled only at their own value. 0 = never; they can still be picked on the Art Objects tab.", type: Number, default: 5, range: { min: 0, max: 100, step: 1 } });
+    reg("fullResale", { name: /*t*/"Full resale price for gems, jewelry and art", hint: /*t*/"Gems, jewelry and art objects are trade goods: merchants buy and sell them at their full value (D35E's Full Resale Price). Applies to generated pieces and to gems taken from this module's compendiums. Off: merchants buy them at half price, like other items.", type: Boolean, default: true });
+    game.settings.register(MOD, "valueRolls", { scope: "world", config: false, type: Object, default: {}, onChange: () => { CAT = null; } });
+    // The Gem and art values window (a settings menu opens a window; this one opens a dialog)
+    const Base = foundry.applications?.api?.ApplicationV2 ?? (typeof FormApplication !== "undefined" ? FormApplication : null);
+    if (Base) {
+      class GemstonesValues extends Base { render() { openValues(); return this; } }
+      game.settings.registerMenu(MOD, "values", {
+        name: /*t*/"Gem and art values", label: /*t*/"Value rolls and base values", icon: "fas fa-coins", restricted: true, type: GemstonesValues,
+        hint: /*t*/"Your own value roll and base value for each of the 6 gem values and the 12 art values (blank keeps the SRD's), and the rule that a rolled value is never below the base value.",
+      });
+    }
     // "Shared treasure lists library" and "Shared library folder" are registered by the shared script (axecleft-treasure.js).
+  });
+
+  // Pieces taken from this module's compendiums (dragged or dropped, or by a merchant): Full Resale Price as set, and a gem's
+  // value rolled with the GM's formula for its grade (generated pieces already carry both)
+  Hooks.on("preCreateItem", (item, data) => {
+    try {
+      if (item.type !== "loot") return;
+      const src = String(item._stats?.compendiumSource ?? item.flags?.core?.sourceId ?? "");
+      const fromHere = src.startsWith(`Compendium.${MOD}.`);
+      if (!fromHere && !item.flags?.[MOD]?.generated) return;
+      const update = {};
+      const full = setting("fullResale") !== false;
+      if (!!item.system?.fullResalePrice !== full) update["system.fullResalePrice"] = full;
+      const grade = src.match(new RegExp(`^Compendium\\.${MOD}\\.gems-(\\d+)-gp\\.`))?.[1];
+      if (grade && !item.flags?.[MOD]?.generated) {
+        const v = valueSettings(), o = v.gems?.[grade] ?? {}, g = (GEMS?.grades ?? []).find((x) => String(x.value) === grade);
+        const formula = String(o.formula ?? "").trim() || g?.formula, base = Number(o.base) > 0 ? Number(o.base) : Number(grade);
+        const changes = foundry.utils.deepClone(item.system?.creationChanges ?? []);
+        const i = changes.findIndex((c) => (Array.isArray(c) ? c[0] : c?.target) === "price");
+        if (formula && i >= 0 && (o.formula || o.base || v.minBase)) {
+          const f = `((${C.withMinBase(formula, base, v.minBase)}))`;
+          if (Array.isArray(changes[i])) changes[i][1] = f; else changes[i].formula = f;
+          update["system.creationChanges"] = changes;
+        }
+        if (Number(o.base) > 0) update["system.unidentified.price"] = base;
+      }
+      if (Object.keys(update).length) item.updateSource(update);
+    } catch (err) { console.warn(`${MOD} | compendium piece`, err); }
   });
 
   Hooks.once("ready", () => {
     const mod = game.modules.get(MOD);
     if (mod) mod.api = API;
+    loadData().catch(() => {}); // the gem grades, for pieces dragged from the compendiums
+    packsFullResale().catch((err) => console.warn(`${MOD} | compendium gems`, err));
   });
 }

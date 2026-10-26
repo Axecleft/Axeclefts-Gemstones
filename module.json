@@ -2,9 +2,9 @@
   "id": "axecleft-gemstones",
   "title": "Axecleft's Gemstones",
   "description": "3.5 SRD gemstones plus Axecleft's Treasure Generator and Merchant Generator. Gems, art objects and jewelry: choose any quality from dropdowns or roll it: 443 gem types with homebrew sizes and qualities, and art and jewelry built from 221 objects, 120 materials, 30 embellishment gems, 12 SRD value levels and 5 workmanship qualities. Roll the SRD Treasure table by encounter level, or each NPC token's own loot by its CR, straight into its inventory; stock merchants for any settlement; add your own entries in lists shared between worlds.\n\n** Gem descriptions are AI generated using ChatGPT",
-  "version": "1.14.6.22",
+  "version": "1.14.6.23",
   "manifest": "https://github.com/Axecleft/Axeclefts-Gemstones/releases/latest/download/module.json",
-  "download": "https://github.com/Axecleft/Axeclefts-Gemstones/releases/download/1.14.6.22/module.zip",
+  "download": "https://github.com/Axecleft/Axeclefts-Gemstones/releases/download/1.14.6.23/module.zip",
   "url": "https://github.com/Axecleft/Axeclefts-Gemstones",
   "compatibility": {
     "minimum": "13",
