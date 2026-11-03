@@ -27,7 +27,7 @@
  *
  * Register at load time (top level of your script). See README "For module authors".
  */
-const AXECLEFT_TREASURE_VERSION = 9.994; // 9.994: a share of treasure and merchant stock from your Item compendiums (Generation settings), Treasure weight tags; 9.993: Generation settings: Sizes of arms, Poisons and Cursed items start with their checkbox, like the other rows; 9.992: a list's note can be built when shown (Gemstones' value levels), column help as tooltips on the Lists tab; 9.991: numbers right-aligned in their boxes; Treasure Lists pages in the world's language (rewritten when it changes), a line per column, an example row and a warning to keep the headings; 9.99: Item Sources show the items found in each compendium of an extra source kind (enhancements, materials, spells…); 9.98: a cursed item's eerie light only while the curse is active (D35E sheet animations); 9.97: custom curses (Treasure Lists); 9.96: cursed items (SRD tables, Generation settings, Forge/Workshop option); 9.94: text in the world's language (Axecleft's Tools 8.2 language files); 9.95: Foundry v11 (Tools 9 window, chat), no intelligent items before D35E 3.1
+const AXECLEFT_TREASURE_VERSION = 9.996; // 9.996: the loot card shows a translated coin name alone ("PO", not "PO (gp)"); 9.995: a tour of each tab (Tour Management, and the window's ⋮ menu); 9.994: a share of treasure and merchant stock from your Item compendiums (Generation settings), Treasure weight tags; 9.993: Generation settings: Sizes of arms, Poisons and Cursed items start with their checkbox, like the other rows; 9.992: a list's note can be built when shown (Gemstones' value levels), column help as tooltips on the Lists tab; 9.991: numbers right-aligned in their boxes; Treasure Lists pages in the world's language (rewritten when it changes), a line per column, an example row and a warning to keep the headings; 9.99: Item Sources show the items found in each compendium of an extra source kind (enhancements, materials, spells…); 9.98: a cursed item's eerie light only while the curse is active (D35E sheet animations); 9.97: custom curses (Treasure Lists); 9.96: cursed items (SRD tables, Generation settings, Forge/Workshop option); 9.94: text in the world's language (Axecleft's Tools 8.2 language files); 9.95: Foundry v11 (Tools 9 window, chat), no intelligent items before D35E 3.1
 const AXECLEFT_TREASURE_HOST = (() => {
   try { return decodeURIComponent(new URL(import.meta.url).pathname).match(/\/modules\/([^/]+)\//)?.[1] ?? null; } catch (e) { return null; }
 })();
@@ -234,7 +234,9 @@ const AXECLEFT_TREASURE_HOST = (() => {
     intelligence: {
       enabled: true,
       melee: { on: true, chance: 1 }, ranged: { on: true, chance: 1 }, armor: { on: true, chance: 1 }, other: { on: true, chance: 1 },
-      purpose: { on: true, greater: true, chance: 0 },
+      // A special purpose and dedicated power instead of a power (version 9.996): SRD, on items with greater powers (the SRD
+      // doesn't say how often; Axecleft's default: always); house rule, on items with only lesser powers
+      purpose: { on: true, greaterChance: 100, lesserChance: 0 },
     },
     hints: { enabled: true, melee: { on: true, chance: 15 }, ranged: { on: true, chance: 15 } },
     poison: { enabled: true, chance: 1 },
@@ -257,6 +259,12 @@ const AXECLEFT_TREASURE_HOST = (() => {
   function generation() {
     let saved = {};
     try { saved = game.settings.get(coinNamespace ?? "world", GEN_KEY) ?? {}; } catch (e) { /* not registered */ }
+    // Before 9.996: "always with greater powers" plus a % of the others → a % for each
+    const op = saved?.intelligence?.purpose;
+    if (op && op.greaterChance === undefined && (op.greater !== undefined || op.chance !== undefined)) {
+      saved = foundry.utils.deepClone(saved);
+      saved.intelligence.purpose = { on: op.on !== false, greaterChance: op.greater !== false ? 100 : Number(op.chance) || 0, lesserChance: Number(op.chance) || 0 };
+    }
     return foundry.utils.mergeObject(foundry.utils.deepClone(GEN_DEFAULTS), saved ?? {}, { inplace: false, insertKeys: false });
   }
   async function saveGeneration(cfg) {
@@ -815,8 +823,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
       <div class="atg-checks">${cb("gen.light.enabled", g.light.enabled, /*t*/"Random light")}${IQ ? cb("gen.intelligence.enabled", g.intelligence.enabled, /*t*/"Random intelligence") : ""}${cb("gen.hints.enabled", g.hints.enabled, /*t*/"Inscription hints")}</div>
       <table class="atg-gen-table"><thead><tr><th></th><th>${esc(t("Sheds light"))}</th><th>${esc(t("Bright / dim"))}</th>${IQ ? `<th>${esc(t("Intelligent"))}</th>` : ""}<th>${esc(t("Hint"))}</th></tr></thead><tbody>${rows}</tbody></table>
       <p class="hint">${t("SRD: 30% of magic melee weapons shed light (a <em>light</em> spell: 20 ft bright, 40 ft dim); ranged weapons don't; 15% of weapons carry an inscription hinting at their power; fewer than 1% of permanent items are intelligent (never potions, scrolls, wands or ammunition). Light on armor, shields and other items is a house rule.")}</p>
-      ${IQ ? `<div class="atg-checks">${cb("gen.intelligence.purpose.on", g.intelligence.purpose.on, /*t*/"Intelligent items can have a special purpose:")}${cb("gen.intelligence.purpose.greater", g.intelligence.purpose.greater, /*t*/"always with greater powers")} <span>${esc(t("plus"))}</span> ${num("gen.intelligence.purpose.chance", g.intelligence.purpose.chance)}${H("% of the others")}</div>
-      <p class="hint">${esc(t("The SRD lists special purposes and dedicated powers but doesn't say how often they occur; this is Axecleft's default (the most capable items, with greater powers, have one)."))}</p>` : ""}
+      ${IQ ? `<div class="atg-checks">${cb("gen.intelligence.purpose.on", g.intelligence.purpose.on, /*t*/"Special purpose instead of a power:")} <span>${num("gen.intelligence.purpose.greaterChance", g.intelligence.purpose.greaterChance)}${H("% of intelligent items with greater powers")}</span> <span>${num("gen.intelligence.purpose.lesserChance", g.intelligence.purpose.lesserChance)}${H("% of those with only lesser powers")}</span></div>
+      <p class="hint">${esc(t("SRD: an intelligent item with greater powers can have a special purpose and a dedicated power instead of one greater power; the SRD doesn't say how often (Axecleft's default: 100%). On an item with only lesser powers, the purpose and dedicated power take the place of a lesser power (house rule; default 0%). A purpose chosen in the Forge or the Curios tab is always an extra."))}</p>` : ""}
       <div class="atg-checks">${cb("gen.light.themes", g.light.themes, /*t*/"Light color and animation follow the item's abilities")}${cb("gen.light.powerBrightness", g.light.powerBrightness, /*t*/"Stronger items glow brighter")}</div>
       <div class="atg-checks">${cb("gen.light.scaleRadii", g.light.scaleRadii, /*t*/"Stronger items shine farther:")} ${num("gen.light.scaleFeet", g.light.scaleFeet, 30, 5)} ${H("ft per +1 above +2")}</div>
       <div class="atg-checks">${cb("gen.size.enabled", g.size.enabled, /*t*/"Sizes of arms")} <span>${num("gen.size.small", g.size.small)}${H("% Small")}</span> <span>${num("gen.size.medium", g.size.medium)}${H("% Medium")}</span> <span>${num("gen.size.large", g.size.large)}${H("% Large")}</span></div>
@@ -1055,6 +1063,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
 
   let compPools = {};      // category -> [{ pack, id, name, price, ranged, label }]
   let compStats = {};      // pack id -> { label, total, byCategory }
+  let tagPool = [];        // version 9.996: every priced item with a specialty Shop tag (any category), for shop types that sell by tag
+  let ownHints = [];       // version 9.996: the Shop tags of your own found in the item sources ("Statue", "Diamond"…)
   let compScanning = null;
 
   /** Item compendiums the generator can read, with whether automatic matching picks them. */
@@ -1193,9 +1203,12 @@ const AXECLEFT_TREASURE_HOST = (() => {
       if (cat) cats.add(cat);
       const hint = HINTS.find((h) => h.toLowerCase() === v || h.toLowerCase() + "s" === v);
       if (hint) hints.add(hint);
+      // Version 9.996: any other word is a Shop tag of your own ("Shop: Statue"), for your own shop types
+      else if (!cat && v) { const own = txt.slice(TAG_PREFIX.length).trim(); hints.add(own.charAt(0).toUpperCase() + own.slice(1)); }
     }
     return { cats: [...cats], hints: [...hints] };
   }
+  const sameHint = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
   /** system.tags with the item's Shop tags replaced. */
   function writeShopTags(tags, cats = [], hints = []) {
     const keep = (Array.isArray(tags) ? tags : []).filter((t) => !String(Array.isArray(t) ? t[0] : t ?? "").trim().toLowerCase().startsWith(TAG_PREFIX.toLowerCase()));
@@ -1451,7 +1464,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
     if (compScanning) return compScanning;
     compScanning = (async () => {
       corrIndex = null; // pick up corrections added since the last scan
-      const pools = {}, stats = {};
+      const pools = {}, stats = {}, tagged = [], own = new Set();
       for (const id of itemSources().packs) {
         const pack = game.packs.get(id);
         if (!pack) continue;
@@ -1468,9 +1481,10 @@ const AXECLEFT_TREASURE_HOST = (() => {
           const e = corrected ? { ...e0, system: { ...(e0.system ?? {}), price } } : e0;
           const cat = classifyItem(e, magicPack, { allowEpic: true });
           const tags = readShopTags(e.system?.tags);
-          if (!cat && !(tags.cats.length && price > 0)) continue;
+          if (!cat && !((tags.cats.length || tags.hints.length) && price > 0)) continue;
           if (corrected) st.corrected = (st.corrected ?? 0) + 1;
-          const entry = { pack: id, id: e._id, name: e.name, display: e.display ?? e.name, price, ranged: e.system?.weaponSubtype === "ranged" || e.system?.subType === "ammo", label, hints: tags.hints, epic: isEpicItem(e), psionic: isPsionicItem(e), weight: treasureWeight(e.system?.tags) };
+          const entry = { pack: id, id: e._id, name: e.name, display: e.display ?? e.name, price, ranged: e.system?.weaponSubtype === "ranged" || e.system?.subType === "ammo", label, hints: tags.hints, epic: isEpicItem(e), psionic: isPsionicItem(e), weight: treasureWeight(e.system?.tags), cat: cat ?? tags.cats[0] ?? null };
+          if (tags.hints.length && price > 0) { tagged.push(entry); for (const h of tags.hints) if (!HINTS.some((b) => sameHint(b, h))) own.add(h); }
           for (const c of new Set([cat, ...tags.cats].filter(Boolean))) {
             (pools[c] ??= []).push(entry);
             st.byCategory[c] = (st.byCategory[c] ?? 0) + 1;
@@ -1479,7 +1493,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
           if (tags.cats.length || tags.hints.length) st.tagged = (st.tagged ?? 0) + 1;
         }
       }
-      compPools = pools; compStats = stats;
+      compPools = pools; compStats = stats; tagPool = tagged;
+      ownHints = [...own].filter((h, i, a) => a.findIndex((x) => sameHint(x, h)) === i).sort((a, b) => a.localeCompare(b));
       kindCache.clear();
       // Extra source kinds are read again too, so the Item Sources tab can show what each compendium supplies (version 9.99)
       await Promise.all(sourceKinds().map((k) => kindItems(k.id, { force: true }).catch(() => [])));
@@ -1496,7 +1511,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
     let pool = allowedByRules(compPools[category] ?? [], { epic }).filter((x) => (x.weight ?? 1) > 0).map((x) => (x.weight === undefined ? { ...x, weight: 1 } : x));
     // A specialty shop's limit for this category (e.g. a bookseller's wondrous items: only those tagged Book)
     const want = hints?.[category];
-    if (want?.length) pool = pool.filter((x) => x.hints?.some((h) => want.includes(h)));
+    if (want?.length) pool = pool.filter((x) => x.hints?.some((h) => want.some((w) => sameHint(w, h))));
     if (tags.includes("ranged") && /weapon$/.test(category)) pool = pool.filter((x) => x.ranged); // a bowyer sells no swords
     if (tags.includes("psionic")) pool = pool.filter((x) => x.psionic); // a psionic shop sells only psionic items (version 9.5)
     if (grade && category.startsWith("magic:")) { const g = pool.filter((x) => gradeOf(x.price) === grade); if (g.length || strictGrade) pool = g; }
@@ -1505,25 +1520,46 @@ const AXECLEFT_TREASURE_HOST = (() => {
   registry.providers.set("axecleft-treasure.compendiums", {
     module: null, name: "compendiums", label: /*t*/"Item compendiums", builtin: true, compendium: true, hints: true,
     categories: Object.keys(CATEGORIES).filter((c) => c !== "gem" && c !== "art"),
-    available: (category, hints) => allowedByRules(compPools[category] ?? []).some((x) => !hints?.length || x.hints?.some((h) => hints.includes(h))),
+    available: (category, hints) => allowedByRules(compPools[category] ?? []).some((x) => !hints?.length || x.hints?.some((h) => hints.some((w) => sameHint(w, h)))),
     async roll({ category, grade, tags = [], merchant, hints = {}, epic = false }) {
       const pool = compPool(category, { grade, tags, hints, epic });
       if (!pool.length) return [placeholder(category, grade)];
-      // Version 9.994: "Treasure weight: n" tags make an item more (or less) likely than the others
-      let r = Math.random() * pool.reduce((a, x) => a + x.weight, 0), pick = pool[pool.length - 1];
-      for (const x of pool) { r -= x.weight; if (r < 0) { pick = x; break; } }
-      const doc = await game.packs.get(pick.pack)?.getDocument(pick.id);
-      if (!doc) return [placeholder(category, grade)];
-      const data = doc.toObject();
-      delete data._id; delete data.folder; delete data.sort;
-      const fix = applyPriceCorrection(pick.pack, data);
-      let qty = Number(data.system?.quantity) || 1;
-      if (category === "standard:ammo" && merchant) qty = /\(\d+\)/.test(pick.name) ? Math.max(1, Math.round(rollDice("1d4"))) : Math.round(rollDice("2d4*10"));
-      foundry.utils.setProperty(data, "system.quantity", qty);
-      const sum = t(qty > 1 ? "{category}, {gp} each; from {source}" : "{category}, {gp}; from {source}", { category: catLabel(category), gp: gp(pick.price), source: pick.label });
-      return [{ name: qty > 1 ? `${data.name} (${qty})` : data.name, data, summary: `${sum}${fix ? ` ${t("(price corrected)")}` : ""}` }];
+      return [await compItem(weightedPick(pool), category, { merchant, grade })];
     },
   });
+  /** Version 9.994: "Treasure weight: n" tags make an item more (or less) likely than the others. */
+  function weightedPick(pool) {
+    let r = Math.random() * pool.reduce((a, x) => a + (x.weight ?? 1), 0), pick = pool[pool.length - 1];
+    for (const x of pool) { r -= x.weight ?? 1; if (r < 0) { pick = x; break; } }
+    return pick;
+  }
+  /** A generator entry for a compendium item picked from a pool. */
+  async function compItem(pick, category, { merchant = false, grade = null } = {}) {
+    const doc = await game.packs.get(pick.pack)?.getDocument(pick.id);
+    if (!doc) return placeholder(category, grade);
+    const data = doc.toObject();
+    delete data._id; delete data.folder; delete data.sort;
+    const fix = applyPriceCorrection(pick.pack, data);
+    let qty = Number(data.system?.quantity) || 1;
+    if (category === "standard:ammo" && merchant) qty = /\(\d+\)/.test(pick.name) ? Math.max(1, Math.round(rollDice("1d4"))) : Math.round(rollDice("2d4*10"));
+    foundry.utils.setProperty(data, "system.quantity", qty);
+    const sum = t(qty > 1 ? "{category}, {gp} each; from {source}" : "{category}, {gp}; from {source}", { category: category ? catLabel(category) : t("Item"), gp: gp(pick.price), source: pick.label });
+    return { name: qty > 1 ? `${data.name} (${qty})` : data.name, data, summary: `${sum}${fix ? ` ${t("(price corrected)")}` : ""}` };
+  }
+  /**
+   * Version 9.996: shop types can sell items by Shop tag, whatever their kind ("Shop: Statue", "Shop: Diamond").
+   * shopHints(): the built-in specialties and your own tags found in the item sources. rollTagged(tag) picks one
+   * item carrying the tag from the item sources (Treasure weight counts; epic and psionic items follow the campaign switches).
+   */
+  const shopHints = () => [...HINTS, ...ownHints];
+  const taggedPool = (tag, { epic = false } = {}) => allowedByRules(tagPool.filter((x) => x.hints?.some((h) => sameHint(h, tag))), { epic }).filter((x) => (x.weight ?? 1) > 0);
+  const hasTagged = (tag) => taggedPool(tag, { epic: true }).length > 0;
+  async function rollTagged(tag, { merchant = true, epic = false } = {}) {
+    const pool = taggedPool(tag, { epic });
+    if (!pool.length) return [];
+    const pick = weightedPick(pool);
+    return [{ ...(await compItem(pick, pick.cat, { merchant })), category: pick.cat }];
+  }
 
   /* ------------------------------------------ */
   /*  Rolling the Treasure table                */
@@ -1584,7 +1620,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
       else {
         const amount = Math.round(rollDice(dice));
         const nm = currencies().name(type);
-        const shown = nm === type ? type : `${nm} (${type})`;
+        // a renamed coin shows its code too ("Crowns (gp)"); in another language the name is the translation ("PO"), so it stands alone
+        const shown = nm === type ? t(type) : locale() === "en-US" ? `${nm} (${type})` : nm;
         notes.push(t("Coins d% {roll}: {dice} {coin} → {amount} {coin}", { roll: r, dice: diceText(dice), coin: shown, amount: num(amount) }));
         entries.push({ coins: { [type]: amount }, name: `${num(amount)} ${shown}` });
       }
@@ -2909,6 +2946,87 @@ const AXECLEFT_TREASURE_HOST = (() => {
     }
   }
 
+  /* ------------------------------------------ */
+  /*  Tours (version 9.995, Axecleft's Tools 9.7) */
+  /* ------------------------------------------ */
+
+  const TREASURE_APP = "axecleft-treasure-generator";
+  /** A tour's first step: the tab's button. */
+  const tourTabStep = (tab, title, content) => ({ id: "tab", sel: `[data-tab-btn="${tab}"]`, title, content, direction: "DOWN" });
+  /** The last steps of every tab that makes treasure: where it goes, and Generate. */
+  function tourFooter() {
+    return [
+      { id: "dest", sel: "fieldset.atg-dest", title: /*t*/"Put items in",
+        content: /*t*/"Where the results go: each selected token (each gets its own roll), an actor or token you choose (or drag one onto the window), the Items sidebar, or only a chat card with a Create Item button for each result.\nItems given to a token or actor arrive with their true value rolled, ready to loot; items in the sidebar or the chat card start unappraised." },
+      { id: "generate", sel: "[data-action=generate]", title: /*t*/"Generate", direction: "UP",
+        content: /*t*/"Makes the treasure and posts a chat card, whispered to the GM, listing each result with a short summary. The window remembers your choices on each tab for next time." },
+    ];
+  }
+  /** Opens the Treasure Generator on a tab, for a tour. */
+  const tourOpen = (tab) => async () => {
+    open(tab);
+    for (let i = 0; i < 40 && !document.getElementById(TREASURE_APP)?.querySelector(`[data-tab-btn="${tab}"].active`); i++) await new Promise((r) => setTimeout(r, 50));
+  };
+  /** The tours of the built-in tabs, listed under the module that hosts the Treasure Generator. */
+  function registerTours() {
+    const R = globalThis.AxecleftTools?.registerTour;
+    if (!R) return;
+    const mod = () => host();
+    const key = (id) => `${host()}.${id}`;
+    R({ module: mod, id: "treasure-by-level", app: TREASURE_APP, tab: "t-treasure-level", open: tourOpen("t-treasure-level"),
+      title: /*t*/"Treasure Generator: Treasure by Level", description: /*t*/"Roll the SRD Treasure table for an encounter level, and set how coins are paid.",
+      next: [() => key("generation-settings")],
+      steps: [
+        tourTabStep("t-treasure-level", /*t*/"Treasure by Level", /*t*/"This tab rolls the SRD Treasure table for an encounter level: coins, goods (gems and art) and items. Each part is made by the module that handles it."),
+        { id: "level", field: "lvl.level", title: /*t*/"Encounter Level", content: /*t*/"The encounter level to roll for, 1 to 30. EL 21 to 30 use the EL 20 row plus the DMG's extra major items." },
+        { id: "roll", field: "lvl.coins", title: /*t*/"Roll", content: /*t*/"Which columns of the table to roll: Coins, Goods and Items. Untick one to leave it out." },
+        { id: "count", field: "lvl.count", title: /*t*/"Treasure rolls", content: /*t*/"How many times the table is rolled for each target." },
+        { id: "preview", sel: "[data-preview=lvl]", title: /*t*/"The table row", content: /*t*/"The SRD row for this level: the d% ranges for coins, goods and items." },
+        { id: "sources", sel: "section.active table.atg-sources", title: /*t*/"Who makes each part", content: /*t*/"Each kind of treasure and the module that makes it. A ✔ means it is made for you; anything whose module isn't active is listed in the chat card for you to handle by hand." },
+        { id: "coins", sel: "[data-sec=coins]", title: /*t*/"Coins", content: /*t*/"How rolled coins are paid: into D35E's coins, a custom currency, or as rolled. Saved for this world." },
+        { id: "gen", sel: "[data-sec=gen] > summary", title: /*t*/"Generation settings", content: /*t*/"The extras that random magic items can get (light, intelligence, inscriptions, sizes, poisons, curses) and the campaign switches for psionics and epic items. They have their own tour." },
+        ...tourFooter(),
+      ] });
+    R({ module: mod, id: "generation-settings", app: TREASURE_APP, tab: "t-treasure-level", open: tourOpen("t-treasure-level"),
+      title: /*t*/"Treasure Generator: Generation settings", description: /*t*/"The campaign switches and the extras random magic items can get. Saved for the world.",
+      next: [() => key("token-loot")],
+      steps: [
+        { id: "section", sel: "[data-sec=gen] > summary", title: /*t*/"Generation settings", content: /*t*/"These settings are saved for the world, the moment you change them, and every Axecleft module follows them: treasure, merchants, crafting and the Forge." },
+        { id: "campaign", field: "gen.rules.psionics", title: /*t*/"Campaign", content: /*t*/"Psionics: off hides psionic items, powers and their crafting everywhere.\nEpic items: on lets the Forge and crafting make epic items and epic merchants stock them; at EL 21+ this share of the extra major items are epic." },
+        { id: "extras", sel: "[data-sec=gen] .atg-checks:has([name='gen.light.enabled'])", title: /*t*/"Random extras", content: /*t*/"Turn on or off, for all random magic items: light, intelligence and inscription hints (a word or symbol that hints at the item's power)." },
+        { id: "table", sel: ".atg-gen-table", title: /*t*/"Chances by kind of item", content: /*t*/"For each kind of item, the chance it sheds light (and how far), is intelligent, or carries an inscription hint. Untick a box or set 0% to turn one off." },
+        { id: "purpose", field: "gen.intelligence.purpose.on", title: /*t*/"Special purpose", content: /*t*/"Shown with D35E 3.1 or later (which has intelligent items): how often an intelligent item gets a special purpose and a dedicated power instead of one of its powers. SRD: an item with greater powers can (the SRD doesn't say how often; by default always). With only lesser powers it is a house rule (by default never).\nThe Forge and the Curios tab can also give an item a purpose of your own words, as an extra." },
+        { id: "look", field: "gen.light.themes", title: /*t*/"How light looks", content: /*t*/"Light color and animation can follow the item's abilities (fire glows orange), stronger items glow brighter, and shine farther per +1 above +2." },
+        { id: "sizes", field: "gen.size.enabled", title: /*t*/"Sizes of arms", content: /*t*/"SRD: random weapons and armor are Small 30%, Medium 60% and another size 10%. Untick for all Medium." },
+        { id: "poison", field: "gen.poison.enabled", title: /*t*/"Poisons", content: /*t*/"A share of mundane item rolls become a poison from your item sources (house rule)." },
+        { id: "sources", field: "gen.sources.enabled", title: /*t*/"Your item compendiums", content: /*t*/"How much of the treasure and merchant stock comes from your own Item compendiums instead of the SRD tables." },
+        { id: "curses", field: "gen.curse.enabled", title: /*t*/"Cursed items", content: /*t*/"How often magic items are cursed (a flat rate, or by grade), whether specific cursed items from the SRD table appear, whether simple effects are applied, and whether merchant stock can be cursed.\nCreate the curse buffs compendium makes every curse a buff you can drag onto a character." },
+        { id: "reset", sel: "[data-gen-reset]", title: /*t*/"Reset to Defaults", direction: "UP", content: /*t*/"Puts every Generation setting back to the SRD and Axecleft defaults." },
+      ] });
+    R({ module: mod, id: "token-loot", app: TREASURE_APP, tab: "t-token-loot", open: tourOpen("t-token-loot"),
+      title: /*t*/"Treasure Generator: Token Loot", description: /*t*/"Give each NPC token its own treasure by its Challenge Rating.",
+      next: [() => key("lists")],
+      steps: [
+        tourTabStep("t-token-loot", /*t*/"Token Loot", /*t*/"Each NPC token gets its own roll on the SRD Treasure table at its Challenge Rating, scaled by the Treasure setting on its NPC sheet. The loot goes into that token's inventory and purse, ready to loot."),
+        { id: "selected", sel: "section.active fieldset:first-of-type", title: /*t*/"Selected tokens", content: /*t*/"The tokens selected on the scene, with their CR and Treasure setting. Select tokens, then press Refresh to update the list." },
+        { id: "buttons", sel: "section.active .atg-footer:has([data-loot=roll])", title: /*t*/"Roll or clear", direction: "UP", content: /*t*/"Roll Loot gives each selected token its treasure. Clear Loot takes back only what the generator put there. Refresh re-reads the selection. The same roll is on the token toolbar." },
+        { id: "parts", field: "loot.coins", title: /*t*/"Roll", content: /*t*/"Which parts to roll (coins, goods, items), and whether to replace loot rolled before." },
+        { id: "traps", field: "loot.trapShare", title: /*t*/"Trap loot", content: /*t*/"Traps can carry the belongings of earlier victims: select trap tokens and roll. This share of a creature's treasure for the trap's CR. Never automatic." },
+        { id: "auto", field: "loot.auto", title: /*t*/"Automatic loot", content: /*t*/"Roll loot by itself when an unlinked NPC token is placed on a scene, with an optional chat card, and for hidden tokens too. Saved for this world." },
+      ] });
+    R({ module: mod, id: "lists", app: TREASURE_APP, tab: "t-axecleft-treasure-lists", open: tourOpen("t-axecleft-treasure-lists"),
+      title: /*t*/"Treasure Generator: Lists", description: /*t*/"Add your own entries (gems, materials, curses, price corrections…) and switch off built-in ones.",
+      steps: [
+        tourTabStep("t-axecleft-treasure-lists", /*t*/"Lists", /*t*/"Your own entries for every Axecleft module: gems, art, materials, curses, price corrections and more. They live in the Treasure Lists journal, which you can also edit directly."),
+        { id: "counts", sel: "table.atg-counts", title: /*t*/"Your lists", content: /*t*/"Each list, how many entries you have added, and how many built-in entries you have switched off." },
+        { id: "library", sel: ".atg-footer:has([data-lists=openJournal])", title: /*t*/"Journal and library", content: /*t*/"Open the Lists journal, or save and load the shared library: a file in your Foundry Data folder that every world on this server loads, which module updates never touch." },
+        { id: "list", field: "lists.sel", title: /*t*/"List", content: /*t*/"Choose the list to work on. The boxes below change to its columns." },
+        { id: "add", sel: "[data-list-form]:not([style*='none']) fieldset:first-of-type", title: /*t*/"Add to a list", content: /*t*/"Fill in the boxes (hover a label for help) and press Add to List. Your entries are listed under Your entries, where a click removes one." },
+        { id: "off", sel: "[data-list-form]:not([style*='none']) fieldset:nth-of-type(2)", title: /*t*/"Switch off built-in entries", content: /*t*/"Type the name of a built-in entry and where to switch it off; it is never used again until you remove it from the list below." },
+        { id: "server", sel: "fieldset:has([data-lists=export])", title: /*t*/"Another Foundry server", direction: "UP", content: /*t*/"Export downloads all your lists as a file; Import merges such a file in. Handy for moving to another server." },
+      ] });
+  }
+
   let APP = existing?._app ?? null;
   function open(tab = null) {
     if (!game.user.isGM) return ui.notifications.warn(t("Only the GM can generate treasure."));
@@ -2925,6 +3043,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
   const api = {
     version: AXECLEFT_TREASURE_VERSION, registry, hosts, CATEGORIES,
     open, registerTab, registerButton, registerProvider, providerFor, currencies, convertCoins, coinSettings,
+    // Version 9.995: tours of the tabs (Axecleft's Tools 9.7)
+    tourFooter, tourOpen, tourTabStep,
     runGeneration, generateTreasure, rollTreasure, rollCreationChanges, resolveDestination,
     // Version 9.7: token loot by CR
     lootToken, lootTokens, clearLoot, clearLootTokens, crOf, treasurePct,
@@ -2945,6 +3065,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
     rules, registerItemMarks, isEpicItem, isPsionicItem, allowedByRules,
     enhanceDatalists,
     tagSuggestions, applyShopTags, readShopTags, writeShopTags, TAG_LABELS, SHOP_HINTS: HINTS,
+    // Version 9.996: your own Shop tags, and shop types that sell by tag
+    shopHints, hasTagged, rollTagged,
     get compendiumStats() { return compStats; },
     // Shared custom lists
     registerList, customList, listRows, disabledEntries, JOURNAL_NAME,
@@ -3013,6 +3135,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
       let ct = null; // keep the Token Loot tab's list of selected tokens current
       Hooks.on("controlToken", () => { clearTimeout(ct); ct = setTimeout(() => { const app = globalThis.AxecleftTreasure._app; if (app?.rendered && app.tab === "t-token-loot") app.render(); }, 150); });
       Hooks.callAll("axecleftTreasure.ready", api);
+      try { registerTours(); } catch (err) { console.warn("AxecleftTreasure | tours", err); }
       const h = host();
       globalThis.AxecleftTools?.register({
         module: h ?? "axecleft-treasure", name: "treasure-generator", title: /*t*/"Treasure Generator", icon: "fas fa-gem",

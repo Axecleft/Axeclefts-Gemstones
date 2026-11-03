@@ -3,6 +3,21 @@
 File: scripts/axecleft-treasure.js. Ship the same copy in every Axecleft treasure module; the highest version runs.
 
 
+## Version 9.996
+
+- **Special purpose instead of a power** (Generation settings; suggested by Gilgalad). The SRD gives an intelligent item with greater powers a special purpose and a dedicated power *instead of* one greater power; before, the purpose came on top of its powers. Now it takes the place of one, and there are two percentages:
+  - **% of intelligent items with greater powers** (SRD, default 100%): they trade one greater power for the purpose and dedicated power.
+  - **% of those with only lesser powers** (house rule, default 0%): they trade one lesser power for it.
+  - Your saved settings carry over: "always with greater powers" becomes 100%, and the old "% of the others" becomes the lesser-powers %. A purpose chosen by hand in the Forge or the Curios tab is still an extra.
+- **Shop tags of your own** (suggested by Gilgalad): any `Shop:` word that isn't a category is now a tag of your own (`Shop: Statue`, `Shop: Holy`), found when the item sources are scanned. `T.shopHints()` lists the built-in specialties and yours; `T.rollTagged(tag)` and `T.hasTagged(tag)` let shop types sell items by tag, whatever kind of item they are (Merchant Generator 7.96). Specialty tags are matched without regard to case.
+- Gems and art for Treasure by Level and merchants: a roll can be limited to gems or art objects whose names contain given words (`goods: { gems, objects }`, Gemstones), for shop types such as a diamond merchant.
+- In a world in another language, a loot card's coins read *40 PO* (the translated coin name alone), not *40 PO (gp)*. A coin renamed in D35E's Currency names still shows its code in English worlds (*40 Crowns (gp)*).
+- The Generation settings tour's **Special purpose** step says the Forge and the Curios tab can also give an item a purpose in your own words.
+
+## Version 9.995
+
+- **Tours** (Axecleft's Tools 9.7, Foundry 13+): the Treasure by Level, Generation settings, Token Loot and Lists tabs each have a tour in Configure Settings → Tour Management and in the window's ⋮ menu (**Tour of this tab**). `T.tourFooter()`, `T.tourOpen(tab)` and `T.tourTabStep(tab, title, text)` help other modules write tours of their own tabs.
+
 ## Version 9.994
 
 - **Your item compendiums** (Generation settings, new row): how much treasure and merchant stock comes from your Item compendiums where an Axecleft module also supplies the kind of item (asked by Gilgalad).

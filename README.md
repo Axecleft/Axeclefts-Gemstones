@@ -3,6 +3,20 @@
 
 Changelog:
 
+v1.14.6.24:
+
+- Suggested by Gilgalad: a rolled **special purpose** for intelligent items (Armory, Curios) takes the place of a power, as the SRD has it (two percentages in Generation settings: items with greater powers, default 100%, and items with only lesser powers, default 0%; your settings carry over), and shop types can sell **items by Shop tag**, including tags of your own (`Shop: Statue`), and only **gems or art objects named** with your words (a diamond merchant). Treasure Generator 9.996 and Merchant Generator 7.96.
+- Ships Axecleft's Tools 9.71: **tours**. Foundry's own guided tours (Configure Settings → **Tour Management**) walk through a window one tab at a time, pointing out what each part of the tab does. Each Axecleft window with tours also has **Tour of this tab** in its ⋮ menu (top right), or a **Tour** button in its title bar on Foundry 11, and the welcome window has **Take a tour**, which opens Tour Management. Foundry 11, 13 and 14.
+- Ships the Merchant Generator 7.96 and **Axecleft's Shop** (new): merchants get Axecleft's own sheet. Players need only Limited or Observer on a merchant; every purchase and sale is carried out by the GM's game, coins really change hands (with change), the merchant's purse pays for what it buys, trade goods have their own sell and buy % (a world house rule, SRD 100%, or per shop), and the GM can let players haggle (Diplomacy, Intimidate or Bluff, GM approval). D35E's loot sheet is no longer needed for merchants. Players can also try pickpocketing and shoplifting (Sleight of Hand against the target's Spot; the GM decides each attempt on a card in chat, with a time-out and a shop lock-out); the sheet is on D35E's parchment. A merchant's **Security** (guards, a watchful owner, locked goods, magic wards, or a careless or crowded shop) changes the DCs and its Spot. The same sheet serves **loot piles and party storage** (take, put in, split coins, sneak things out), with **locks** (keys, Open Lock, forcing, breaking, *knock*) and **traps** (simple, or a trap from Axecleft's Traps).
+- Ships the Treasure Generator 9.995: tours of the **Treasure by Level**, **Generation settings**, **Token Loot** and **Lists** tabs, and every treasure tab's tour ends with Put items in and Generate.
+- Tours of the **Gems**, **Art Objects** and **Jewelry** tabs.
+- Ships the Merchant Generator 7.94: tours of the Merchant, Shop Types, People, Item Sources and Shop Tags tabs.
+- Axecleft's Shop 1.31–1.34: the merchant's **log** (sales, purchases, haggling, pickpocketing, shoplifting, lock-outs), a **basket** to buy several things at once, item **descriptions** on hover or click (the unidentified one for an unidentified item), and the item list keeps its place when the sheet redraws.
+- Ships the Treasure Generator 9.996: in another language a loot card's coins read *40 PO*, not *40 PO (gp)*.
+- French: Gilgalad's corrections from the third review file; texts the language files had missed (Craft progress in silver pieces, a merchant's restock note, hiding an item on the shop sheet) and the new ones drafted for review.
+- Axecleft's Shop 1.35: **tours** of the shop sheet, for players (**Buying and selling**; **Loot and party storage**) and for the GM (**the merchant**: prices, haggling, security, purse, restock, log, stock; **loot and party storage**: who opens it, coins, lock, container, trap). Start them from the sheet's ⋮ menu (**Tour of this window**) or Tour Management. While a tour runs, the sheet shows an example of the parts it points at that aren't there yet (haggling, a basket, a lock, the log) (Shop 1.36).
+- Ships Axecleft's Tools 9.72: searchable lists can have headings that divide them.
+
 v1.14.6.23:
 
 - **Full Resale Price** (D35E) for gems, jewelry and art objects: they are trade goods, so merchants buy and sell them at their full value (reported by Gilgalad). On by default with the new setting **Full resale price for gems, jewelry and art**; it applies to generated pieces and to gems taken from this module's compendiums, whose SRD gems now have it on too. Off: merchants buy them at half price, like other items.

@@ -360,13 +360,33 @@ const LIST_KEYS = LIST_DEFS.map((d) => d.key);
 /*  Provider: gems and art for Treasure by Level */
 /* -------------------------------------------- */
 
+/** A shop type's goods limit as words ("diamond, Ruby" → ["diamond", "ruby"]). */
+const goodsWords = (v) => (Array.isArray(v) ? v : String(v ?? "").split(/[,;\n]/)).map((w) => String(w).trim().toLowerCase()).filter(Boolean);
+/** Does a gem or object name (English, or as this world shows it) contain one of the words? */
+const goodsFit = (name, words) => { const n = [name, t(name)].map((x) => String(x ?? "").toLowerCase()); return words.some((w) => n.some((x) => x.includes(w))); };
+const pickRandom = (list) => list[Math.floor(Math.random() * list.length)];
+
 const PROVIDER = {
   module: MOD, name: "goods", label: "Axecleft's Gemstones", categories: ["gem", "art"],
-  async roll({ category, form }) {
+  /** goods (Merchant Generator 7.96 shop types): { gems: "diamond, ruby", objects: "statue, idol" } limits what is rolled. */
+  async roll({ category, form, goods = null }) {
     const cat = await catalog();
-    if (category === "gem") return [entry(cat, C.rollGem(cat, gemOptions(form)))];
+    if (category === "gem") {
+      const opts = gemOptions(form), words = goodsWords(goods?.gems);
+      if (!words.length) return [entry(cat, C.rollGem(cat, opts))];
+      const pool = C.gemsFor(cat, { sources: opts.sources }).filter((g) => goodsFit(g.name, words));
+      if (!pool.length) return [];
+      // the SRD's odds among the values the matching gems have, then a gem of that value
+      const grade = C.weighted(cat.grades.filter((gr) => pool.some((g) => g.grade === gr.value))).value;
+      const gem = pickRandom(pool.filter((g) => g.grade === grade));
+      return [entry(cat, C.rollGem(cat, { ...opts, gem: `${gem.source}|${gem.name}` }))];
+    }
     const withJewelry = form?.elements["art.withJewelry"] ? form.elements["art.withJewelry"].checked : true;
-    return [entry(cat, C.rollArt(cat, { kind: withJewelry ? "any" : "art", ...artOptions(form, "art") }))];
+    const kind = withJewelry ? "any" : "art", words = goodsWords(goods?.objects);
+    if (!words.length) return [entry(cat, C.rollArt(cat, { kind, ...artOptions(form, "art") }))];
+    const objects = C.objectsFor(cat, kind).filter((o) => goodsFit(o.name, words));
+    if (!objects.length) return [];
+    return [entry(cat, C.rollArt(cat, { kind, ...artOptions(form, "art"), object: pickRandom(objects).name }))];
   },
   async recreate(spec) { return C.itemData(await catalog(), spec); },
 };
@@ -459,12 +479,62 @@ async function packsFullResale() {
   }
 }
 
+/* -------------------------------------------- */
+/*  Tours (Axecleft's Tools 9.7)                */
+/* -------------------------------------------- */
+
+/** A tour of each tab: Configure Settings → Tour Management, or the Treasure Generator's ⋮ menu. */
+function registerTours(hub) {
+  const R = globalThis.AxecleftTools?.registerTour;
+  if (!R || !hub.tourOpen) return;
+  const APP = "axecleft-treasure-generator", tab = (n) => `t-${MOD}-${n}`;
+  R({ module: MOD, id: "gems", app: APP, tab: tab("gems"), open: hub.tourOpen(tab("gems")), next: [`${MOD}.art`],
+    title: /*t*/"Treasure Generator: Gems", description: /*t*/"Make gems, chosen or rolled, with the homebrew sizes and qualities.",
+    steps: [
+      hub.tourTabStep(tab("gems"), /*t*/"Gems", /*t*/"This tab makes gems. Every choice can be set by hand or left on Random."),
+      { id: "lists", field: "src.srd", title: /*t*/"Gem lists", content: /*t*/"Which gem lists to roll from: the SRD's 67 gems, 376 homebrew varieties, and your own Custom gems from the Lists tab. The count of each is shown." },
+      { id: "grade", field: "gem.grade", title: /*t*/"Base value", content: /*t*/"One of the SRD gem values (10 to 5,000 gp, with the SRD's dice), or Random with the SRD's odds." },
+      { id: "gem", field: "gem.gem", title: /*t*/"Gem", content: /*t*/"A specific gem from the ticked lists, or Random. The list follows the base value." },
+      { id: "variations", field: "gem.variations", title: /*t*/"Size & quality", content: /*t*/"Ticked, gems also get a size and a quality that multiply their value (homebrew). The default is a module setting." },
+      { id: "size", field: "gem.size", title: /*t*/"Size", content: /*t*/"Tiny ×0.25 to Huge ×5, or Random (5/15/60/15/5)." },
+      { id: "quality", field: "gem.quality", title: /*t*/"Quality", content: /*t*/"Flawed ×0.25 to Exceptional ×5, or Random (5/15/60/15/5)." },
+      { id: "preview", sel: "[data-preview=gem]", title: /*t*/"Preview", content: /*t*/"The true value: the dice × size × quality. Players see a rough value and the gem's simpler appraised name until it is appraised." },
+      { id: "count", field: "gem.count", title: /*t*/"How many", content: /*t*/"How many to make for each target." },
+      ...hub.tourFooter(),
+    ] });
+  for (const [kind, next, title, description, intro, object] of [
+    ["art", `${MOD}.jewelry`, /*t*/"Treasure Generator: Art Objects", /*t*/"Make art objects from an object, a material, a gemstone and a workmanship.",
+      /*t*/"This tab makes art objects: an object, the material it is made of, an optional gemstone and a workmanship. Every choice can be set by hand or left on Random.",
+      /*t*/"What it is (an amphora, a statuette, a book…), or Random. Each object has a construction (molded, carved, clothing or book) that decides which materials suit it. Premade pieces have their own groups."],
+    ["jewelry", null, /*t*/"Treasure Generator: Jewelry", /*t*/"Make jewelry from a piece, a material, a gemstone and a workmanship.",
+      /*t*/"This tab makes jewelry: a piece, the material it is made of, an optional gemstone and a workmanship. Every choice can be set by hand or left on Random.",
+      /*t*/"The piece (a ring, a tiara, a brooch…), or Random. Its construction decides which materials suit it."],
+  ]) {
+    R({ module: MOD, id: kind, app: APP, tab: tab(kind), open: hub.tourOpen(tab(kind)), next: next ? [next] : [],
+      title, description,
+      steps: [
+        hub.tourTabStep(tab(kind), kind === "art" ? /*t*/"Art Objects" : /*t*/"Jewelry", intro),
+        { id: "value", field: `${kind}.level`, title: /*t*/"Value", content: /*t*/"One of the SRD's 12 art values, from 1d10×10 gp to 2d6×1,000 gp, or Random with the SRD's odds." },
+        { id: "object", field: `${kind}.object`, title: kind === "art" ? /*t*/"Object" : /*t*/"Piece", content: object },
+        { id: "material", field: `${kind}.material`, title: /*t*/"Material", content: /*t*/"What it is made of. Only materials that suit the object are offered, grouped by whether they suit the value; Random picks a fitting one." },
+        { id: "gem", field: `${kind}.gem`, title: /*t*/"Gemstone", content: /*t*/"A gem set into it, None, or Random (more likely at higher values). Each gem shows the values it appears at." },
+        { id: "variations", field: `${kind}.variations`, title: /*t*/"Quality", content: /*t*/"Ticked, the piece gets a workmanship that multiplies its value (homebrew). The default is a module setting." },
+        { id: "quality", field: `${kind}.quality`, title: /*t*/"Workmanship", content: /*t*/"Junk ×0.25 to Masterpiece ×5, or Random (5/15/60/15/5)." },
+        ...(kind === "art" ? [{ id: "jewelry", field: "art.withJewelry", title: /*t*/"Treasure by Level", content: /*t*/"Ticked, art rolled on the Treasure by Level tab can come out as jewelry too." }] : []),
+        { id: "preview", sel: `[data-preview=${kind}]`, title: /*t*/"Preview", content: /*t*/"The value range of your choices and how many combinations are possible." },
+        { id: "count", field: `${kind}.count`, title: /*t*/"How many", content: /*t*/"How many to make for each target." },
+        ...hub.tourFooter(),
+      ] });
+  }
+}
+
 if (globalThis.Hooks) {
   const hub = T();
   if (hub) {
     hub.registerTab(GEM_TAB);
     hub.registerTab(artTab("art", 20));
     hub.registerTab(artTab("jewelry", 30));
+    registerTours(hub);
     hub.registerProvider(PROVIDER);
     if (hub.registerList) for (const d of LIST_DEFS) hub.registerList({ module: MOD, prepare: loadData, ...d });
     else console.error(`${MOD} | the shared Treasure Generator script is older than version 8; custom lists are unavailable.`);

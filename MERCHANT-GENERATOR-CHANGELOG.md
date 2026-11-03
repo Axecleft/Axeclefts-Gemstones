@@ -2,6 +2,75 @@
 
 File: scripts/axecleft-merchants.js. Ship the same copy in every Axecleft module, listed in module.json "esmodules" after axecleft-tools.js and axecleft-treasure.js (version 9 or later for this version). The highest version runs.
 
+## Axecleft's Shop 1.37
+
+- Foundry v11: the shop sheet registers again, so a generated merchant opens on it (and Axecleft's Shop shows in the actor's Sheet choices). Item descriptions on the sheet show their links and rolls on v11 too.
+
+## Axecleft's Shop 1.36
+
+- Tours point at the sheet they opened (not another shop sheet open behind it), and start on the Buy list.
+- While a tour runs, its sheet shows an example of the parts it points at that aren't there yet: the haggling buttons and Pick a pocket (when the shop doesn't allow them), a basket, a closed container's lock buttons (on an open one) and an empty log. Their buttons don't work, and they go when the tour ends.
+
+## Axecleft's Shop 1.35
+
+- **Tours** of the shop sheet (Axecleft's Tools 9.7, Foundry 13+). Players: **Axecleft's Shop: buying and selling** (trading as, haggling, Buy and Sell, item descriptions, the basket, sleight of hand) and **Axecleft's Shop: loot and party storage** (locks and traps, coins and splitting, taking items, sneaking things out, the log). GM: **the merchant (GM)** (prices and trade goods, who can trade, haggling, pickpocketing and security, purse, restock, log, the stock, character sheet) and **loot and party storage (GM)** (who opens it, coins, lock, container, trap, opening and closing it). The sheet's ⋮ menu has **Tour of this window**: the GM's tour for a GM, the players' for players, for the kind of sheet open. A tour opens a sheet of its kind when none is open.
+- The script's header describes the merchant, loot and party storage sheets and all their saved settings.
+
+## Axecleft's Shop 1.34
+
+- Texts the language files had missed: the eye that hides an item from players (*Hide from players* / *Hidden from players: show*) and a decided pickpocketing card's fallback (*Decided*).
+
+## Axecleft's Shop 1.31: the merchant's log and a basket
+
+- **Item descriptions** (1.32): rest the pointer on an item's name for a pop-up of its description; click the name to keep it open under the item (click again to close). An unidentified item shows players its unidentified description; the GM sees both. On the Buy and Sell lists and in loot.
+- The item list keeps its place when the sheet redraws (opening a description, the basket, a trade) instead of jumping back to the top (1.33).
+- **Log** (in the shop sheet's GM settings): every sale and purchase, haggle, pickpocketing and shoplifting attempt (rolls and outcome) and lock-out, with the date and time, newest first. Clear it there. Loot piles keep the same log; players see party storage's (not what was sneaked out).
+- **Basket**: the cart beside **Buy** adds one at a time (up to what's in stock); the basket above the list shows the total (red when the character can't afford it), takes one off with −, and **Buy all** pays for everything in one go.
+
+## Axecleft's Shop 1.3: loot, party storage, locks and traps
+
+Ships with Merchant Generator 7.96 (same file, `scripts/axecleft-trade.js`).
+
+- **Loot and Party storage**: the same sheet for loot piles and the party's stash. Right-click an NPC actor in the Actors sidebar: **Make it a loot container** or **Make it party storage** (or pick the sheet in its GM settings). Players with Limited or Observer take items and coins, put things in (drop an item on the sheet), and split the coins equally among the party (the GM, or players if allowed); what can't be shared stays. Takes are in chat (everyone, GM only or not shown) and in a log (players see party storage's log).
+- **Sneaking things out**: the hand beside **Take** slips an item or coins away without the others knowing. Sleight of Hand against the Spot of the other players' characters; only the GM is told, on a card that can tell those who noticed.
+- **Locks** (unlocked unless the GM sets one): lock quality and Open Lock DC (SRD: very simple 20, average 25, good 30, amazing 40), a key (an item by name), *arcane lock* (+10), the container's hardness, hit points and Break DC (SRD small chest 5/1/17, treasure chest 5/15/23). Players use the key, pick the lock (roll, take 10 or 20; thieves' tools −2 without, +2 masterwork), cast *knock* or ring a chime of opening, force it (Strength against the Break DC) or break it (damage less hardness).
+- **Traps** (none unless the GM arms one): a simple trap (Search DC, Disable Device DC, a Reflex, Fortitude or Will save and DC, damage, half or none on a save, poison text), or a trap actor from Axecleft's Traps, Poisons, and Diseases (its DCs; its card opens the trap's sheet with the victim targeted). Search finds it (over DC 20 only with trapfinding); Disable Device disarms it, failing by 5 or more sets it off; opening it unaware sets it off. When it goes off, the victim's save and the damage are rolled and the GM applies them.
+- **What needs the GM**: keys, picking the lock, *knock*, opening, searching and disabling go ahead on their own, and the GM is told. Forcing, breaking (noise, damage) and a trap going off come to the GM on a card.
+- D35E's **valuable** items are sold, bought and looted like goods.
+
+## Version 7.96
+
+- **Items by Shop tag** (Shop Types tab; suggested by Gilgalad): a shop type can sell the items in your item sources that carry a Shop tag, whatever kind of item they are, each tag with its own share of the stock like a category. Tags of your own work too: tag your statues `Shop: Statue` on the Shop Tags tab and make a statue carver that sells them. The tags found in your item sources are listed. A shop type can now sell only by tag.
+- **Only gems named / Only art objects named** (Shop Types tab): keep a shop's gems or art objects to those whose names contain one of your words (in English or the world's language): *diamond* for a diamond merchant (every diamond, in every size and quality), *statue, idol* for a sculptor. Gems and art come from Axecleft's Gemstones.
+- The Shop Tags help explains tags of your own, and the Shop Types tour has steps for the new rows.
+- **Security** (a new section on the Merchant tab, under Settlement character; needs Axecleft's Shop 1.21): how well the shop is protected against pickpocketing and shoplifting. Tick any that fit; their changes add up:
+  - Careless / distracted: the merchant's Spot −4, DCs −2. Crowded / busy: Spot −2.
+  - Watchful owner: Spot +4. Guards on duty: Spot +5. Guard animal: Spot +3.
+  - Goods locked away: shoplifting DC +10. Coin kept secure: pickpocketing DC +5.
+  - Magically warded: Spot +10 against shoplifting.
+- Saved with the merchant (a restock with its saved settings keeps it), shown in the generator's chat summary, and editable on the shop sheet's GM settings. The GM's pickpocketing card shows the DC and Spot with the security's share and lists what applied.
+- The new-merchant hint describes Axecleft's Shop sheet when it's loaded.
+- **Character sheet** (GM, top right of the shop sheet): opens the merchant on D35E's own NPC sheet (stats, skills, saves, attacks) beside the shop, which stays its sheet.
+
+## Version 7.95
+
+- **Axecleft's Shop sheet** (new shared script `scripts/axecleft-trade.js`, version 1.3, listed after this one; the module needs `"socket": true`). New and converted merchants get Axecleft's own merchant sheet instead of D35E's loot sheet:
+  - Players need only **Limited** or **Observer** on the merchant (never Owner). Every purchase and sale goes to the GM's game, which checks it and moves the coins and items; without a GM connected, nothing can be traded.
+  - A player trades as their assigned character, or any character they own (chosen on the sheet).
+  - **Buying**: the price is the item's value × the shop's sell % (unappraised goods at their base value); the character pays with the biggest coins that fit and gets change; the merchant's purse gets the money. Partial stacks work.
+  - **Trade goods** (gems, art and jewelry with D35E's Full Resale Price) have their own sell and buy %: the world's house rule in the module settings (**Trade goods: merchants sell at / buy at**, SRD 100%), or a shop's own on its sheet.
+  - **Selling**: the shop's buy % (trade goods at the trade goods %), paid from the merchant's purse: a merchant can't buy what it can't afford. Drop an item from your character onto the sheet to sell it.
+  - **Haggling** (a GM toggle, with the skills the GM allows: Diplomacy, Intimidate, Bluff): the player rolls; the GM approves, changes or refuses the suggested price change (2% for every 5 points over 10, up to 10%), which lasts for that character until reset or a restock.
+  - The GM's settings on the sheet: sell and buy %, open to all players or those set in Ownership, trades in chat (everyone, GM only, not shown), the purse, hidden items, quantities, Restock and the Merchant Generator.
+  - **Pickpocketing and shoplifting** (world setting **Pickpocketing and shoplifting**, on by default; each shop can turn it off): a player picks a merchant's pockets from its sheet, shoplifts an item from its stock (the hand beside **Buy**), or picks anyone's pockets from the token controls (the hand button, on the token they target). They roll Sleight of Hand (SRD: DC 20 to lift something from a person; shoplifting DC 10 for 1 lb or less, 20 for more); the target's Spot is rolled against it. Nobody else sees anything: the GM gets a card in chat with the rolls and a suggested outcome, picks what's taken (a handful of coins or a small item, suggested), and decides. The card also has a **time-out** for the player (no more attempts for 10 minutes to a day), a **lock-out** from the shop (it won't trade with that character until the GM lets them back, also on the sheet) and a box to post the target's reaction (to everyone, or to the player only). Characters a player owns can't be robbed; unowned character actors (an NPC with a familiar, say) can.
+  - The sheet uses D35E's parchment, like its own actor sheets.
+  - A haggle that goes against the character reads "worse prices".
+  - Merchants made before keep working: the sheet reads their saved sell and buy %. Pick **Axecleft's Shop** in an actor's sheet settings to switch one by hand.
+
+## Version 7.94
+
+- **Tours** (Axecleft's Tools 9.7, Foundry 13+): the Merchant, Shop Types, People, Item Sources and Shop Tags tabs each have a tour in Configure Settings → Tour Management and in the window's ⋮ menu (**Tour of this tab**).
+
 ## Version 7.93
 
 - Item Sources: the explanation says merchants and treasure take items from your Item compendiums where no module covers a kind, and otherwise by the share set in Generation settings (Your item compendiums). Needs the Treasure Generator 9.994.

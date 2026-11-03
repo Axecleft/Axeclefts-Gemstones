@@ -15,7 +15,7 @@
  * Other modules can add shop types:
  *   AxecleftMerchants.registerMerchantType({ module, key, label, categories: { "mundane:weapon": 5, ... }, filter, tags });
  */
-const AXECLEFT_MERCHANTS_VERSION = 7.93; // 7.93: the Item Sources tab points to the Item compendiums share in Generation settings; 7.92: numbers right-aligned in their boxes; 7.91: Item Sources show the items found in each compendium of every source list, not only Item compendiums; 7.6: text in the world's language (Axecleft's Tools 8.2 language files); 7.7: shop names through the grammar and word files (Tools 8.4); 7.8: shop words have their own word-file lines (Shop: Anvil); 7.9: Foundry v11 (Tools 9 window and dialogs)
+const AXECLEFT_MERCHANTS_VERSION = 7.96; // 7.96: Security (guards, wards, locked goods…): how hard the shop is to rob (Axecleft's Shop 1.21); 7.95: merchants get Axecleft's own shop sheet (axecleft-trade.js) when it's loaded; 7.94: a tour of each tab (Tour Management, and the window's ⋮ menu); 7.6: text in the world's language (Axecleft's Tools 8.2 language files); 7.7: shop names through the grammar and word files (Tools 8.4); 7.8: shop words have their own word-file lines (Shop: Anvil); 7.9: Foundry v11 (Tools 9 window and dialogs)
 const AXECLEFT_MERCHANTS_HOST = (() => {
   try { return decodeURIComponent(new URL(import.meta.url).pathname).match(/\/modules\/([^/]+)\//)?.[1] ?? null; } catch (e) { return null; }
 })();
@@ -106,6 +106,8 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
   ];
   /** Settlement characters this world can use (the Epic campaign needs the world's Epic items switch). */
   const traitsAvailable = () => TRAITS.filter((t) => !t.needs || !!T()?.rules?.()?.[t.needs]);
+  /** Shop security (Axecleft's Shop 1.21+: how hard the shop is to rob). */
+  const security = () => globalThis.AxecleftTrade?.SECURITY ?? [];
 
   /* ------------------------------------------ */
   /*  Names (built-in lists, original)          */
@@ -206,7 +208,10 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
   };
   /*t*/"Book"; /*t*/"Clothing"; /*t*/"Jewelry"; // Shop tag specialties
   /** "Wondrous items tagged Book" for a shop type's limited category. */
-  const hintLabel = (c, type) => (type?.hints?.[c]?.length ? t("{category} tagged {tags}", { category: catLabel(c), tags: type.hints[c].map((h) => t(h)).join(t(" or ")) }) : catLabel(c));
+  /** Version 7.96: a shop type's "items tagged Shop: X" row is the stock category "tag:X". */
+  const isTagCat = (c) => String(c).startsWith("tag:");
+  const tagLabel = (c) => t("Items tagged \"Shop: {tag}\"", { tag: String(c).slice(4) });
+  const hintLabel = (c, type) => isTagCat(c) ? tagLabel(c) : (type?.hints?.[c]?.length ? t("{category} tagged {tags}", { category: catLabel(c), tags: type.hints[c].map((h) => t(h)).join(t(" or ")) }) : catLabel(c));
   const lines = (s) => String(s ?? "").split(/\r?\n|,/).map((x) => x.trim()).filter(Boolean);
 
   /* ------------------------------------------ */
@@ -365,11 +370,13 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
   /** Effective weights, stock, limit, price and unappraised multipliers after settlement traits. */
   function applyTraits(type, traitKeys = []) {
     const tr = TRAITS.filter((t) => traitKeys.includes(t.key));
-    const weights = Object.fromEntries(Object.entries(type.categories).map(([c, w]) => {
+    const weights = Object.fromEntries(Object.entries(type.categories ?? {}).map(([c, w]) => {
       let m = 1;
       for (const t of tr) m *= t.weights?.[c] ?? (c.startsWith("magic:") ? t.weights?.["magic:*"] ?? 1 : 1);
       return [c, w * m];
     }));
+    // Version 7.96: items by Shop tag ("tag:Statue"), whatever their kind
+    for (const [tag, w] of Object.entries(type.tagged ?? {})) if (Number(w) > 0) weights[`tag:${tag}`] = Number(w);
     const mult = (k) => tr.reduce((a, t) => a * (t[k] ?? 1), 1);
     const epic = tr.some((t) => t.epic) && !!T()?.rules?.()?.epic;
     return { weights, stock: mult("stock"), limit: mult("limit"), price: mult("price"), unappraised: mult("unappraised"), traits: tr, epic };
@@ -393,8 +400,9 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
     const grades = !cap || fx.epic ? ["minor", "medium", "major"] : fx.limit >= 2 ? (SETTLEMENTS[Math.min(SETTLEMENTS.length - 1, SETTLEMENTS.indexOf(town) + 2)].grades) : town.grades;
     const cats = Object.entries(fx.weights).filter(([, w]) => w > 0);
     const hintFor = (c) => type.hints?.[c] ?? null;
-    const available = cats.filter(([c]) => hub.hasProvider(c, hintFor(c)));
-    const missing = cats.filter(([c]) => !hub.hasProvider(c, hintFor(c))).map(([c]) => c);
+    const has = (c) => (isTagCat(c) ? !!hub.hasTagged?.(c.slice(4)) : hub.hasProvider(c, hintFor(c)));
+    const available = cats.filter(([c]) => has(c));
+    const missing = cats.filter(([c]) => !has(c)).map(([c]) => c);
     if (!available.length) return { items: [], missing, skipped: 0, type, town, fx, limit };
 
     let count = Number.isFinite(opts.count) ? opts.count : Math.round(roll(opts.stock || town.stock) * fx.stock);
@@ -405,19 +413,21 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
     const exclude = new Set(); // version 7.5: an epic item isn't stocked twice
     let skipped = 0;
     for (let n = 0; n < count; n++) {
-      const category = pickWeighted(available);
+      let category = pickWeighted(available);
+      const byTag = isTagCat(category) ? category.slice(4) : null;
       const isGoods = category === "gem" || category === "art";
       let placed = false;
       for (let tries = 0; tries < 15 && !placed; tries++) {
-        let grade = category.startsWith("magic:") ? pickWeighted(grades.map((g) => [g, GRADE_WEIGHT[g]])) : null;
+        let grade = !byTag && category.startsWith("magic:") ? pickWeighted(grades.map((g) => [g, GRADE_WEIGHT[g]])) : null;
         // Epic campaign (7.5): about 1 magic item in 10 is epic (the SRD epic tables, Armory and Curios), whatever the settlement
         let epicRoll = fx.epic && grade && tries === 0 && Math.random() < EPIC_STOCK;
         let entry = null;
+        if (byTag) [entry] = await hub.rollTagged(byTag, { merchant: true, epic: fx.epic });
         if (epicRoll) {
           [entry] = (await hub.rollCategory(category, { grade: "epic", level: null, merchant: true, settlement: town.key, tags: type.tags ?? [], hints: type.hints ?? {}, epic: true, exclude })).filter((e) => !e.placeholder && e.data);
           if (!entry) epicRoll = false; // nothing epic in this category (potions, wands, gems): an ordinary item instead
         }
-        if (!entry) [entry] = await hub.rollCategory(category, { grade, level: null, merchant: true, mix: true, settlement: town.key, tags: type.tags ?? [], hints: type.hints ?? {}, epic: fx.epic });
+        if (!entry && !byTag) [entry] = await hub.rollCategory(category, { grade, level: null, merchant: true, mix: true, settlement: town.key, tags: type.tags ?? [], hints: type.hints ?? {}, goods: type.goods ?? null, epic: fx.epic });
         if (!entry || entry.placeholder || !entry.data) break;
         if (epicRoll) exclude.add(String(entry.name ?? entry.data.name).toLowerCase().replace(/[’']/g, "'").replace(/[^a-z0-9']+/g, " ").trim());
         if (isGoods && !matches(type.filter, entry.ref)) continue;
@@ -429,7 +439,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         const appraised = !isGoods || Math.random() * 100 >= unapp;
         foundry.utils.setProperty(data, "system.identified", appraised);
         delete data._id;
-        items.push({ data, price, appraised, category, base: Number(data.system?.unidentified?.price) || price });
+        items.push({ data, price, appraised, category: byTag ? entry.category || "mundane:gear" : category, base: Number(data.system?.unidentified?.price) || price });
         placed = true;
       }
       if (!placed) skipped++;
@@ -462,7 +472,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
       const name = fmt === "shop" ? person.shop : fmt === "person" ? person.name : `${person.name} (${person.shop})`;
       const data = {
         name, type: "npc", folder: folder.id,
-        ownership: { default: 0 }, // D35E's merchant sheet needs None; the GM sets permissions on the sheet
+        ownership: { default: 0 }, // open to the players chosen by the GM (Axecleft's shop sheet: Limited or Observer)
         prototypeToken: { actorLink: true, name: person.name },
       };
       if (opts.img) { data.img = opts.img; data.prototypeToken.texture = { src: opts.img }; }
@@ -509,12 +519,14 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
       const stock = await rollStock({ ...o, restock });
       const town = stock.town;
       const sell = Math.round((Number(o.sell) || 100) * stock.fx.price);
+      const Trade = globalThis.AxecleftTrade;
       const upd = {
-        "flags.core.sheetClass": SHEET,
+        "flags.core.sheetClass": Trade?.SHEET ?? SHEET,
+        ...(Trade?.shopUpdate ? Trade.shopUpdate({ sell, buy: Number(o.buy) || 50, security: Array.isArray(o.security) ? o.security : [] }) : {}),
         "flags.D35E.lootsheettype": "Merchant",
         "flags.D35E.priceModifier": sell / 100,
         "flags.D35E.priceModifierBuy": (Number(o.buy) || 50) / 100,
-        [`flags.${FLAG_SCOPE}.${FLAG_KEY}`]: { type: stock.type.key, settlement: town.key, traits: o.traits ?? [], cap: o.cap !== false, unappraised: Number(o.unappraised) || 0,
+        [`flags.${FLAG_SCOPE}.${FLAG_KEY}`]: { type: stock.type.key, settlement: town.key, traits: o.traits ?? [], security: Array.isArray(o.security) ? o.security : [], cap: o.cap !== false, unappraised: Number(o.unappraised) || 0,
           sell: Number(o.sell) || 100, buy: Number(o.buy) || 50, shop: saved?.shop ?? person.shop, race: saved?.race ?? person.race, sex: saved?.sex ?? person.sex },
       };
       if (tg.isNew) upd["system.details.biography.value"] = `<p>${t("<strong>{name}</strong>, {who} proprietor of <em>{shop}</em>: {type} in a {settlement}{traits}.", { name: esc(person.name), who: esc(whoText(person)), shop: esc(person.shop), type: esc(t(stock.type.label).toLowerCase()), settlement: esc(t(town.label).toLowerCase()), traits: stock.fx.traits.length ? ` (${esc(stock.fx.traits.map((x) => t(x.label).toLowerCase()).join(", "))})` : "" })}</p>`;
@@ -564,6 +576,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
     const missing = stock.missing.length ? `<p><small>${esc(t("Not stocked (no source: a module isn't active or no items are tagged): {list}.", { list: [...new Set(stock.missing.map((c) => hintLabel(c, stock.type)))].join(", ") }))}</small></p>` : "";
     const skipped = stock.skipped ? `<p><small>${esc(t(stock.skipped === 1 ? "{n} item skipped: nothing suitable under the {gp} limit." : "{n} items skipped: nothing suitable under the {gp} limit.", { n: stock.skipped, gp: gp(stock.limit) }))}</small></p>` : "";
     const traits = stock.fx.traits.length ? ` ${esc(stock.fx.traits.map((x) => t(x.label)).join(", "))}.` : "";
+    const secList = security().filter((x) => (o.security ?? []).includes(x.key)).map((x) => t(x.label));
     const where = esc(`${t(stock.type.label)}, ${t(stock.town.label).toLowerCase()}${o.cap === false ? ` ${t("(no gp limit)")}` : ` ${t("(gp limit {gp})", { gp: gp(stock.limit) })}`}.`);
     await ChatMessage.create({
       whisper: ChatMessage.getWhisperRecipients("GM").map((u) => u.id),
@@ -571,8 +584,9 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
       content: `<h3>${restock ? esc(t("Restocked:")) + " " : ""}@UUID[${actor.uuid}]{${esc(label)}}</h3>
         ${person ? `<p><em>${esc(t("{name}, {who}, proprietor of {shop}.", { name: person.name, who: whoText(person), shop: person.shop }))}</em></p>` : ""}
         <p>${where}${traits} ${esc(t("Sells at {sell}%, buys at {buy}%.", { sell: o.sell, buy: Number(o.buy) || 50 }))}${purseText ? ` ${esc(t(restock ? "Added to the purse: {coins}." : "Purse: {coins}.", { coins: purseText }))}` : ""}</p>
+        ${secList.length ? `<p>${esc(t("Security: {list}.", { list: secList.join(", ") }))}</p>` : ""}
         ${list ? `<ol>${list}</ol>` : `<p>${esc(t("No stock."))}</p>`}${missing}${skipped}
-        <p><small>${esc(t("Players buy and sell from the merchant's token on the scene. Set player permissions on the merchant sheet."))}</small></p>`,
+        <p><small>${esc(globalThis.AxecleftTrade ? t("Players buy and sell on the merchant's sheet (double-click its token). Open it to them with Limited or Observer ownership, or All players in the sheet's GM settings.") : t("Players buy and sell from the merchant's token on the scene. Set player permissions on the merchant sheet."))}</small></p>`,
     });
   }
 
@@ -583,7 +597,6 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
   const STYLE = `<style>
     #axecleft-merchant-generator { max-height: calc(100vh - 16px); }
     #axecleft-merchant-generator .window-content { overflow-y: auto; }
-    .amg input[type=number] { text-align: right; }
     .amg .amg-footer.sticky { position: sticky; bottom: -1rem; z-index: 2; margin: 8px 0 0; padding: 6px 0 calc(1rem + 4px); background: var(--background, var(--color-cool-5, #1b1d24)); }
     .amg details.amg-sec { border: 1px solid var(--color-border-light-tertiary, #888); border-radius: 4px; margin: 8px 0 4px; padding: 2px 8px 4px; }
     .amg details.amg-sec > summary { cursor: pointer; font-weight: bold; padding: 2px 0; }
@@ -666,6 +679,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
       const CAT = T()?.CATEGORIES ?? {};
       const mode = r("mode", "new");
       const traitsOn = r("traits", "").split(",").filter(Boolean);
+      const securityOn = r("security", "").split(",").filter(Boolean);
       const tokens = (canvas?.scene?.tokens?.contents ?? []).filter((tp) => tp.actor).sort((a, b) => a.name.localeCompare(b.name));
       const actors = [...(game.actors ?? [])].sort((a, b) => a.name.localeCompare(b.name));
       const actorOpts = opt("", t("Choose an actor or token…"))
@@ -683,6 +697,9 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         <div class="form-group"><label>${esc(t("GP limit"))}</label><label style="flex:1;display:flex;gap:4px;align-items:center"><input type="checkbox" name="cap" ${r("cap", "1") === "1" ? "checked" : ""}> ${esc(t("Nothing priced above the settlement's gp limit"))}</label></div>
         <details class="amg-sec" data-sec="traits" ${r("sec.traits", "0") === "1" ? "open" : ""}><summary>${esc(t("Settlement character"))} <small data-sec-note="traits"></small></summary><div class="amg-traits">
           ${traitsAvailable().map((tp) => `<label><input type="checkbox" name="trait.${tp.key}" ${traitsOn.includes(tp.key) ? "checked" : ""}><span>${esc(t(tp.label))}<small>${esc(t(tp.hint))}</small></span></label>`).join("")}</div></details>
+        ${security().length ? `<details class="amg-sec" data-sec="security" ${r("sec.security", "0") === "1" ? "open" : ""}><summary>${esc(t("Security"))} <small data-sec-note="security"></small></summary>
+          <p class="hint" style="margin:2px 0">${esc(t("How well the shop is protected against pickpocketing and shoplifting: changes to the DCs and the merchant's Spot. Also on the shop sheet's GM settings."))}</p><div class="amg-traits">
+          ${security().map((x) => `<label><input type="checkbox" name="secy.${x.key}" ${securityOn.includes(x.key) ? "checked" : ""}><span>${esc(t(x.label))}<small>${esc(t(x.hint))}</small></span></label>`).join("")}</div></details>` : ""}
         <div class="form-group"><label>${esc(t("Different items"))}</label><input type="text" name="stock" value=""><span class="hint" style="flex:1">${esc(t("dice formula; blank uses the settlement's (half for a restock)"))}</span></div>
         <div class="form-group"><label>${esc(t("Unappraised goods"))}</label><input type="number" name="unappraised" min="0" max="100" step="1" value="${esc(r("unappraised", "10"))}"><span class="hint" style="flex:1">${esc(t("% of gems, art and jewelry left unidentified (sold at base value)"))}</span></div>
         <details class="amg-sec" data-sec="prices" ${r("sec.prices", "0") === "1" ? "open" : ""}><summary>${esc(t("Prices and purse"))} <small data-sec-note="prices"></small></summary>
@@ -704,13 +721,14 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
             ${opt("replace", t("Replace the old stock and purse"), r("stockMode", "replace"))}${opt("restock", t("Restock: keep the stock, add more"), r("stockMode", "replace"))}</select></div>
           <div class="form-group" data-mode="selected actor" data-stock="restock"><label>${esc(t("Shop settings"))}</label><label style="flex:1;display:flex;gap:4px;align-items:center"><input type="checkbox" name="useSaved" checked> ${esc(t("Use each merchant's own saved shop, settlement and traits"))}</label></div>
           <p class="hint" data-mode="selected actor">${esc(t("Replacing removes weapons, equipment, consumables and loot only; feats, classes and other items are kept."))}</p>
-          <p class="hint" data-mode="new">${esc(t("Created in the \"{folder}\" Actors folder on D35E's merchant sheet, with permissions set to None: set player permissions on the merchant sheet. Players buy and sell from its token.", { folder: t(FOLDER) }))}</p>
+          <p class="hint" data-mode="new">${esc(globalThis.AxecleftTrade ? t("Created in the \"{folder}\" Actors folder on Axecleft's Shop sheet, closed to players: open it to them in the sheet's GM settings. Players trade on its sheet (double-click its token).", { folder: t(FOLDER) }) : t("Created in the \"{folder}\" Actors folder on D35E's merchant sheet, with permissions set to None: set player permissions on the merchant sheet. Players buy and sell from its token.", { folder: t(FOLDER) }))}</p>
         </fieldset>
         <div class="amg-footer sticky"><button type="button" data-action="generate" class="bright"><i class="fas fa-store"></i> ${esc(t("Generate Merchant"))}</button></div>
       </section>`;
 
       const custom = customTypes();
       const ed = custom.find((tp) => tp.key === this.editing) ?? null;
+      const tagNames = [...new Set([...(T()?.shopHints?.() ?? T()?.SHOP_HINTS ?? []), ...Object.keys(ed?.tagged ?? {})])];
       const weights = CATEGORY_ORDER.map((c) => `<span>${esc(catLabel(c))}</span><input type="number" name="w.${c}" min="0" step="1" value="${ed?.categories?.[c] ?? ""}" placeholder="0">`).join("");
       const typesTab = `<section data-tab="types">
         <p class="hint">${esc(t("Make your own shop types. Each category's number is its share of the stock (0 or blank: never sold). Saved in this world."))}</p>
@@ -718,9 +736,16 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         <div class="form-group"><label>${esc(t("Start from"))}</label><select name="ct.from">${opt("", "—")}${typeOpts("")}</select></div>
         <div class="form-group"><label>${esc(t("Name"))}</label><input type="text" name="ct.label" value="${esc(ed?.label ?? "")}" placeholder="${esc(t("e.g. Dragon-bone carver"))}"></div>
         <fieldset><legend>${esc(t("What it sells"))}</legend><div class="amg-weights">${weights}</div></fieldset>
+        <fieldset class="amg-tagged"><legend>${esc(t("Items by Shop tag"))}</legend>
+          <p class="hint">${t("Items in your item sources tagged <code>Shop: Statue</code>, <code>Shop: Diamond</code> and so on, whatever kind of item they are (tag them on the Shop Tags tab). Each number is a share of the stock, like the categories above.")}</p>
+          ${tagNames.length ? `<div class="amg-weights">${tagNames.map((h) => `<span>${esc(t(h))}</span><input type="number" data-tagw="${esc(h)}" min="0" step="1" value="${ed?.tagged?.[h] ?? ""}" placeholder="0">`).join("")}</div>` : `<p class="hint">${esc(t("No Shop tags in your item sources yet."))}</p>`}
+        </fieldset>
         <div class="form-group"><label>${esc(t("Gems and art"))}</label><select name="ct.kind">${opt("", t("Any"), ed?.filter?.kind)}${opt("art", t("Art objects only"), ed?.filter?.kind)}${opt("jewelry", t("Jewelry only"), ed?.filter?.kind)}</select></div>
         <div class="form-group"><label>${esc(t("Art made by"))}</label><select name="ct.make">${opt("", t("Any"), ed?.filter?.make)}${opt("Molded", t("Molded / cast (metal, glass)"), ed?.filter?.make)}${opt("Carved", t("Carved (wood, bone, stone)"), ed?.filter?.make)}${opt("Clothing", t("Cloth, fur and hide"), ed?.filter?.make)}${opt("Book", t("Books and documents"), ed?.filter?.make)}</select></div>
-        <div class="form-group"><label>${esc(t("Wondrous items"))}</label><select name="ct.hint">${opt("", t("Any"), ed?.hints?.["magic:wondrous"]?.[0])}${(T()?.SHOP_HINTS ?? ["Book", "Clothing", "Jewelry"]).map((h) => opt(h, t("Only those tagged \"Shop: {tag}\"", { tag: h }), ed?.hints?.["magic:wondrous"]?.[0])).join("")}</select></div>
+        <div class="form-group"><label>${esc(t("Only gems named"))}</label><input type="text" name="ct.gems" value="${esc(ed?.goods?.gems ?? "")}" placeholder="${esc(t("e.g. diamond, ruby (blank: any gem)"))}"></div>
+        <div class="form-group"><label>${esc(t("Only art objects named"))}</label><input type="text" name="ct.objects" value="${esc(ed?.goods?.objects ?? "")}" placeholder="${esc(t("e.g. statue, idol (blank: any object)"))}"></div>
+        <p class="hint">${esc(t("Gems and art objects are made by Axecleft's Gemstones: these keep only the ones whose names contain one of the words (in English or this world's language), so a diamond merchant sells diamonds of every size and quality."))}</p>
+        <div class="form-group"><label>${esc(t("Wondrous items"))}</label><select name="ct.hint">${opt("", t("Any"), ed?.hints?.["magic:wondrous"]?.[0])}${(T()?.shopHints?.() ?? T()?.SHOP_HINTS ?? ["Book", "Clothing", "Jewelry"]).map((h) => opt(h, t("Only those tagged \"Shop: {tag}\"", { tag: h }), ed?.hints?.["magic:wondrous"]?.[0])).join("")}</select></div>
         <div class="amg-footer"><button type="button" data-action="saveType"><i class="fas fa-save"></i> ${esc(t("Save Shop Type"))}</button><button type="button" data-action="deleteType" ${ed ? "" : "disabled"}><i class="fas fa-trash"></i> ${esc(t("Delete"))}</button></div>
       </section>`;
 
@@ -759,28 +784,21 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         return `${t(st.total === 1 ? "{n} item:" : "{n} items:", { n: st.total })} ${Object.entries(groups).sort((a, b) => b[1] - a[1]).map(([g, n]) => `${n} ${g.toLowerCase()}`).join(", ")}${st.corrected ? `; ${t(st.corrected === 1 ? "{n} price corrected" : "{n} prices corrected", { n: st.corrected })}` : ""}`;
       };
       // Extra source kinds registered by modules (Armory: enhancements, special materials...)
-      const kindStatText = (k, ks, id) => {
-        const st = hub?.kindStats?.(k.id)?.[id];
-        if (!st) return ks.packs.includes(id) ? t("not scanned yet") : "";
-        const by = Object.entries(st.by ?? {}).sort((a, b) => b[1] - a[1]);
-        if (!by.length) return t(st.total === 1 ? "{n} item" : "{n} items", { n: st.total });
-        return `${t(st.total === 1 ? "{n} item:" : "{n} items:", { n: st.total })} ${by.map(([g, n]) => `${n} ${t(g).toLowerCase()}`).join(", ")}`;
-      };
       const kindsHtml = (hub?.sourceKinds?.() ?? []).map((k) => {
         const ks = hub.kindSources(k.id);
         const auto = (p) => { try { return [p.en ?? p.label, p.label].some((l) => (typeof k.match === "function" ? !!k.match(l, p.id) : k.match instanceof RegExp && k.match.test(l))); } catch (e) { return false; } }; // English labels (Babele)
         const secKey = `kind-${k.id.replace(/[^\w-]/g, "-")}`;
-        return `<details class="amg-sec" data-sec="${esc(secKey)}" ${r(`sec.${secKey}`, "0") === "1" ? "open" : ""}><summary>${esc(t(k.label))} <small>(${esc(game.modules.get(k.module)?.title ?? k.module)}: ${esc(t("{n} of {m} used, {how}", { n: ks.packs.length, m: packs.length, how: ks.mode === "auto" ? t("automatic") : t("your choice") }))})</small></summary>
+        return `<details class="amg-sec" data-sec="${esc(secKey)}" ${r(`sec.${secKey}`, "0") === "1" ? "open" : ""}><summary>${esc(t(k.label))} <small>(${esc(game.modules.get(k.module)?.title ?? k.module)}: ${esc(t(ks.packs.length === 1 ? "{n} compendium" : "{n} compendiums", { n: ks.packs.length }))}, ${esc(ks.mode === "auto" ? t("automatic") : t("your choice"))})</small></summary>
           <div data-kind="${esc(k.id)}">
           ${k.hint ? `<p class="hint">${esc(t(k.hint))}</p>` : ""}
           <div class="form-group"><label>${esc(t("Compendiums"))}</label><select name="kind.${esc(k.id)}.mode">${opt("auto", t("Automatic (matching names)"), ks.mode)}${opt("custom", t("My choice (tick below)"), ks.mode)}</select></div>
           <table class="amg-packs">${packs.map((p) => `<tr><td><input type="checkbox" name="kind.${esc(k.id)}.pack" value="${esc(p.id)}" data-auto="${auto(p) ? 1 : 0}" ${ks.packs.includes(p.id) ? "checked" : ""}></td>
-            <td>${esc(p.label)}<br><small>${esc(t(p.source))}${auto(p) ? ` · ${esc(t("matches"))}` : ""}</small></td><td><small>${esc(kindStatText(k, ks, p.id))}</small></td></tr>`).join("")}</table></div></details>`;
+            <td>${esc(p.label)}<br><small>${esc(t(p.source))}${auto(p) ? ` · ${esc(t("matches"))}` : ""}</small></td></tr>`).join("")}</table></div></details>`;
       }).join("");
       /*t*/"System"; /*t*/"World"; /*t*/"Module"; // compendium sources
       const nCorr = (hub?.priceCorrections?.() ?? []).length;
       const sourcesTab = `<section data-tab="sources">
-        <p class="hint">${esc(t("Besides the SRD lists and Axecleft's modules, merchants and treasure draw items from Item compendiums: wherever no module covers a category, and otherwise the share set in Generation settings (Treasure Generator → Treasure by Level → Your item compendiums). Each item is sorted by its own data: standard, masterwork or magic weapons, armor and shields, ammunition, gear, alchemical items, potions, scrolls, wands, rings, rods, staffs and wondrous items. Magic items are graded by price (minor up to 4,000 gp, medium up to 25,000 gp). Mounts, services and epic items are left out."))}</p>
+        <p class="hint">${esc(t("Besides the SRD lists and Axecleft's modules, merchants (and treasure, where no module covers a category) draw items from Item compendiums. Each item is sorted by its own data: standard, masterwork or magic weapons, armor and shields, ammunition, gear, alchemical items, potions, scrolls, wands, rings, rods, staffs and wondrous items. Magic items are graded by price (minor up to 4,000 gp, medium up to 25,000 gp). Mounts, services and epic items are left out."))}</p>
         <div class="form-group"><label>${esc(t("Compendiums"))}</label><select name="src.mode">
           ${opt("auto", t("Automatic: D35E's item compendiums and any with a matching name"), src.mode)}${opt("custom", t("My choice (tick below)"), src.mode)}</select></div>
         <p class="hint">${esc(t("Automatic matching picks compendiums named like D35E's (Items, Weapons and Ammo, Armor and Shields, Magic Items), with Gear, Equipment, Weapons, Ammo, Armor, Shields or Magic Items in their name, and Poison Consumables (Axecleft's Traps, Poisons, and Diseases). Poisons are found by their own data in any of your sources."))}${globalThis.game?.babele ? ` ${esc(t("Translated compendiums are matched by their English names."))}` : ""}</p>
@@ -802,6 +820,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
           <p>${t("Shop tags are ordinary D35E item tags written as <code>Shop: Scroll</code>, <code>Shop: Book</code> and so on. This tool writes them for you, and you can also add or remove them by hand in an item's tags.")}</p>
           <ul><li>${t("<b>Category tags</b> add the item to that category as well as its own: {tags}.", { tags: esc(Object.values(hub?.TAG_LABELS ?? {}).join(", ")) })}</li>
           <li>${t("<b>Specialty tags</b> pick a specialty shop's wondrous items: <b>Book</b> (booksellers), <b>Clothing</b> (clothiers), <b>Jewelry</b> (jewelers). Your own shop types can use them too (Shop Types tab).")}</li>
+          <li>${t("<b>Your own tags</b>: any other word is a tag of your own, such as <code>Shop: Statue</code> or <code>Shop: Holy</code>. On the Shop Types tab, a shop type can sell items by tag (<b>Items by Shop tag</b>), whatever kind of item they are.")}</li>
           <li>${t("Scan a compendium. Suggestions come from item names and folder names (a folder called \"Books\" suggests Scroll and Book). Edit any row's tags, separated by commas, tick the rows to change and press <b>Write Tags</b>. A blank row with a tick removes its Shop tags.")}</li>
           <li>${t("Only compendiums in your <b>Item Sources</b> stock merchants. Locked compendiums are unlocked for the write and locked again. Write tags in your own compendiums: system and module compendiums are replaced when they update.")}</li>
           <li>${esc(t("Shop tags are always written in English (Shop: Scroll), whatever the world's language, so every world reads them."))}</li></ul>
@@ -840,6 +859,8 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
       const notes = () => {
         const n = TRAITS.filter((tp) => el(`trait.${tp.key}`)?.checked).map((tp) => t(tp.label).split(" /")[0]);
         const tn = form.querySelector('[data-sec-note="traits"]'); if (tn) tn.textContent = n.length ? `(${n.join(", ")})` : `(${t("none")})`;
+        const sc = security().filter((x) => el(`secy.${x.key}`)?.checked).map((x) => t(x.label).split(" /")[0]);
+        const sn = form.querySelector('[data-sec-note="security"]'); if (sn) sn.textContent = sc.length ? `(${sc.join(", ")})` : `(${t("none")})`;
         const pn = form.querySelector('[data-sec-note="prices"]'); if (pn) pn.textContent = `(${t("sells {sell}%, buys {buy}%, purse {purse}", { sell: el("sell").value || 100, buy: el("buy").value || 50, purse: el("purse").value || t("settlement's") })})`;
       };
       form.querySelectorAll("details.amg-sec").forEach((d) => d.addEventListener("toggle", () => { remember(`sec.${d.dataset.sec}`, d.open ? "1" : "0"); fit(); }));
@@ -855,10 +876,11 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
       const sources = () => {
         const tp = types().find((x) => x.key === el("type").value);
         const hub = T(), CAT = hub?.CATEGORIES ?? {};
-        const cats = Object.entries(tp?.categories ?? {}).filter(([, w]) => w > 0).map(([c]) => c);
+        const cats = [...Object.entries(tp?.categories ?? {}).filter(([, w]) => w > 0).map(([c]) => c), ...Object.entries(tp?.tagged ?? {}).filter(([, w]) => w > 0).map(([g]) => `tag:${g}`)];
         const hint = (c) => tp?.hints?.[c] ?? null;
-        const have = cats.filter((c) => hub?.hasProvider?.(c, hint(c))), lack = cats.filter((c) => !hub?.hasProvider?.(c, hint(c)));
-        const untagged = lack.filter((c) => hint(c)), noMod = lack.filter((c) => !hint(c));
+        const has = (c) => (isTagCat(c) ? !!hub?.hasTagged?.(c.slice(4)) : hub?.hasProvider?.(c, hint(c)));
+        const have = cats.filter(has), lack = cats.filter((c) => !has(c));
+        const untagged = lack.filter((c) => hint(c) || isTagCat(c)), noMod = lack.filter((c) => !hint(c) && !isTagCat(c));
         const names = (l) => [...new Set(l.map((c) => hintLabel(c, tp)))].join(", ");
         form.querySelector("[data-sources]").innerHTML = (have.length ? `<span class="ok">✔ ${esc(names(have))}</span>` : "")
           + (noMod.length ? `<br><span class="no">✘ ${esc(t("{list}: needs {modules}", { list: names(noMod), modules: [...new Set(noMod.map((c) => t(CAT[c]?.module ?? "another module")))].join(", ") }))}</span>` : "")
@@ -911,7 +933,8 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
       action("generate", async () => {
         const v = (n) => el(n)?.value ?? "";
         const traits = TRAITS.filter((tp) => el(`trait.${tp.key}`)?.checked).map((tp) => tp.key);
-        const opts = { type: v("type"), settlement: v("settlement"), cap: el("cap").checked, traits, stock: v("stock").trim(), unappraised: Number(v("unappraised")),
+        const sec = security().filter((x) => el(`secy.${x.key}`)?.checked).map((x) => x.key);
+        const opts = { type: v("type"), settlement: v("settlement"), cap: el("cap").checked, traits, security: sec, stock: v("stock").trim(), unappraised: Number(v("unappraised")),
           sell: Number(v("sell")), buy: Number(v("buy")), purse: v("purse").trim(), mode: v("mode"), uuid: v("uuid"), name: v("name"), nameFormat: v("nameFormat"),
           race: v("race"), sex: v("sex"), names: v("names"), img: v("img").trim(), stockMode: v("stockMode"), useSaved: el("useSaved").checked,
           shop: el("name").dataset.rolled === v("name") ? el("name").dataset.shop : "" };
@@ -919,7 +942,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         if (el("name").dataset.rolled === v("name") && v("name")) Object.assign(opts, { race: el("name").dataset.race, sex: el("name").dataset.sex });
         for (const k of ["type", "settlement", "unappraised", "sell", "buy", "mode", "nameFormat", "stockMode", "names"]) remember(k, String(opts[k]));
         remember("race", v("race")); remember("sex", v("sex"));
-        remember("cap", opts.cap ? "1" : "0"); remember("traits", traits.join(","));
+        remember("cap", opts.cap ? "1" : "0"); remember("traits", traits.join(",")); remember("security", sec.join(","));
         const res = await generateMerchant(opts);
         ui.notifications.info(t(res.some((x) => x.restock) ? "Restocked {list}." : "Stocked {list}.", { list: res.map((x) => x.label).join(", ") }));
         if (opts.mode === "new") { res[0]?.actor.sheet?.render(true); el("name").value = ""; }
@@ -933,17 +956,21 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         for (const c of CATEGORY_ORDER) el(`w.${c}`).value = src.categories?.[c] ?? "";
         el("ct.kind").value = src.filter?.kind ?? ""; el("ct.make").value = src.filter?.make ?? "";
         el("ct.hint").value = src.hints?.["magic:wondrous"]?.[0] ?? "";
+        form.querySelectorAll("[data-tagw]").forEach((x) => { x.value = src.tagged?.[x.dataset.tagw] ?? ""; });
+        el("ct.gems").value = src.goods?.gems ?? ""; el("ct.objects").value = src.goods?.objects ?? "";
         if (!el("ct.label").value) el("ct.label").value = t("{name} (custom)", { name: src.custom ? src.label : t(src.label) });
       });
       action("saveType", async () => {
         const label = el("ct.label").value.trim();
         if (!label) throw new Error(t("Give the shop type a name."));
         const categories = Object.fromEntries(CATEGORY_ORDER.map((c) => [c, Number(el(`w.${c}`).value) || 0]).filter(([, w]) => w > 0));
-        if (!Object.keys(categories).length) throw new Error(t("Give at least one category a number above 0."));
+        const tagged = Object.fromEntries([...form.querySelectorAll("[data-tagw]")].map((x) => [x.dataset.tagw, Number(x.value) || 0]).filter(([, w]) => w > 0));
+        if (!Object.keys(categories).length && !Object.keys(tagged).length) throw new Error(t("Give at least one category or Shop tag a number above 0."));
+        const goods = { gems: el("ct.gems").value.trim(), objects: el("ct.objects").value.trim() };
         const key = this.editing || `custom-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now().toString(36)}`;
         const filter = {}; if (el("ct.kind").value) filter.kind = el("ct.kind").value; if (el("ct.make").value) filter.make = el("ct.make").value;
         const hints = el("ct.hint").value ? { "magic:wondrous": [el("ct.hint").value] } : null;
-        await saveCustomType({ key, label, categories, ...(Object.keys(filter).length ? { filter } : {}), ...(hints ? { hints } : {}) });
+        await saveCustomType({ key, label, categories, ...(Object.keys(tagged).length ? { tagged } : {}), ...(goods.gems || goods.objects ? { goods } : {}), ...(Object.keys(filter).length ? { filter } : {}), ...(hints ? { hints } : {}) });
         this.editing = key; remember("type", key);
         ui.notifications.info(t("Saved the shop type \"{name}\".", { name: label }));
         this.render();
@@ -1206,6 +1233,80 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
     }
   }
 
+  /* ------------------------------------------ */
+  /*  Tours (version 7.94, Axecleft's Tools 9.7) */
+  /* ------------------------------------------ */
+
+  const MERCHANT_APP = "axecleft-merchant-generator";
+  /** Opens the window on a tab, for a tour. */
+  const tourOpen = (tab) => async () => {
+    open(tab);
+    for (let i = 0; i < 40 && !document.getElementById(MERCHANT_APP)?.querySelector(`[data-tab-btn="${tab}"].active`); i++) await new Promise((r) => setTimeout(r, 50));
+  };
+  const tabStep = (tab, title, content) => ({ id: "tab", sel: `[data-tab-btn="${tab}"]`, title, content, direction: "DOWN" });
+  /** A tour of each tab, listed under the module that hosts the Merchant Generator. */
+  function registerTours() {
+    const R = globalThis.AxecleftTools?.registerTour;
+    if (!R) return;
+    const mod = () => host();
+    const key = (id) => `${host()}.${id}`;
+    const tour = (id, tab, title, description, next, steps) => R({ module: mod, id, app: MERCHANT_APP, tab, open: tourOpen(tab), title, description, next: next ? [() => key(next)] : [], steps });
+    tour("merchant", "merchant", /*t*/"Merchant Generator: Merchant", /*t*/"Create a merchant, or stock and restock one, for a shop in a settlement.", "shop-types", [
+      tabStep("merchant", /*t*/"Merchant", /*t*/"This tab creates a merchant on D35E's merchant sheet, with stock and a purse, or restocks merchants you already have."),
+      { id: "type", field: "type", title: /*t*/"Shop", content: /*t*/"The kind of shop: a general store, a weaponsmith, an alchemist, a scribe… Your own shop types (Shop Types tab) are listed too." },
+      { id: "sources", sel: "[data-sources]", title: /*t*/"Who stocks it", content: /*t*/"What this shop sells and where it comes from. A ✘ means a kind of item needs a module you don't have, or has no items in your item sources yet." },
+      { id: "settlement", field: "settlement", title: /*t*/"Settlement", content: /*t*/"From a thorp to a metropolis. The settlement sets the gp limit, how many different items are in stock and the merchant's purse (DMG)." },
+      { id: "cap", field: "cap", title: /*t*/"GP limit", content: /*t*/"Ticked, nothing priced above the settlement's gp limit is stocked." },
+      { id: "traits", sel: "[data-sec=traits] > summary", title: /*t*/"Settlement character", content: /*t*/"Click to open: traits such as a port, a magic academy, a mining town or an epic campaign shift what the shop stocks and its prices." },
+      { id: "security", sel: "[data-sec=security] > summary", title: /*t*/"Security", content: /*t*/"Click to open: guards, a watchful owner, locked cases or magic wards make the shop harder to rob (higher DCs, a better Spot); a careless or crowded shop is easier." },
+      { id: "stock", field: "stock", title: /*t*/"Different items", content: /*t*/"How many different items are in stock, as dice. Blank uses the settlement's (half for a restock)." },
+      { id: "unappraised", field: "unappraised", title: /*t*/"Unappraised goods", content: /*t*/"The share of gems, art and jewelry left unidentified: sold at their base value, so a sharp-eyed buyer can find a bargain." },
+      { id: "prices", sel: "[data-sec=prices] > summary", title: /*t*/"Prices and purse", content: /*t*/"Click to open: the % of value the merchant sells at and buys at (SRD: half), and its purse in gp (dice; blank uses the settlement's)." },
+      { id: "mode", field: "mode", title: /*t*/"Make", content: /*t*/"A new merchant, or stock the selected tokens or an actor you choose. For a merchant you already have, choose whether to replace its stock or restock it." },
+      { id: "race", field: "race", title: /*t*/"Race and sex", content: /*t*/"For a new merchant: its race and sex, or Random. They pick its name and, if you set a portrait folder (People tab), its portrait." },
+      { id: "name", field: "name", title: /*t*/"Name", content: /*t*/"For a new merchant: blank for a random name and shop name, or the dice button to roll one now. Actor name sets whether the actor is named for the merchant, the shop or both." },
+      { id: "img", field: "img", title: /*t*/"Image", content: /*t*/"For a new merchant: a portrait or token image. Blank takes one from your portrait folder that fits, if you have set one." },
+      { id: "generate", sel: "section.active [data-action=generate]", title: /*t*/"Generate Merchant", direction: "UP", content: /*t*/"Creates the merchant (in the Merchants Actors folder, permissions None: set player permissions on its sheet) or restocks the chosen ones. Players buy and sell from its token." },
+    ]);
+    tour("shop-types", "types", /*t*/"Merchant Generator: Shop Types", /*t*/"Make your own kinds of shop and what they sell.", "people", [
+      tabStep("types", /*t*/"Shop Types", /*t*/"Make your own kinds of shop. Saved in this world, and listed under Your shop types on the Merchant tab."),
+      { id: "edit", field: "ct.edit", title: /*t*/"Edit", content: /*t*/"A new shop type, or one of yours to change." },
+      { id: "from", field: "ct.from", title: /*t*/"Start from", content: /*t*/"Copy what an existing shop type sells, then adjust it." },
+      { id: "label", field: "ct.label", title: /*t*/"Name", content: /*t*/"Its name, as shown in the Shop list." },
+      { id: "weights", sel: "section.active .amg-weights", title: /*t*/"What it sells", content: /*t*/"Each category's number is its share of the stock. 0 or blank: never sold." },
+      { id: "tagged", sel: "section.active fieldset.amg-tagged", title: /*t*/"Items by Shop tag", content: /*t*/"Sell items by their Shop tag, whatever kind of item they are: a statue carver sells the items tagged Shop: Statue. The tags found in your item sources are listed; tag items on the Shop Tags tab." },
+      { id: "goods", field: "ct.gems", title: /*t*/"Only gems or art objects named", content: /*t*/"Keep only the gems, or the art objects, whose names contain one of these words: diamond for a diamond merchant, statue for a sculptor. Blank: any." },
+      { id: "kind", field: "ct.kind", title: /*t*/"Gems and art", content: /*t*/"Narrow its gems and art: art objects only, jewelry only, how the art is made, and which wondrous items it stocks (by Shop tag, such as Book or Clothing)." },
+      { id: "save", sel: "section.active .amg-footer:has([data-action=saveType])", title: /*t*/"Save or delete", direction: "UP", content: /*t*/"Save the shop type, or delete the one you are editing." },
+    ]);
+    tour("people", "names", /*t*/"Merchant Generator: People", /*t*/"Your own names, shop names and portraits for merchants.", "item-sources", [
+      tabStep("names", /*t*/"People", /*t*/"Your own names and shop names for random merchants, and a folder of portraits. Saved in this world."),
+      { id: "group", field: "n.group", title: /*t*/"Names for", content: /*t*/"Names for one race, or Any race (used for every race). The count of each is shown." },
+      { id: "names", sel: "section.active .amg-cols4", title: /*t*/"Names", content: /*t*/"Male, female and either first names, and surnames: one per line, or separated by commas." },
+      { id: "shops", field: "n.shops", title: /*t*/"Shop names", content: /*t*/"Shop names any shop can use." },
+      { id: "use", field: "names", title: /*t*/"Random names use", content: /*t*/"The built-in names and yours, only yours, or only the built-in ones." },
+      { id: "save", sel: "section.active .amg-footer:has([data-action=saveNames])", title: /*t*/"Save and examples", content: /*t*/"Save your names, or show a few examples of the names they make." },
+      { id: "portraits", sel: "section.active fieldset:has([name='p.folder'])", title: /*t*/"Portraits", content: /*t*/"A folder of portraits. A new merchant without an image gets one that fits its race and sex, read from the folder and file names (dwarf/female/smith-01.webp). Save and Scan Folder after adding images." },
+    ]);
+    tour("item-sources", "sources", /*t*/"Merchant Generator: Item Sources", /*t*/"Choose the Item compendiums that stock merchants and treasure, and fix wrong prices.", "shop-tags", [
+      tabStep("sources", /*t*/"Item Sources", /*t*/"Besides the SRD lists and Axecleft's modules, merchants (and treasure, where no module covers a kind of item) draw items from your Item compendiums."),
+      { id: "mode", field: "src.mode", title: /*t*/"Compendiums", content: /*t*/"Automatic uses D35E's item compendiums and any whose name matches (Gear, Weapons, Armor, Magic Items…); My choice uses the ones you tick." },
+      { id: "packs", sel: "[data-sec=srcpacks] > summary", title: /*t*/"Item compendiums", content: /*t*/"Click to open the list: each compendium, whether it is used, and what was found in it, by kind of item." },
+      { id: "kinds", sel: "section.active details.amg-sec:not([data-sec=srcpacks]) > summary", title: /*t*/"Other sources", content: /*t*/"Modules can add sources of their own (the Armory's enhancements and special materials, spells for Curios…), each with its compendiums." },
+      { id: "save", sel: "section.active .amg-footer:has([data-action=saveSources])", title: /*t*/"Save and Rescan", content: /*t*/"Save your choice and read the compendiums again. Rescan after adding items to a compendium." },
+      { id: "prices", sel: "section.active fieldset:has([data-action=priceCheck])", title: /*t*/"Price corrections", content: /*t*/"Some compendium items have wrong prices. Price Check lists the ones that differ from the SRD; corrections fix them for treasure and merchants without changing the compendium. Export CSV saves the list." },
+    ]);
+    tour("shop-tags", "tags", /*t*/"Merchant Generator: Shop Tags", /*t*/"Tag your compendium items with the shops that sell them.", null, [
+      tabStep("tags", /*t*/"Shop Tags", /*t*/"An item is sold by the shops that stock its own kind. A Shop tag lets other shops sell it too: tag a magic tome Scroll and scribes stock it, tag it Book and booksellers do."),
+      { id: "help", sel: "[data-sec=taghelp] > summary", title: /*t*/"How Shop tags work", content: /*t*/"Click to open the details: category and specialty tags, tags of your own (Shop: Statue) for your shop types, suggestions, and which compendiums to write in." },
+      { id: "pack", field: "tag.pack", title: /*t*/"Compendium", content: /*t*/"Choose an Item compendium and press Scan. Write tags in your own compendiums: system and module ones are replaced when they update." },
+      { id: "filter", sel: "section.active [data-tagbody] .amg-tagbar:first-of-type", title: /*t*/"Show and filter", content: /*t*/"After a scan: show rows with new suggestions, all items, tagged or untagged items, and filter by name, folder or tag." },
+      { id: "bulk", sel: "section.active [data-tagbody] .amg-tagbar:nth-of-type(2)", title: /*t*/"Ticked rows", content: /*t*/"After a scan: add a tag to, remove it from or clear every ticked row shown, or reset them to their current tags plus suggestions." },
+      { id: "rows", sel: "section.active .amg-tagwrap", title: /*t*/"Items", content: /*t*/"After a scan: each item, what it is sold as, and its Shop tags, which you can edit (separated by commas). Tick the rows to change." },
+      { id: "write", sel: "section.active [data-action=tagWrite]", title: /*t*/"Write Tags", direction: "UP", content: /*t*/"After a scan: writes the tags of the ticked rows into the compendium. A ticked row left blank loses its Shop tags. Locked compendiums are unlocked for the write and locked again." },
+    ]);
+  }
+
   let APP = existing?._app ?? null;
   /** Open the window, optionally on a tab: "merchant", "types", "names", "sources" or "tags". */
   function open(tab) {
@@ -1234,6 +1335,7 @@ const AXECLEFT_MERCHANTS_HOST = (() => {
         hint: /*t*/"Tag compendium items with the shops that sell them", gmOnly: true, onClick: () => globalThis.AxecleftMerchants.open("tags"),
       });
       Hooks.callAll("axecleftMerchants.ready", api);
+      try { registerTours(); } catch (err) { console.warn("AxecleftMerchants | tours", err); }
     },
   };
   globalThis.AxecleftMerchants = api;
