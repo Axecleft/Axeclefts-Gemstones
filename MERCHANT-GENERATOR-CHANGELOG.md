@@ -2,6 +2,14 @@
 
 File: scripts/axecleft-merchants.js. Ship the same copy in every Axecleft module, listed in module.json "esmodules" after axecleft-tools.js and axecleft-treasure.js (version 9 or later for this version). The highest version runs.
 
+## Axecleft's Shop 1.39
+
+- **GM settings and the item list in a short window** (spotted by Gilgalad). Open, the GM's shop settings take at most half of the sheet and scroll inside their own box, so every setting can be reached without making the window taller, and the item list below stays visible (at least a few rows) without closing the settings first. The settings keep their scroll position when the sheet redraws.
+
+## Axecleft's Shop 1.38
+
+- **Basket: how many?** Shift+click the cart beside an item to choose how many to add to the basket (up to what's in stock), and Shift+click − in the basket to choose how many to take off: a stack of arrows or crossbow bolts in one go. A plain click still adds or takes off one.
+
 ## Axecleft's Shop 1.37
 
 - Foundry v11: the shop sheet registers again, so a generated merchant opens on it (and Axecleft's Shop shows in the actor's Sheet choices). Item descriptions on the sheet show their links and rolls on v11 too.

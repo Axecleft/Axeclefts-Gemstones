@@ -3,6 +3,14 @@
 File: scripts/axecleft-treasure.js. Ship the same copy in every Axecleft treasure module; the highest version runs.
 
 
+## Version 9.997
+
+- Generation settings: **Epic share of the extra items at EL 21+** is on its own line under *Campaign* (suggested by Gilgalad). Next to the Psionics and Epic items boxes, its label wrapped badly, in French above all.
+- A checkbox with a long label (*La couleur et l'animation de la lumière dispensée par l'objet dépendent de ses propriétés*) wraps onto a second line instead of running out of the window (spotted by Gilgalad).
+- **How likely is a custom curse?** (asked by Gilgalad). A custom curse joins its SRD table with its weight, so its chance is its weight ÷ the table's total weight (each SRD table totals 100). The Custom Curses page now says so, with an example, and the Lists tab shows each of your curses' chance: *Leaden Hands: 4.8% of the rolls on the Drawback table (weight 5 of 105)*. The share of items from your compendiums (treasure and merchants) doesn't apply to curses. List pages are rewritten once (text version 4) to carry the new note; their rows are kept.
+
+- **Inscription hints for armor and other magic items** (suggested by Gilgalad). Generation settings now has a hint % on every row: armor and shields (not in the SRD; 30%, the DMG's figure) and other magic items (SRD: 30% of rings, rods, staffs, wands and wondrous items; never potions or scrolls). Weapons keep the SRD's 15%. Worlds that changed their Generation settings get the new rows at their defaults. A note under the table says where each figure comes from, and that items with charges are never intelligent (SRD). **Items with charges can be intelligent** (house rule, off by default) lets staffs and rings and rods with charges roll intelligence too; wands, potions and scrolls never do.
+
 ## Version 9.996
 
 - **Special purpose instead of a power** (Generation settings; suggested by Gilgalad). The SRD gives an intelligent item with greater powers a special purpose and a dedicated power *instead of* one greater power; before, the purpose came on top of its powers. Now it takes the place of one, and there are two percentages:

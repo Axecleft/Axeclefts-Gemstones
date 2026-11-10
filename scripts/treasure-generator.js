@@ -78,6 +78,18 @@ function artOptions(form, kind) {
   const el = (n) => form?.elements[n];
   return { variations: el(`${kind}.variations`) ? el(`${kind}.variations`).checked : setting("artVariations"), premadeShare: setting("premadeShare") };
 }
+/* The Art Objects and Jewelry tabs' list boxes (suggested by Gilgalad, 1.14.6.25): which lists and constructions random picks use. */
+const ART_SOURCES = [["module", /*t*/"Axecleft's objects"], ["premade", /*t*/"Premade pieces"], ["custom", /*t*/"Custom"]];
+const artMakes = (cat, kind) => Object.keys(cat.makes).filter((mk) => C.objectsFor(cat, kind).some((o) => o.make === mk));
+const ART_KEY = (kind) => `${MOD}.artLists.${kind}`;
+function artRemembered(kind) { try { return JSON.parse(localStorage.getItem(ART_KEY(kind)) ?? "null"); } catch (e) { return null; } }
+/** The ticked lists and constructions of a tab: { sources, makes }; null when the tab has no boxes (macros, Treasure by Level). */
+function artFilter(form, kind) {
+  if (!form?.elements[`${kind}.src.module`]) return null;
+  const sources = ART_SOURCES.map(([k]) => k).filter((k) => form.elements[`${kind}.src.${k}`]?.checked);
+  const makes = [...form.querySelectorAll(`[name^="${kind}.make."]`)].filter((x) => x.checked).map((x) => x.name.slice(`${kind}.make.`.length));
+  return { sources, makes: form.querySelector(`[name^="${kind}.make."]`) ? makes : null };
+}
 
 /* -------------------------------------------- */
 /*  Generating (also the macro API)             */
@@ -108,8 +120,8 @@ export async function generateGoods({ level = 1, times = 1, dest = "items" } = {
 
 const prepare = async () => { await catalog(); };
 /** The Object list: base objects, then each contributor's premade pieces in their own group. */
-function objectOptions(cat, kind) {
-  const list = C.objectsFor(cat, kind);
+function objectOptions(cat, kind, filter = null) {
+  const list = C.objectsFor(cat, kind, filter);
   const base = list.filter((o) => !o.premade).map((o) => opt(o.name, `${dn(o.name)} (${t(cat.makes[o.make]?.label ?? o.make).toLowerCase()})${o.source === "custom" ? " *" : ""}`)).join("");
   const byCreator = new Map();
   for (const o of list.filter((x) => x.premade)) { const c = o.premade.creator || ""; if (!byCreator.has(c)) byCreator.set(c, []); byCreator.get(c).push(o); }
@@ -180,6 +192,13 @@ function artTab(kind, order) {
     content() {
       const cat = CAT;
       return `
+        ${(() => {
+          const all = C.objectsFor(cat, kind), mem = artRemembered(kind), makes = artMakes(cat, kind);
+          const on = (group, k, n) => (n ? (mem?.[group]?.includes(k) ?? true) : false);
+          const src = ART_SOURCES.map(([k, l]) => { const n = all.filter((o) => C.artList(o) === k).length; return `<label><input type="checkbox" name="${kind}.src.${k}" ${on("sources", k, n) ? "checked" : ""} ${n ? "" : "disabled"}> ${H(l)} (${n})</label>`; }).join("");
+          const mk = makes.length > 1 ? `<div class="form-group"><label>${H("Construction")}</label><div class="atg-checks">${makes.map((m) => { const n = all.filter((o) => o.make === m).length; return `<label><input type="checkbox" name="${kind}.make.${m}" ${on("makes", m, n) ? "checked" : ""}> ${H(cat.makes[m]?.label ?? m)} (${n})</label>`; }).join("")}</div></div>` : "";
+          return `<div class="form-group"><label>${H("Lists")}</label><div class="atg-checks">${src}</div></div>${mk}`;
+        })()}
         <div class="form-group"><label>${H("Value")}</label><select name="${kind}.level">${opt("", t("Random (SRD odds)"))}${cat.levels.map((l) => opt(l.level, t("{level}: {formula} gp (about {value})", { level: l.level, formula: fmtFormula(l.formula), value: gp(l.avg) }))).join("")}</select></div>
         <div class="form-group"><label>${H(kind === "jewelry" ? "Piece" : "Object")}</label><select name="${kind}.object">${opt("", t("Random"))}${objectOptions(cat, kind)}</select></div>
         <div class="form-group"><label>${H("Material")}</label><select name="${kind}.material"></select></div>
@@ -192,6 +211,35 @@ function artTab(kind, order) {
     },
     wire(section) {
       const form = section.closest("form"), el = (n) => form.elements[n], cat = CAT;
+      // A premade piece (Leo's and the like) comes as it was made: no gem and no workmanship to choose (suggested by Gilgalad, 1.14.6.25)
+      const premade = () => !!cat.objects.find((o) => o.name === el(`${kind}.object`).value)?.premade;
+      // List boxes: the Object choices follow them, and they are remembered in this browser
+      const filter = () => artFilter(form, kind);
+      const fillObjects = () => {
+        const sel = el(`${kind}.object`), keep = sel.value, f = filter();
+        sel.innerHTML = opt("", t("Random ({n})", { n: C.objectsFor(cat, kind, f).length })) + objectOptions(cat, kind, f);
+        sel.value = [...sel.options].some((o) => o.value === keep) ? keep : "";
+        try { localStorage.setItem(ART_KEY(kind), JSON.stringify(f)); } catch (e) { /* private window */ }
+      };
+      const gemSel = el(`${kind}.gem`), qualSel = el(`${kind}.quality`), gemHTML = gemSel.innerHTML, qualHTML = qualSel.innerHTML;
+      let gemKeep = "", qualKeep = "", varKeep = el(`${kind}.variations`).checked, locked = false;
+      const lockPremade = () => {
+        const pre = premade();
+        if (pre && !locked) {
+          gemKeep = gemSel.value; qualKeep = qualSel.value; varKeep = el(`${kind}.variations`).checked;
+          gemSel.innerHTML = opt("", t("None (part of the object)"));
+          qualSel.innerHTML = opt("", t("Part of the object"));
+          el(`${kind}.variations`).disabled = true;
+          gemSel.disabled = true;
+          locked = true;
+        } else if (!pre && locked) {
+          gemSel.innerHTML = gemHTML; gemSel.value = gemKeep;
+          qualSel.innerHTML = qualHTML; qualSel.value = qualKeep;
+          el(`${kind}.variations`).disabled = false; el(`${kind}.variations`).checked = varKeep;
+          gemSel.disabled = false;
+          locked = false;
+        }
+      };
       const fillMaterials = () => {
         const sel = el(`${kind}.material`), keep = sel.value;
         const obj = cat.objects.find((o) => o.name === el(`${kind}.object`).value);
@@ -202,7 +250,7 @@ function artTab(kind, order) {
           return;
         }
         sel.disabled = false;
-        const makes = obj ? [obj.make] : [...new Set(C.objectsFor(cat, kind).map((o) => o.make))];
+        const makes = obj ? [obj.make] : [...new Set(C.objectsFor(cat, kind, filter()).filter((o) => !o.premade).map((o) => o.make))];
         const fits = (m) => !level || (m.minLevel <= level && level <= m.maxLevel);
         const group = (label, list) => (list.length ? `<optgroup label="${esc(label)}">${list.map((m) => opt(m.name, `${t("{name} (values {min}–{max})", { name: dn(m.name), min: m.minLevel, max: m.maxLevel })}${m.source === "custom" ? " *" : ""}`, keep)).join("")}</optgroup>` : "");
         sel.innerHTML = opt("", t(level ? "Random (suits the value)" : "Random (suits the value rolled)"), keep) + makes.map((mk) => {
@@ -211,7 +259,7 @@ function artTab(kind, order) {
           return level ? group(t("{construction}: suits value {level}", { construction: label, level }), list.filter(fits)) + group(t("{construction}: other values", { construction: label }), list.filter((m) => !fits(m))) : group(label, list);
         }).join("");
       };
-      const toggle = () => section.querySelectorAll(`[data-var="${kind}"] select`).forEach((s) => { s.disabled = !el(`${kind}.variations`).checked; });
+      const toggle = () => section.querySelectorAll(`[data-var="${kind}"] select`).forEach((s) => { s.disabled = locked || !el(`${kind}.variations`).checked; });
       const preview = () => {
         const pre = cat.objects.find((o) => o.name === el(`${kind}.object`).value)?.premade;
         if (pre) {
@@ -224,18 +272,21 @@ function artTab(kind, order) {
         section.querySelector(`[data-preview="${kind}"]`).innerHTML = lv
           ? H("True value: {formula}. Players see {value} until it is appraised.", { formula: `${fmtFormula(lv.formula)} ${t("gp")}${m === null ? t(" × quality") : m !== 1 ? ` × ${m}` : ""}`, value: gp(lv.avg) })
           : H(kind === "jewelry" ? "{objects} pieces × {materials} materials × {gems} gem options × 12 values{qualities}." : "{objects} objects × {materials} materials × {gems} gem options × 12 values{qualities}.",
-            { objects: C.objectsFor(cat, kind).length, materials: cat.materials.length, gems: cat.embellishments.length + 1, qualities: el(`${kind}.variations`).checked ? t(" × 5 qualities") : "" });
+            { objects: C.objectsFor(cat, kind, filter()).length, materials: cat.materials.length, gems: cat.embellishments.length + 1, qualities: el(`${kind}.variations`).checked ? t(" × 5 qualities") : "" });
       };
-      el(`${kind}.object`).addEventListener("change", fillMaterials);
+      el(`${kind}.object`).addEventListener("change", () => { fillMaterials(); lockPremade(); toggle(); });
+      section.querySelectorAll(`[name^="${kind}.src."], [name^="${kind}.make."]`).forEach((b) => b.addEventListener("change", () => { fillObjects(); fillMaterials(); lockPremade(); toggle(); }));
       el(`${kind}.level`).addEventListener("change", fillMaterials);
       el(`${kind}.variations`).addEventListener("change", toggle);
       section.addEventListener("change", preview);
-      fillMaterials(); toggle(); preview();
+      fillObjects(); fillMaterials(); lockPremade(); toggle(); preview();
     },
     generate(form) {
       const v = (n) => form.elements[n]?.value || null, el = (n) => form.elements[n];
       const opts = { kind, level: v(`${kind}.level`), object: v(`${kind}.object`), material: el(`${kind}.material`).disabled ? null : v(`${kind}.material`),
-        gem: v(`${kind}.gem`), quality: v(`${kind}.quality`), ...artOptions(form, kind) };
+        gem: el(`${kind}.gem`).disabled ? null : v(`${kind}.gem`), quality: el(`${kind}.quality`).disabled ? null : v(`${kind}.quality`), ...artOptions(form, kind),
+        filter: artFilter(form, kind) };
+      if (opts.filter && !opts.object && (!opts.filter.sources.length || (opts.filter.makes && !opts.filter.makes.length))) throw new Error(t("Tick at least one list and one construction."));
       return { entries: repeat(v(`${kind}.count`), () => entry(CAT, C.rollArt(CAT, opts))) };
     },
     generateTitle: (form) => t(kind === "jewelry" ? "Jewelry" : Number(form.elements["art.count"]?.value) > 1 ? "Art Objects" : "Art Object"),
@@ -520,7 +571,7 @@ function registerTours(hub) {
         { id: "gem", field: `${kind}.gem`, title: /*t*/"Gemstone", content: /*t*/"A gem set into it, None, or Random (more likely at higher values). Each gem shows the values it appears at." },
         { id: "variations", field: `${kind}.variations`, title: /*t*/"Quality", content: /*t*/"Ticked, the piece gets a workmanship that multiplies its value (homebrew). The default is a module setting." },
         { id: "quality", field: `${kind}.quality`, title: /*t*/"Workmanship", content: /*t*/"Junk ×0.25 to Masterpiece ×5, or Random (5/15/60/15/5)." },
-        ...(kind === "art" ? [{ id: "jewelry", field: "art.withJewelry", title: /*t*/"Treasure by Level", content: /*t*/"Ticked, art rolled on the Treasure by Level tab can come out as jewelry too." }] : []),
+        ...(kind === "art" ? [{ id: "jewelry", field: "art.withJewelry", title: /*t*/"Treasure by Level", content: [/*t*/"Art rolled by level can be jewelry too"] }] : []),
         { id: "preview", sel: `[data-preview=${kind}]`, title: /*t*/"Preview", content: /*t*/"The value range of your choices and how many combinations are possible." },
         { id: "count", field: `${kind}.count`, title: /*t*/"How many", content: /*t*/"How many to make for each target." },
         ...hub.tourFooter(),

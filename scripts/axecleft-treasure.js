@@ -27,7 +27,7 @@
  *
  * Register at load time (top level of your script). See README "For module authors".
  */
-const AXECLEFT_TREASURE_VERSION = 9.996; // 9.996: the loot card shows a translated coin name alone ("PO", not "PO (gp)"); 9.995: a tour of each tab (Tour Management, and the window's ⋮ menu); 9.994: a share of treasure and merchant stock from your Item compendiums (Generation settings), Treasure weight tags; 9.993: Generation settings: Sizes of arms, Poisons and Cursed items start with their checkbox, like the other rows; 9.992: a list's note can be built when shown (Gemstones' value levels), column help as tooltips on the Lists tab; 9.991: numbers right-aligned in their boxes; Treasure Lists pages in the world's language (rewritten when it changes), a line per column, an example row and a warning to keep the headings; 9.99: Item Sources show the items found in each compendium of an extra source kind (enhancements, materials, spells…); 9.98: a cursed item's eerie light only while the curse is active (D35E sheet animations); 9.97: custom curses (Treasure Lists); 9.96: cursed items (SRD tables, Generation settings, Forge/Workshop option); 9.94: text in the world's language (Axecleft's Tools 8.2 language files); 9.95: Foundry v11 (Tools 9 window, chat), no intelligent items before D35E 3.1
+const AXECLEFT_TREASURE_VERSION = 9.997; // 9.997: the epic share of the extra items on its own line under Campaign (long in French); long checkbox labels wrap instead of running out of the window; the chance of each custom curse (Lists tab), and how weights make it (Custom Curses page); inscription hints for armor and shields (DMG, default 30%) and other magic items (SRD: rings, rods, staffs, wands, wondrous items, 30%); "Items with charges can be intelligent" (house rule, off: the SRD); 9.996: the loot card shows a translated coin name alone ("PO", not "PO (gp)"); 9.995: a tour of each tab (Tour Management, and the window's ⋮ menu); 9.994: a share of treasure and merchant stock from your Item compendiums (Generation settings), Treasure weight tags; 9.993: Generation settings: Sizes of arms, Poisons and Cursed items start with their checkbox, like the other rows; 9.992: a list's note can be built when shown (Gemstones' value levels), column help as tooltips on the Lists tab; 9.991: numbers right-aligned in their boxes; Treasure Lists pages in the world's language (rewritten when it changes), a line per column, an example row and a warning to keep the headings; 9.99: Item Sources show the items found in each compendium of an extra source kind (enhancements, materials, spells…); 9.98: a cursed item's eerie light only while the curse is active (D35E sheet animations); 9.97: custom curses (Treasure Lists); 9.96: cursed items (SRD tables, Generation settings, Forge/Workshop option); 9.94: text in the world's language (Axecleft's Tools 8.2 language files); 9.95: Foundry v11 (Tools 9 window, chat), no intelligent items before D35E 3.1
 const AXECLEFT_TREASURE_HOST = (() => {
   try { return decodeURIComponent(new URL(import.meta.url).pathname).match(/\/modules\/([^/]+)\//)?.[1] ?? null; } catch (e) { return null; }
 })();
@@ -217,7 +217,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
    * hints and poisons. Shared by every Axecleft module (Armory and Curios read them with
    * T.generation()); edited in the "Generation settings" section of the Treasure by Level tab.
    * Defaults: the SRD where it has a rule (30% of magic melee weapons shed light as a light spell;
-   * 15% of weapons carry a hint; under 1% of permanent items are intelligent), Axecleft's house rules
+   * 15% of weapons carry a hint, 30% of rings, rods, staffs, wands and wondrous items (9.997; armor and shields 30%, the DMG's figure);
+   * under 1% of permanent items are intelligent, never one with charges), Axecleft's house rules
    * elsewhere (light on 5% of armor and shields, 1% of other permanent items; poison on 1% of mundane rolls).
    */
   const GEN_KEY = "axecleftGeneration";
@@ -237,8 +238,12 @@ const AXECLEFT_TREASURE_HOST = (() => {
       // A special purpose and dedicated power instead of a power (version 9.996): SRD, on items with greater powers (the SRD
       // doesn't say how often; Axecleft's default: always); house rule, on items with only lesser powers
       purpose: { on: true, greaterChance: 100, lesserChance: 0 },
+      // 9.997: SRD, an item with charges (staffs, rings and rods with charges) is never intelligent; a house rule can allow it
+      charged: false,
     },
-    hints: { enabled: true, melee: { on: true, chance: 15 }, ranged: { on: true, chance: 15 } },
+    // 9.997 (suggested by Gilgalad): armor and shields (not in the SRD; the DMG gives 30%) and other magic items (SRD: rings, rods, staffs,
+    // wands and wondrous items 30%; never potions or scrolls)
+    hints: { enabled: true, melee: { on: true, chance: 15 }, ranged: { on: true, chance: 15 }, armor: { on: true, chance: 30 }, other: { on: true, chance: 30 } },
     poison: { enabled: true, chance: 1 },
     // Cursed items (version 9.96): a flat rate, or a rate by grade (the SRD gives no frequency)
     curse: { enabled: true, method: "flat", flat: 1, minor: 3, medium: 2, major: 1, merchants: false, specific: true, mechanics: true },
@@ -518,6 +523,20 @@ const AXECLEFT_TREASURE_HOST = (() => {
     try { rows = registry.lists.has(`${CORR_MOD}|curses`) ? customList(CORR_MOD, "curses") : builtinCurseRows(); } catch (e) { rows = builtinCurseRows(); }
     const kind = kindOfCategory(category);
     return rows.filter((r) => r.table === table && (Number(r.weight) || 0) > 0 && (!kind || !r.kinds?.length || r.kinds.includes(kind)));
+  }
+  /** The chance of each of the GM's curses on its table (Lists tab): weight ÷ the table's total weight. */
+  function curseOddsHtml() {
+    let mine = [];
+    try { mine = listRows(CORR_MOD, "curses").filter((r) => (Number(r.weight) || 0) > 0); } catch (e) { mine = []; }
+    if (!mine.length) return "";
+    const lines = mine.slice().sort((a, b) => a.table.localeCompare(b.table) || a.name.localeCompare(b.name)).map((r) => {
+      const total = curseRows(r.table).reduce((a, x) => a + (Number(x.weight) || 0), 0);
+      const pct = total > 0 ? Math.round((Number(r.weight) / total) * 1000) / 10 : 0;
+      const table = t(CURSE_TABLES.find(([k]) => k === r.table)?.[1] ?? r.table);
+      return `<li>${esc(t("{name}: {pct}% of the rolls on the {table} table (weight {weight} of {total})", { name: r.name, pct: num(pct), table, weight: num(Number(r.weight)), total: num(total) }))}</li>`;
+    }).join("");
+    return `<details class="atg-sec" data-sec="odds" open><summary>${esc(t("Chance of each of your curses"))}</summary><ul>${lines}</ul>
+      <p class="hint">${esc(t("A curse limited to some items is only rolled for those items, among the rows that fit them, so its chance there is a little higher."))}</p></details>`;
   }
   /** A select or checks option's key from its key, its English label or its label in the world's language (list pages show labels). */
   const optionKey = (opts, v) => {
@@ -818,11 +837,15 @@ const AXECLEFT_TREASURE_HOST = (() => {
     const changed = JSON.stringify(g) !== JSON.stringify(GEN_DEFAULTS);
     return `<details class="atg-sec atg-gen" data-sec="gen" ${recall("sec.gen", "0") === "1" ? "open" : ""}><summary>${esc(t("Generation settings"))} <small>(${esc(changed ? t("changed for this world") : t("SRD and Axecleft defaults"))})</small></summary>
       <p class="hint">${esc(t("Extras that Axecleft's modules (Armory, Curios) add to randomly generated magic items, and poisons among mundane items. Untick a row or set 0% to turn it off. Crafting tools (the Armory's Forge) can always add them by hand. Saved for this world."))}</p>
-      <div class="form-group"><label>${esc(t("Campaign"))}</label>${cb("gen.rules.psionics", g.rules.psionics, /*t*/"Psionics")}${cb("gen.rules.epic", g.rules.epic, /*t*/"Epic items")}${H("Epic share of the extra items at EL 21+:")} ${num("gen.rules.epicShare", g.rules.epicShare ?? 25)}<span class="hint">%</span></div>
+      <div class="form-group"><label>${esc(t("Campaign"))}</label>${cb("gen.rules.psionics", g.rules.psionics, /*t*/"Psionics")}${cb("gen.rules.epic", g.rules.epic, /*t*/"Epic items")}</div>
+      <div class="form-group"><label>${H("Epic share of the extra items at EL 21+:")}</label>${num("gen.rules.epicShare", g.rules.epicShare ?? 25)}<span class="hint">%</span></div>
       <p class="hint">${t("For every Axecleft module. <strong>Psionics</strong> off hides psionic items, powers, power stones, psionic tattoos, dorjes and psicrowns from treasure, merchants, crafting and the Forge. <strong>Epic items</strong> on lets the Forge and crafting make epic items (past the SRD +5/+10 limits) and lets merchants with the <em>Epic campaign</em> settlement character stock them; random treasure stays SRD up to EL 20. EL 21–30 (DMG): the EL 20 row plus 1, 2, 4, 6, 9, 12, 17, 23, 31 or 42 extra major items; while Epic items is on, this share of them are epic items from the SRD epic tables (house rule).")}</p>
       <div class="atg-checks">${cb("gen.light.enabled", g.light.enabled, /*t*/"Random light")}${IQ ? cb("gen.intelligence.enabled", g.intelligence.enabled, /*t*/"Random intelligence") : ""}${cb("gen.hints.enabled", g.hints.enabled, /*t*/"Inscription hints")}</div>
       <table class="atg-gen-table"><thead><tr><th></th><th>${esc(t("Sheds light"))}</th><th>${esc(t("Bright / dim"))}</th>${IQ ? `<th>${esc(t("Intelligent"))}</th>` : ""}<th>${esc(t("Hint"))}</th></tr></thead><tbody>${rows}</tbody></table>
+      <p class="hint">${t("Inscription hints: the SRD gives 30% for rings, rods, staffs, wands and wondrous items (the Other row, wands included; never potions or scrolls); armor and shields have none in the SRD, 30% is the DMG's figure.")}</p>
       <p class="hint">${t("SRD: 30% of magic melee weapons shed light (a <em>light</em> spell: 20 ft bright, 40 ft dim); ranged weapons don't; 15% of weapons carry an inscription hinting at their power; fewer than 1% of permanent items are intelligent (never potions, scrolls, wands or ammunition). Light on armor, shields and other items is a house rule.")}</p>
+      ${IQ ? `<div class="atg-checks">${cb("gen.intelligence.charged", g.intelligence.charged, /*t*/"Items with charges can be intelligent (house rule)")}</div>
+      <p class="hint">${esc(t("SRD: only permanent items can be intelligent, never single-use items or items with charges (staffs, wands, and rings and rods with charges). Tick to let staffs and charged rings and rods roll intelligence too; wands, potions and scrolls never do."))}</p>` : ""}
       ${IQ ? `<div class="atg-checks">${cb("gen.intelligence.purpose.on", g.intelligence.purpose.on, /*t*/"Special purpose instead of a power:")} <span>${num("gen.intelligence.purpose.greaterChance", g.intelligence.purpose.greaterChance)}${H("% of intelligent items with greater powers")}</span> <span>${num("gen.intelligence.purpose.lesserChance", g.intelligence.purpose.lesserChance)}${H("% of those with only lesser powers")}</span></div>
       <p class="hint">${esc(t("SRD: an intelligent item with greater powers can have a special purpose and a dedicated power instead of one greater power; the SRD doesn't say how often (Axecleft's default: 100%). On an item with only lesser powers, the purpose and dedicated power take the place of a lesser power (house rule; default 0%). A purpose chosen in the Forge or the Curios tab is always an extra."))}</p>` : ""}
       <div class="atg-checks">${cb("gen.light.themes", g.light.themes, /*t*/"Light color and animation follow the item's abilities")}${cb("gen.light.powerBrightness", g.light.powerBrightness, /*t*/"Stronger items glow brighter")}</div>
@@ -2132,7 +2155,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
   }
   // Version 9.991: the page text in the world's language, a line per column (its heading as written in the table, and translated),
   // a warning to keep the headings, and an example row in a second table (only the first table is read)
-  const TEXT_VERSION = 3;
+  const TEXT_VERSION = 4; // 4 (9.997): Custom Curses explains how a weight becomes a chance
   /** A list's closing note as HTML blocks: a function's own HTML, or a sentence in a paragraph. */
   const noteHtml = (spec) => { try { return typeof spec.note === "function" ? String(spec.note() ?? "") : spec.note ? `<p>${t(spec.note)}</p>` : ""; } catch (e) { return ""; } };
   const helpText = (spec, field) => (spec.help?.[field] ? decodeCell(t(spec.help[field])) : "");
@@ -2484,6 +2507,7 @@ const AXECLEFT_TREASURE_HOST = (() => {
             ${noteHtml(s) ? `<div class="hint">${noteHtml(s)}</div>` : ""}
             <div class="atg-footer"><button type="button" data-lists="addRow" data-i="${i}"><i class="fas fa-plus"></i> ${esc(t("Add to List"))}</button></div>
             <details class="atg-sec" data-sec="mine"><summary>${esc(t("Your entries"))} <small>(${mine.length})</small></summary>${chips(mine, s.module, s.key, (r) => r.name)}</details>
+            ${(() => { try { return typeof s.odds === "function" ? String(s.odds() ?? "") : ""; } catch (e) { return ""; } })()}
           </fieldset>
           <fieldset><legend>${esc(t("Switch off built-in entries"))}</legend>
             <p class="hint">${esc(t("Switched-off entries are never used. They go on the \"{page}\" page.", { page: disabledSpec(s.module).page }))}</p>
@@ -2601,7 +2625,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
     .atg input[type=number] { text-align: right; }
     .atg input[type=number].atg-ft { text-align: start; }
     .atg .atg-checks { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    .atg .atg-checks label { display: flex; gap: 4px; align-items: center; flex: none; }
+    .atg .atg-checks label { display: flex; gap: 4px; align-items: center; flex: 0 1 auto; min-width: 0; max-width: 100%; } /* 9.997: a long (translated) label wraps inside the window */
+    .atg .atg-checks label > input { flex: none; }
     .atg .atg-checks .hint { margin: 0; }
     .atg .hint { font-size: 0.85em; opacity: 0.85; margin: 2px 0 6px; }
     .atg fieldset { margin: 8px 0 4px; padding: 4px 8px 6px; }
@@ -3102,7 +3127,8 @@ const AXECLEFT_TREASURE_HOST = (() => {
           text: /*t*/"what the curse does, in a sentence. It goes in the cursed item's description and on its curse buff.",
           penalties: /*t*/"optional: what the curse buff applies while the curse is active, separated by semicolons: -2 attack; -2 saves; -1 str; -4 spot; -5 hp (also melee, ranged, damage, ac, fort, ref, will, checks, skills, init, speed, or a skill's English name).",
         },
-        note: /*t*/"The SRD's own curses are listed as built-in rows; switch one off on the Disabled Entries page.",
+        note: () => `<p>${t("The SRD's own curses are listed as built-in rows; switch one off on the Disabled Entries page.")}</p><p>${t("A row's chance is its weight divided by the total weight of its table. Each SRD table totals 100, so a curse of weight 10 alone in a table comes up 10 in 110 rolls, about 9%. The Lists tab of the Treasure Generator shows the chance of each of your curses.")}</p>`,
+        odds: () => curseOddsHtml(),
         example: { name: "Leaden Hands", table: "drawback", weight: 5, kinds: ["arms", "wondrous"], text: "The bearer's hands feel heavy and clumsy.", penalties: "-2 attack; -2 sleight of hand" },
         cols: [["name", /*t*/"Curse"], ["table", /*t*/"Table", { type: "select", options: CURSE_TABLES }], ["weight", /*t*/"Weight", { type: "number", value: 5, min: 0, step: 1 }],
           ["kinds", /*t*/"Items", { type: "checks", options: CURSE_KINDS }], ["text", /*t*/"What it does"], ["penalties", /*t*/"Penalties (buff)", { placeholder: /*t*/"-2 attack; -2 saves" }]],

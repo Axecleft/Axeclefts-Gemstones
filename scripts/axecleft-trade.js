@@ -28,7 +28,7 @@
  * The Merchant Generator's saved settings (flags.world.axecleftMerchant) and D35E's loot sheet flags are read as a
  * fallback, so merchants made before this sheet work as they are.
  */
-const AXECLEFT_TRADE_VERSION = 1.37; // 1.37: the shop sheet registers on Foundry v11 (its Actors and TextEditor aren't properties of globalThis), so merchants open on it; 1.36: tours point at the sheet they opened, and show an example of the parts that aren't there yet (haggling, the basket, the lock, the log); 1.35: tours of the merchant, loot and party storage sheets (players and GM); 1.34: texts the language files missed (hide or show an item, a decided pickpocketing card); 1.33: the item list keeps its place when the sheet is redrawn (opening a description, adding to the basket, a trade); 1.32: an item's description pops up when the pointer rests on its name, and stays open under it when clicked (the unidentified one for an unidentified item); 1.31: a merchant's log (sales, purchases, haggling, pickpocketing, shoplifting, lock-outs) on the GM settings; a basket to buy several things at once; 1.3: Loot and Party storage sheets (take, put in, split coins, sneak things out), locks (keys, Open Lock, force, break, knock) and traps (simple, or a Traps module trap actor); D35E "valuable" items; 1.24: long buttons on the GM's pickpocketing card wrap instead of being cut off; 1.23: the GM opens the merchant's character sheet (D35E's NPC sheet: stats, skills, attacks) from the shop sheet; 1.22: the item list on the parchment too (Foundry's dark table rows made the items look greyed out); 1.21: a shop's security (guards, wards, locked goods…) changes the DCs and its Spot; 1.2: pickpocketing and shoplifting (the GM decides each one on a card in chat: time-outs, lock-outs, the target's reaction); the sheet on D35E's parchment; 1.13: 1.13: a haggle that goes against the buyer reads "worse prices" (not "-5% better"); 1.12: stock shows (D35E marks loose items with container "none"); players can use the sheet's tabs and buttons (Foundry disabled them on a sheet they don't own); the window's title is the merchant's name; 1.1: trade goods at their own sell and buy % (world house rule, or per shop); haggling with Diplomacy, Intimidate or Bluff
+const AXECLEFT_TRADE_VERSION = 1.39; // 1.39: the open GM settings scroll in their own box, so the item list stays in reach in a short window; 1.38: Shift+click on the basket's cart or − asks how many to add or take off (a stack of arrows or bolts in one go); 1.37: the shop sheet registers on Foundry v11 (its Actors and TextEditor aren't properties of globalThis), so merchants open on it; 1.36: tours point at the sheet they opened, and show an example of the parts that aren't there yet (haggling, the basket, the lock, the log); 1.35: tours of the merchant, loot and party storage sheets (players and GM); 1.34: texts the language files missed (hide or show an item, a decided pickpocketing card); 1.33: the item list keeps its place when the sheet is redrawn (opening a description, adding to the basket, a trade); 1.32: an item's description pops up when the pointer rests on its name, and stays open under it when clicked (the unidentified one for an unidentified item); 1.31: a merchant's log (sales, purchases, haggling, pickpocketing, shoplifting, lock-outs) on the GM settings; a basket to buy several things at once; 1.3: Loot and Party storage sheets (take, put in, split coins, sneak things out), locks (keys, Open Lock, force, break, knock) and traps (simple, or a Traps module trap actor); D35E "valuable" items; 1.24: long buttons on the GM's pickpocketing card wrap instead of being cut off; 1.23: the GM opens the merchant's character sheet (D35E's NPC sheet: stats, skills, attacks) from the shop sheet; 1.22: the item list on the parchment too (Foundry's dark table rows made the items look greyed out); 1.21: a shop's security (guards, wards, locked goods…) changes the DCs and its Spot; 1.2: pickpocketing and shoplifting (the GM decides each one on a card in chat: time-outs, lock-outs, the target's reaction); the sheet on D35E's parchment; 1.13: 1.13: a haggle that goes against the buyer reads "worse prices" (not "-5% better"); 1.12: stock shows (D35E marks loose items with container "none"); players can use the sheet's tabs and buttons (Foundry disabled them on a sheet they don't own); the window's title is the merchant's name; 1.1: trade goods at their own sell and buy % (world house rule, or per shop); haggling with Diplomacy, Intimidate or Bluff
 const AXECLEFT_TRADE_HOST = (() => {
   try { return decodeURIComponent(new URL(import.meta.url).pathname).match(/\/modules\/([^/]+)\//)?.[1] ?? null; } catch (e) { return null; }
 })();
@@ -680,7 +680,10 @@ const AXECLEFT_TRADE_HOST = (() => {
     .axecleft-shop nav.ash-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--color-border-light-tertiary, #999); }
     .axecleft-shop nav.ash-tabs button { flex: 0 0 auto; border-radius: 4px 4px 0 0; margin: 0; padding: 3px 12px; line-height: 1.4; width: auto; }
     .axecleft-shop nav.ash-tabs button.active { font-weight: bold; box-shadow: inset 0 -3px 0 var(--color-warm-1, #c9593f); }
-    .axecleft-shop .ash-list { flex: 1; overflow-y: auto; min-height: 120px; }
+    .axecleft-shop .ash > * { flex-shrink: 0; }
+    .axecleft-shop .ash-list { flex: 1 1 auto; overflow-y: auto; min-height: 120px; }
+    /* 1.39 (spotted by Gilgalad): the open GM settings take at most half the sheet and scroll inside it, so every setting and the item list stay in reach */
+    .axecleft-shop .ash > details.ash-gm[open] { flex: 0 1 auto; min-height: 5em; max-height: 50%; overflow-y: auto; }
     .axecleft-shop table.ash-t { width: 100%; border-collapse: collapse; margin: 0; }
     .axecleft-shop table.ash-t th { text-align: left; position: sticky; top: 0; background: var(--background, var(--color-cool-5, #1b1d24)); z-index: 1; padding: 3px 4px; font-size: 0.9em; }
     .axecleft-shop table.ash-t td { padding: 2px 4px; vertical-align: middle; border-top: 1px solid rgba(128,128,128,0.25); }
@@ -830,7 +833,7 @@ const AXECLEFT_TRADE_HOST = (() => {
         <a class="ash-ctl" data-ash="qty" data-d="-1" data-id="${i.id}" title="${H("One fewer")}"><i class="fas fa-minus"></i></a><a class="ash-ctl" data-ash="qty" data-d="1" data-id="${i.id}" title="${H("One more")}"><i class="fas fa-plus"></i></a>
         <a class="ash-ctl" data-ash="edit" data-id="${i.id}" title="${H("Edit")}"><i class="fas fa-pen"></i></a><a class="ash-ctl" data-ash="delete" data-id="${i.id}" title="${H("Remove")}"><i class="fas fa-trash"></i></a>` : "";
       return `<tr class="${isHidden(i) ? "hidden-item" : ""}"><td class="name"><img src="${esc(i.img)}" alt=""><span class="ash-name" data-ash="desc" data-uuid="${i.uuid}">${name}</span></td><td class="n">${q}</td>
-        <td class="n">${esc(money(price))}</td><td class="n">${steal && q > 0 ? `<a class="ash-ctl" data-ash="shoplift" data-id="${i.id}" title="${H("Shoplift: Sleight of Hand; the GM decides")}"><i class="fas fa-hand-sparkles"></i></a> ` : ""}${buyer && q > 0 && cart ? `<a class="ash-ctl" data-ash="cart" data-id="${i.id}" title="${H("Add one to the basket")}"><i class="fas fa-cart-plus"></i>${cart[i.id] ? `<small>${cart[i.id]}</small>` : ""}</a> ` : ""}${buyer && q > 0 ? `<button type="button" class="ash-act" data-ash="buy" data-id="${i.id}">${H("Buy")}</button>` : ""}</td><td class="n">${ctl}</td></tr>`;
+        <td class="n">${esc(money(price))}</td><td class="n">${steal && q > 0 ? `<a class="ash-ctl" data-ash="shoplift" data-id="${i.id}" title="${H("Shoplift: Sleight of Hand; the GM decides")}"><i class="fas fa-hand-sparkles"></i></a> ` : ""}${buyer && q > 0 && cart ? `<a class="ash-ctl" data-ash="cart" data-id="${i.id}" title="${H("Add one to the basket (Shift+click: how many)")}"><i class="fas fa-cart-plus"></i>${cart[i.id] ? `<small>${cart[i.id]}</small>` : ""}</a> ` : ""}${buyer && q > 0 ? `<button type="button" class="ash-act" data-ash="buy" data-id="${i.id}">${H("Buy")}</button>` : ""}</td><td class="n">${ctl}</td></tr>`;
     };
     return `<table class="ash-t"><tr><th>${H("Item")}</th><th class="n">${H("Qty")}</th><th class="n">${H("Price each")}</th><th></th><th></th></tr>${rowsByGroup(items, row)}</table>`;
   }
@@ -843,7 +846,7 @@ const AXECLEFT_TRADE_HOST = (() => {
     const total = lines.reduce((s, x) => s + askPrice(shop, x.it, buyer) * x.n, 0);
     const short = total > wealth(buyer);
     return `<div class="ash-row ash-basket" style="padding:4px 6px;border:1px solid #7a7971;border-radius:4px;background:rgba(255,255,255,0.25)"><b><i class="fas fa-basket-shopping"></i> ${H("Basket")}</b>
-      ${lines.map((x) => `<span>${x.n} × ${esc(shownName(x.it))}<a class="ash-ctl" data-ash="uncart" data-id="${x.it.id}" title="${H("One fewer")}"><i class="fas fa-minus"></i></a></span>`).join(" ")}
+      ${lines.map((x) => `<span>${x.n} × ${esc(shownName(x.it))}<a class="ash-ctl" data-ash="uncart" data-id="${x.it.id}" title="${H("One fewer (Shift+click: how many)")}"><i class="fas fa-minus"></i></a></span>`).join(" ")}
       <span style="margin-left:auto">${H("Total")}: <b class="${short ? "warn" : ""}">${esc(money(total))}</b></span>
       <button type="button" class="ash-act" data-ash="buyAll"${short ? ` title="${H("{name} has {has}", { name: buyer.name, has: money(wealth(buyer)) })}"` : ""}><i class="fas fa-cash-register"></i> ${H("Buy all")}</button>
       <button type="button" class="ash-act" data-ash="clearCart"><i class="fas fa-xmark"></i> ${H("Empty")}</button></div>`;
@@ -978,6 +981,7 @@ const AXECLEFT_TRADE_HOST = (() => {
       const el = ev.target, s2 = (st.scroll ??= {});
       if (el === root) s2.content = el.scrollTop;
       else if (el.classList?.contains("ash-list")) s2[".ash-list"] = el.scrollTop;
+      else if (el.matches?.(".ash > details.ash-gm")) s2[".ash > details.ash-gm"] = el.scrollTop; // the GM settings keep their place when the sheet redraws
     }, true);
     root.addEventListener("toggle", (ev) => { const c = ev.target.classList; if (c?.contains("ash-log")) st.logOpen = ev.target.open; else if (c?.contains("ash-gm")) st.gmOpen = ev.target.open; }, true);
     root.addEventListener("click", async (ev) => {
@@ -1009,8 +1013,19 @@ const AXECLEFT_TRADE_HOST = (() => {
       if (act === "sell") return sellFlow(sheet, shop, buyer, id, run);
       if (act === "pickpocket") return stealFlow({ kind: "pocket", target: shop, thief: buyer });
       if (act === "shoplift") return stealFlow({ kind: "shoplift", target: shop, itemId: id, thief: buyer });
-      if (act === "cart") { const it = shop.items.get(id); if (!it) return; st.cart ??= {}; st.cart[id] = Math.min(qtyOf(it), (st.cart[id] ?? 0) + 1); return rerender(sheet); }
-      if (act === "uncart") { if (st.cart?.[id]) { st.cart[id] -= 1; if (st.cart[id] <= 0) delete st.cart[id]; } return rerender(sheet); }
+      if (act === "cart") {
+        const it = shop.items.get(id); if (!it) return; st.cart ??= {};
+        const room = qtyOf(it) - (st.cart[id] ?? 0); if (room <= 0) return;
+        let n = 1;
+        if (ev.shiftKey && room > 1) { n = await askQty(t("Add {item} to the basket", { item: shownName(it) }), t("How many?"), room, buyer ? askPrice(shop, it, buyer) : null); if (!n) return; }
+        st.cart[id] = Math.min(qtyOf(it), (st.cart[id] ?? 0) + n); return rerender(sheet);
+      }
+      if (act === "uncart") {
+        const have = st.cart?.[id] ?? 0; if (!have) return;
+        let n = 1;
+        if (ev.shiftKey && have > 1) { const it = shop.items.get(id); n = await askQty(t("Take {item} out of the basket", { item: it ? shownName(it) : "" }), t("How many?"), have, null); if (!n) return; }
+        st.cart[id] = have - n; if (st.cart[id] <= 0) delete st.cart[id]; return rerender(sheet);
+      }
       if (act === "clearCart") { st.cart = {}; return rerender(sheet); }
       if (act === "buyAll") {
         if (!buyer) return;
@@ -1755,15 +1770,15 @@ const AXECLEFT_TRADE_HOST = (() => {
       { id: "restock", sel: "[data-ash='restock']", title: /*t*/"Restock", content: /*t*/"New stock by the merchant's saved Merchant Generator settings, or open the Merchant Generator. Players need Limited or Observer on this actor, never Owner." },
       { id: "log", sel: "details.ash-log > summary", title: /*t*/"Log", content: /*t*/"Every sale and purchase, haggle, pickpocketing and shoplifting attempt and lock-out, newest first. Clear it here." },
       { id: "stock", sel: ".ash-list a.ash-ctl[data-ash='hide']", title: /*t*/"The stock", content: /*t*/"Beside each item: hide it from players, one more or one fewer, edit it, remove it. Drop items on the sheet to add them to the stock." },
-      { id: "charsheet", sel: "[data-ash='charsheet']", title: /*t*/"Character sheet", content: /*t*/"The merchant's stats, skills and attacks on D35E's own NPC sheet, beside the shop (it stays the shop's sheet)." },
+      { id: "charsheet", sel: "[data-ash='charsheet']", title: /*t*/"Character sheet", content: [/*t*/"The merchant's stats, skills and attacks on D35E's sheet (the shop stays its sheet)"] },
     ]);
     tour("shop", "merchant", false, /*t*/"Axecleft's Shop: buying and selling", /*t*/"Trade with a merchant: buy, sell, the basket, haggling and sleight of hand.", "loot", [
       { id: "intro", title: /*t*/"A merchant's shop", content: /*t*/"Double-click a merchant's token to open its shop. You trade as one of your characters; the GM's game carries out each trade, so a GM must be connected." },
       { id: "who", sel: ".ash-who select[data-ash='buyer']", title: /*t*/"Trading as", content: /*t*/"The character who buys and sells, and the coins in their purse." },
       { id: "haggle", sel: ".ash-who [data-ash='haggle']", title: /*t*/"Haggle", content: /*t*/"When the shop allows it: roll Diplomacy, Intimidate or Bluff for better prices. The GM decides how much (or worse prices, if it goes badly); it lasts for this character." },
       { id: "tabs", sel: "nav.ash-tabs", title: /*t*/"Buy and Sell", content: /*t*/"Buy: what the shop has, at its prices. Sell: your character's items the shop would buy, with its offer for each. You can also drop an item from your character on the sheet to sell it." },
-      { id: "list", sel: ".ash-list table.ash-t tr:first-child", title: /*t*/"Items", content: /*t*/"By kind, with how many and the price. Rest the pointer on a name to read the item; click it to keep the description open. The cart adds one to the basket." },
-      { id: "basket", sel: ".ash-basket", title: /*t*/"Basket", content: /*t*/"What you're about to buy and its total (red when the character can't afford it). − takes one off; Buy all pays for everything at once, with change." },
+      { id: "list", sel: ".ash-list table.ash-t tr:first-child", title: /*t*/"Items", content: /*t*/"By kind, with how many and the price. Rest the pointer on a name to read the item; click it to keep the description open. The cart adds one to the basket; Shift+click it to choose how many." },
+      { id: "basket", sel: ".ash-basket", title: /*t*/"Basket", content: /*t*/"What you're about to buy and its total (red when the character can't afford it). − takes one off (Shift+click to choose how many); Buy all pays for everything at once, with change." },
       { id: "steal", sel: ".ash-who [data-ash='pickpocket']", title: /*t*/"Sleight of hand", content: /*t*/"When the GM allows it: pick the merchant's pocket here, or shoplift an item with the hand beside it. You roll Sleight of Hand; only the GM sees the result and decides. The hand button in the token controls picks the pocket of a token you target." },
     ]);
     tour("loot-gm", "loot", true, /*t*/"Axecleft's Shop: loot and party storage (GM)", /*t*/"Setting up a loot pile or party storage: who opens it, its coins, a lock and a trap.", "loot", [
@@ -1774,7 +1789,7 @@ const AXECLEFT_TRADE_HOST = (() => {
       { id: "lock", sel: "[data-ash-l='lock.locked']", title: /*t*/"Lock", content: /*t*/"Locked or not, the lock's quality and Open Lock DC (SRD: very simple 20 to amazing 40), arcane lock (+10), and a key (an item by name) that opens it." },
       { id: "box", sel: "[data-ash-l='lock.box']", title: /*t*/"Container", content: /*t*/"What it is (a small chest, a treasure chest…): its hardness, hit points and Break DC, for forcing or breaking it open." },
       { id: "trap", sel: "[data-ash-l='trap.armed']", title: /*t*/"Trap", content: /*t*/"Arm a simple trap (its Search and Disable DCs, a save, damage, poison) or pick a trap actor from Axecleft's Traps, Poisons, and Diseases. Search finds it; Disable Device disarms it; opening it unaware sets it off." },
-      { id: "openclose", sel: "[data-ash='close'], [data-ash='gmOpen']", title: /*t*/"Open or close it", content: /*t*/"Locking it or arming a trap closes it. Picking the lock, keys, knock and traps found or disabled go ahead on their own (you're told); forcing it, breaking it and a trap going off come to you on a card." },
+      { id: "openclose", sel: "[data-ash='close'], [data-ash='gmOpen']", title: /*t*/"Open or close it", content: [/*t*/"Locking it or arming a trap closes it. Picking the lock, keys, knock and finding or disabling a trap go ahead on their own (you're told); forcing it, breaking it and a trap going off come to you on a card."] },
     ]);
     tour("loot", "loot", false, /*t*/"Axecleft's Shop: loot and party storage", /*t*/"Take things, put things in, split the coins, and get past a lock or a trap.", null, [
       { id: "intro", title: /*t*/"Loot and party storage", content: /*t*/"A chest, a body to search or the party's stash. Choose your character, then take what you want; the GM's game moves it, so a GM must be connected." },

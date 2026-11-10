@@ -213,8 +213,20 @@ export function multiplierTable(cat, spec) {
 /*  Art objects and jewelry                     */
 /* -------------------------------------------- */
 
-export function objectsFor(cat, kind = "any") {
-  return cat.objects.filter((o) => kind === "any" || o.kind === kind);
+export function objectsFor(cat, kind = "any", filter = null) {
+  return cat.objects.filter((o) => (kind === "any" || o.kind === kind) && artMatches(o, filter));
+}
+/**
+ * Which list an object is on (the Art Objects and Jewelry tabs' list boxes, 1.14.6.25): "custom" (your Treasure Lists),
+ * "premade" (premade pieces), else "module" (Axecleft's objects).
+ */
+export const artList = (o) => (o.source === "custom" ? "custom" : o.premade ? "premade" : "module");
+/** filter: { sources: ["module", "premade", "custom"], makes: ["Molded", …] } (missing = all). Premade pieces need "premade" ticked too. */
+export function artMatches(o, filter = null) {
+  if (!filter) return true;
+  if (filter.sources && (!filter.sources.includes(artList(o)) || (o.premade && !filter.sources.includes("premade")))) return false;
+  if (filter.makes && !filter.makes.includes(o.make)) return false;
+  return true;
 }
 /** Materials an object can be made of; with a level, only those that fit it. */
 export function materialsFor(cat, obj, level = null) {
@@ -241,13 +253,22 @@ export function artName(obj, material, gem, { quality = "", en = false } = {}) {
 
 /**
  * Roll one art object or piece of jewelry.
- * opts: kind ("art" | "jewelry" | "any"), level (1-12), object, material, gem (name | "none"), quality, variations
+ * opts: kind ("art" | "jewelry" | "any"), level (1-12), object, material, gem (name | "none"), quality, variations,
+ * filter ({ sources, makes }: only objects on those lists, 1.14.6.25)
  */
 export function rollArt(cat, opts = {}, rng = Math.random) {
   const kind = opts.kind ?? "any";
-  const level = cat.levels.find((l) => l.level === Number(opts.level)) ?? weighted(cat.levels, rng);
+  const all = objectsFor(cat, kind, opts.object ? null : opts.filter ?? null);
+  if (!opts.object && !all.length) throw new Error(t("No object matches the ticked lists."));
+  // Only premade pieces ticked: roll among the value rows that have one
+  const onlyPremade = !opts.object && all.every((o) => o.premade);
+  let level = cat.levels.find((l) => l.level === Number(opts.level));
+  if (!level) {
+    const rows = onlyPremade ? cat.levels.filter((l) => all.some((o) => o.premade.level === l.level)) : cat.levels;
+    level = weighted(rows.length ? rows : cat.levels, rng);
+  }
+  if (onlyPremade && !all.some((o) => o.premade.level === level.level)) throw new Error(t("No premade piece at value {level} on the ticked lists.", { level: level.level }));
   // Premade pieces: a random pick takes one only at its own value row, and only premadeShare % of the time (default 5).
-  const all = objectsFor(cat, kind);
   let pool = all.filter((o) => !o.premade);
   const premades = all.filter((o) => o.premade && o.premade.level === level.level);
   const chosenMat = opts.material ? cat.materials.find((m) => m.name === opts.material) : null;

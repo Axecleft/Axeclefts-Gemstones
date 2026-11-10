@@ -3,6 +3,16 @@
 
 Changelog:
 
+v1.14.6.25:
+
+- **One link installs the whole suite.** Every Axecleft module now recommends all the others (Gemstones, Armory, Curios, Traps, Adventurers and Minions, Hoard Editor, Printable Sheets, VooDoo and the Tools Suite manager), so installing any one of them offers to install the rest.
+- Ships Axecleft's Tools 9.74: **Help on hover**. In a window that has a tour, turn on **Help on hover** in its ⋮ menu and rest the mouse on a part of the window to see that part's tour text.
+- Tours reuse the windows' own sentences where they said the same thing (Axecleft's Tools 9.73: a tour step can be built from several texts), so a translator translates each once. Asked by Gilgalad.
+- Suggested by Gilgalad: choosing a **premade art object** (Leo's and the like) on the Art Objects or Jewelry tab now locks **Gemstone** and **Workmanship** too, as it already did Material: a premade piece comes as it was made, so neither can be picked. Your earlier choices come back when you pick another object.
+- Suggested by Gilgalad: the Art Objects and Jewelry tabs have **list boxes**, like the Gems tab's gem lists: **Axecleft's objects**, **Premade pieces** and **Custom** (your Treasure Lists), and the **constructions** (molded, carved, cloth, book). Random picks, the Object choices and the materials offered follow the ticks, which are remembered in your browser. Only Premade pieces ticked: Generate always gives a premade piece (at a value that has one). Treasure by Level, token loot and merchants keep using every list.
+- Ships the Treasure Generator 9.997: **Epic share of the extra items** on its own line; long checkbox labels wrap inside the window; the **chance of each custom curse** (Lists tab); inscription hints for armor and shields and other magic items; *Items with charges can be intelligent* (house rule, off). Ships the Crafting engine 1.98 (the window closes once a request is sent; the end of a craft is announced in chat).
+- French: Gilgalad's fifth translation file.
+
 v1.14.6.24:
 
 - Suggested by Gilgalad: a rolled **special purpose** for intelligent items (Armory, Curios) takes the place of a power, as the SRD has it (two percentages in Generation settings: items with greater powers, default 100%, and items with only lesser powers, default 0%; your settings carry over), and shop types can sell **items by Shop tag**, including tags of your own (`Shop: Statue`), and only **gems or art objects named** with your words (a diamond merchant). Treasure Generator 9.996 and Merchant Generator 7.96.
