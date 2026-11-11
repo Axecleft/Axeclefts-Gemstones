@@ -2,6 +2,15 @@
 
 File: scripts/axecleft-merchants.js. Ship the same copy in every Axecleft module, listed in module.json "esmodules" after axecleft-tools.js and axecleft-treasure.js (version 9 or later for this version). The highest version runs.
 
+## Axecleft's Shop 1.40
+
+- **Coins it takes** (suggested by Seph), in a merchant's GM shop settings, when the world has D35E custom coins:
+  - **Any coins** (as before): every coin counts at its value in gp, custom coins too.
+  - **Standard coins**: platinum, gold, silver and copper only; custom coins aren't taken or paid.
+  - **A custom currency** (D35E's Group (Currency) Name, such as *Minted Geld*): that currency only. Prices show in whole coins of it, rounded up (a 6,000 gp item: *6 Minted Geld* when a coin is worth 1,000 gp); the buyer pays with those coins and the merchant keeps them; what the merchant buys he pays in them too, rounded down (Buys at 0%: he buys nothing). The purse on the sheet counts only those coins, and the header tells players *takes only Minted Geld*.
+- The GM's Purse row shows the merchant's custom coins (its currency's, or any it has) beside the standard ones, to set how many it holds.
+- A restock keeps the setting.
+
 ## Axecleft's Shop 1.39
 
 - **GM settings and the item list in a short window** (spotted by Gilgalad). Open, the GM's shop settings take at most half of the sheet and scroll inside their own box, so every setting can be reached without making the window taller, and the item list below stays visible (at least a few rows) without closing the settings first. The settings keep their scroll position when the sheet redraws.

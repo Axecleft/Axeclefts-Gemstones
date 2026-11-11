@@ -28,7 +28,7 @@
  * The Merchant Generator's saved settings (flags.world.axecleftMerchant) and D35E's loot sheet flags are read as a
  * fallback, so merchants made before this sheet work as they are.
  */
-const AXECLEFT_TRADE_VERSION = 1.39; // 1.39: the open GM settings scroll in their own box, so the item list stays in reach in a short window; 1.38: Shift+click on the basket's cart or − asks how many to add or take off (a stack of arrows or bolts in one go); 1.37: the shop sheet registers on Foundry v11 (its Actors and TextEditor aren't properties of globalThis), so merchants open on it; 1.36: tours point at the sheet they opened, and show an example of the parts that aren't there yet (haggling, the basket, the lock, the log); 1.35: tours of the merchant, loot and party storage sheets (players and GM); 1.34: texts the language files missed (hide or show an item, a decided pickpocketing card); 1.33: the item list keeps its place when the sheet is redrawn (opening a description, adding to the basket, a trade); 1.32: an item's description pops up when the pointer rests on its name, and stays open under it when clicked (the unidentified one for an unidentified item); 1.31: a merchant's log (sales, purchases, haggling, pickpocketing, shoplifting, lock-outs) on the GM settings; a basket to buy several things at once; 1.3: Loot and Party storage sheets (take, put in, split coins, sneak things out), locks (keys, Open Lock, force, break, knock) and traps (simple, or a Traps module trap actor); D35E "valuable" items; 1.24: long buttons on the GM's pickpocketing card wrap instead of being cut off; 1.23: the GM opens the merchant's character sheet (D35E's NPC sheet: stats, skills, attacks) from the shop sheet; 1.22: the item list on the parchment too (Foundry's dark table rows made the items look greyed out); 1.21: a shop's security (guards, wards, locked goods…) changes the DCs and its Spot; 1.2: pickpocketing and shoplifting (the GM decides each one on a card in chat: time-outs, lock-outs, the target's reaction); the sheet on D35E's parchment; 1.13: 1.13: a haggle that goes against the buyer reads "worse prices" (not "-5% better"); 1.12: stock shows (D35E marks loose items with container "none"); players can use the sheet's tabs and buttons (Foundry disabled them on a sheet they don't own); the window's title is the merchant's name; 1.1: trade goods at their own sell and buy % (world house rule, or per shop); haggling with Diplomacy, Intimidate or Bluff
+const AXECLEFT_TRADE_VERSION = 1.40; // 1.40: a merchant can take only one of D35E's custom currencies (Coins it takes, in the GM settings): prices in whole coins of it, paid and received in it (suggested by Seph); 1.39: the open GM settings scroll in their own box, so the item list stays in reach in a short window; 1.38: Shift+click on the basket's cart or − asks how many to add or take off (a stack of arrows or bolts in one go); 1.37: the shop sheet registers on Foundry v11 (its Actors and TextEditor aren't properties of globalThis), so merchants open on it; 1.36: tours point at the sheet they opened, and show an example of the parts that aren't there yet (haggling, the basket, the lock, the log); 1.35: tours of the merchant, loot and party storage sheets (players and GM); 1.34: texts the language files missed (hide or show an item, a decided pickpocketing card); 1.33: the item list keeps its place when the sheet is redrawn (opening a description, adding to the basket, a trade); 1.32: an item's description pops up when the pointer rests on its name, and stays open under it when clicked (the unidentified one for an unidentified item); 1.31: a merchant's log (sales, purchases, haggling, pickpocketing, shoplifting, lock-outs) on the GM settings; a basket to buy several things at once; 1.3: Loot and Party storage sheets (take, put in, split coins, sneak things out), locks (keys, Open Lock, force, break, knock) and traps (simple, or a Traps module trap actor); D35E "valuable" items; 1.24: long buttons on the GM's pickpocketing card wrap instead of being cut off; 1.23: the GM opens the merchant's character sheet (D35E's NPC sheet: stats, skills, attacks) from the shop sheet; 1.22: the item list on the parchment too (Foundry's dark table rows made the items look greyed out); 1.21: a shop's security (guards, wards, locked goods…) changes the DCs and its Spot; 1.2: pickpocketing and shoplifting (the GM decides each one on a card in chat: time-outs, lock-outs, the target's reaction); the sheet on D35E's parchment; 1.13: 1.13: a haggle that goes against the buyer reads "worse prices" (not "-5% better"); 1.12: stock shows (D35E marks loose items with container "none"); players can use the sheet's tabs and buttons (Foundry disabled them on a sheet they don't own); the window's title is the merchant's name; 1.1: trade goods at their own sell and buy % (world house rule, or per shop); haggling with Diplomacy, Intimidate or Bluff
 const AXECLEFT_TRADE_HOST = (() => {
   try { return decodeURIComponent(new URL(import.meta.url).pathname).match(/\/modules\/([^/]+)\//)?.[1] ?? null; } catch (e) { return null; }
 })();
@@ -82,6 +82,8 @@ const AXECLEFT_TRADE_HOST = (() => {
       security: Array.isArray(own.security) ? own.security : Array.isArray(gen.security) ? gen.security : [],
       chat: own.chat ?? "public",
       shopName: gen.shop ?? "",
+      // 1.40: "" any coins, "std" the standard coins only, else the group (D35E's Group (Currency) Name) of the custom coins the shop takes and pays with
+      coins: String(own.coins ?? gen.coins ?? ""),
     };
   }
 
@@ -100,25 +102,64 @@ const AXECLEFT_TRADE_HOST = (() => {
     for (const [k, v] of STD.slice(1)) { const n = Math.floor(cp / v); if (n) { out.push(`${n.toLocaleString()} ${coinName(k)}`); cp -= n * v; } }
     return out.join(" ");
   }
-  /** Every coin an actor has, as stacks from the smallest: [{ path, value (cp), count }] (carried coins before weightless ones). */
-  function stacks(actor) {
+  /** The custom currencies (D35E's Group (Currency) Name; a coin without a group is its own currency): [{ group, coins }]. */
+  function currencyGroups() {
+    const out = new Map();
+    for (const c of customs()) { const g = String(c.group || c.name || c.id).trim(); if (!out.has(g)) out.set(g, []); out.get(g).push(c); }
+    return [...out].map(([group, coins]) => ({ group, coins }));
+  }
+  /**
+   * 1.40: the coins a shop takes (and pays with), when it takes only one custom currency: { name, ids, unit (cp, its
+   * smallest coin) }; { std: true } for the standard coins only. null: any coins (also when that currency is no longer
+   * in D35E's custom coins).
+   */
+  function shopCoins(shop) {
+    const g = shopOf(shop).coins;
+    if (!g) return null;
+    if (g === "std") return { std: true, name: "", ids: new Set(), unit: 1 };
+    const coins = currencyGroups().find((x) => x.group === g)?.coins;
+    if (!coins?.length) return null;
+    return { name: g, ids: new Set(coins.map((c) => c.id)), unit: Math.min(...coins.map((c) => Math.round(c.value * 100))) };
+  }
+  /** A price in a shop's coins: "6 Minted Geld" for a shop that takes one currency, else "12 gp 5 sp". */
+  function priceText(shop, cp) {
+    const c = shop ? shopCoins(shop) : null;
+    return c && !c.std ? `${Math.round((Number(cp) || 0) / c.unit).toLocaleString()} ${c.name}` : money(cp);
+  }
+  /** Every coin an actor has, as stacks from the smallest: [{ path, value (cp), count }] (carried coins before weightless ones). only: a shop's coins (shopCoins). */
+  function stacks(actor, only = null) {
     const s = actor?.system ?? {}, out = [];
-    STD.forEach(([k, v]) => {
+    if (!only || only.std) STD.forEach(([k, v]) => {
       out.push({ path: `system.currency.${k}`, value: v, count: Math.max(0, Math.floor(Number(s.currency?.[k]) || 0)), order: 0 });
       out.push({ path: `system.altCurrency.${k}`, value: v, count: Math.max(0, Math.floor(Number(s.altCurrency?.[k]) || 0)), order: 1 });
     });
-    for (const c of customs()) out.push({ path: `system.customCurrency.${c.id}`, value: Math.round(c.value * 100), count: Math.max(0, Math.floor(Number(s.customCurrency?.[c.id]) || 0)), order: 2 });
+    if (!only?.std) for (const c of customs()) if (!only || only.ids.has(c.id)) out.push({ path: `system.customCurrency.${c.id}`, value: Math.round(c.value * 100), count: Math.max(0, Math.floor(Number(s.customCurrency?.[c.id]) || 0)), order: 2 });
     return out.filter((x) => x.value > 0).sort((a, b) => a.value - b.value || a.order - b.order);
   }
-  const wealth = (actor) => stacks(actor).reduce((n, x) => n + x.value * x.count, 0);
+  const wealth = (actor, only = null) => stacks(actor, only).reduce((n, x) => n + x.value * x.count, 0);
+  /** What an actor has, in a shop's coins ("9 Minted Geld"), or all its coins. */
+  const purseText = (actor, shop) => { const c = shop ? shopCoins(shop) : null; return c ? priceText(shop, wealth(actor, c)) : money(wealth(actor)); };
+  /** The shop keeps (and pays out) the very coins of its one custom currency; otherwise coins are counted by value. */
+  const ownCoins = (c) => !!c && !c.std;
+  /** The coins a payment takes from an actor, by path (to hand the same coins to the other side). */
+  function coinsTaken(actor, pay) {
+    const out = {};
+    for (const [p, v] of Object.entries(pay)) { const before = Math.floor(Number(getP(actor, p)) || 0); if (p.startsWith("system.customCurrency.") && v < before) out[p] = before - v; }
+    return out;
+  }
+  /** Coins added to an actor, as they are (a shop that takes one currency keeps and pays the coins themselves). */
+  function giveCoins(actor, coins, upd = {}) {
+    for (const [p, n] of Object.entries(coins)) upd[p] = (upd[p] ?? (Number(getP(actor, p)) || 0)) + n;
+    return upd;
+  }
   /**
    * The coins an actor hands over for a price: the biggest coins that fit, then smaller ones, then one coin big enough for
    * the rest, with the change given back in gold, silver and copper. → an actor update, or null when it can't pay.
    */
-  function payment(actor, cost) {
+  function payment(actor, cost, only = null) {
     cost = Math.round(cost);
     if (cost <= 0) return {};
-    const list = stacks(actor);
+    const list = stacks(actor, only);
     if (list.reduce((n, x) => n + x.value * x.count, 0) < cost) return null;
     let left = cost;
     // The biggest coins that fit first (few coins, no change when it comes out even), then smaller ones for the rest
@@ -173,7 +214,10 @@ const AXECLEFT_TRADE_HOST = (() => {
   /** What the shop asks for one piece (sell %, or the trade goods %), less the buyer's haggling. */
   function askPrice(shop, item, buyer) {
     const s = shopOf(shop);
-    return Math.max(0, Math.round(valueOf(item) * (isTradeGoods(item) ? s.tradeSell : s.sell) / 100 * (1 - haggleOf(shop, buyer) / 100)));
+    const cp = Math.max(0, Math.round(valueOf(item) * (isTradeGoods(item) ? s.tradeSell : s.sell) / 100 * (1 - haggleOf(shop, buyer) / 100)));
+    // 1.40: in whole coins of the one currency a shop takes, rounded up (a 6,000 gp item: 6 coins worth 1,000 gp)
+    const c = shopCoins(shop);
+    return ownCoins(c) && cp > 0 ? Math.ceil(cp / c.unit - 1e-9) * c.unit : cp;
   }
   /**
    * What the shop pays for one piece: trade goods (D35E's Full Resale Price: gems, art, jewelry) at the trade goods %
@@ -183,7 +227,10 @@ const AXECLEFT_TRADE_HOST = (() => {
     const s = shopOf(shop), v = valueOf(item);
     const pct = isTradeGoods(item) ? s.tradeBuy : s.buy;
     const cap = v * Math.max(100, isTradeGoods(item) ? s.tradeBuy : 0) / 100;
-    return Math.max(0, Math.min(Math.round(cap), Math.round(v * pct / 100 * (1 + haggleOf(shop, seller) / 100))));
+    const cp = Math.max(0, Math.min(Math.round(cap), Math.round(v * pct / 100 * (1 + haggleOf(shop, seller) / 100))));
+    // 1.40: a shop that takes one currency pays in whole coins of it, rounded down
+    const c = shopCoins(shop);
+    return ownCoins(c) ? Math.floor(cp / c.unit + 1e-9) * c.unit : cp;
   }
 
   /** The same item (to stack onto): same type and name, and the same data apart from quantity and where it is. */
@@ -297,14 +344,16 @@ const AXECLEFT_TRADE_HOST = (() => {
       if (qty < 1) throw fail(/*t*/"Choose how many.");
       if (qty > qtyOf(item)) throw fail(/*t*/"{shop} has only {n}.", { shop: shop.name, n: qtyOf(item) });
       const cost = askPrice(shop, item, buyer) * qty;
-      const pay = payment(buyer, cost);
-      if (!pay) throw fail(/*t*/"{name} doesn't have {price} (has {has}).", { name: buyer.name, price: money(cost), has: money(wealth(buyer)) });
+      const only = shopCoins(shop), P = priceText(shop, cost);
+      const pay = payment(buyer, cost, only);
+      if (!pay) throw fail(/*t*/"{name} doesn't have {price} (has {has}).", { name: buyer.name, price: P, has: purseText(buyer, shop) });
+      const taken = ownCoins(only) ? coinsTaken(buyer, pay) : null;
       if (Object.keys(pay).length) await buyer.update(pay);
-      if (cost > 0) await shop.update(addCoins(shop, cost));
+      if (cost > 0) await shop.update(taken ? giveCoins(shop, taken) : addCoins(shop, cost));
       const moved = await moveItem(shop, buyer, item.id, qty, { "system.equipped": false, "system.carried": true });
-      await announce(shop, t("<b>{buyer}</b> buys {qty} × {item} for {price}.", { buyer: esc(buyer.name), qty: moved.qty, item: esc(moved.name), price: esc(money(cost)) }));
-      await logLoot(shop, t("{name} bought {qty} × {item} for {price}.", { name: buyer.name, qty: moved.qty, item: moved.name, price: money(cost) }));
-      return { text: /*t*/"{name} bought {qty} × {item} for {price}.", data: { name: buyer.name, qty: moved.qty, item: moved.name, price: money(cost) } };
+      await announce(shop, t("<b>{buyer}</b> buys {qty} × {item} for {price}.", { buyer: esc(buyer.name), qty: moved.qty, item: esc(moved.name), price: esc(P) }));
+      await logLoot(shop, t("{name} bought {qty} × {item} for {price}.", { name: buyer.name, qty: moved.qty, item: moved.name, price: P }));
+      return { text: /*t*/"{name} bought {qty} × {item} for {price}.", data: { name: buyer.name, qty: moved.qty, item: moved.name, price: P } };
     }
     if (action === "buyMany") {
       const { shop, actor: buyer, user } = await parties(data, userId, "buyer");
@@ -318,16 +367,18 @@ const AXECLEFT_TRADE_HOST = (() => {
       }
       if (!list.length) throw fail(/*t*/"The basket is empty.");
       const cost = list.reduce((n, x) => n + x.cost, 0);
-      const pay = payment(buyer, cost);
-      if (!pay) throw fail(/*t*/"{name} doesn't have {price} (has {has}).", { name: buyer.name, price: money(cost), has: money(wealth(buyer)) });
+      const only = shopCoins(shop), P = priceText(shop, cost);
+      const pay = payment(buyer, cost, only);
+      if (!pay) throw fail(/*t*/"{name} doesn't have {price} (has {has}).", { name: buyer.name, price: P, has: purseText(buyer, shop) });
+      const taken = ownCoins(only) ? coinsTaken(buyer, pay) : null;
       if (Object.keys(pay).length) await buyer.update(pay);
-      if (cost > 0) await shop.update(addCoins(shop, cost));
+      if (cost > 0) await shop.update(taken ? giveCoins(shop, taken) : addCoins(shop, cost));
       const got = [];
       for (const x of list) { const moved = await moveItem(shop, buyer, x.item.id, x.qty, { "system.equipped": false, "system.carried": true }); got.push(`${moved.qty} × ${moved.name}`); }
       const what = got.join(", ");
-      await announce(shop, t("<b>{buyer}</b> buys {what} for {price}.", { buyer: esc(buyer.name), what: esc(what), price: esc(money(cost)) }));
-      await logLoot(shop, t("{name} bought {what} for {price}.", { name: buyer.name, what, price: money(cost) }));
-      return { text: /*t*/"{name} bought {what} for {price}.", data: { name: buyer.name, what, price: money(cost) } };
+      await announce(shop, t("<b>{buyer}</b> buys {what} for {price}.", { buyer: esc(buyer.name), what: esc(what), price: esc(P) }));
+      await logLoot(shop, t("{name} bought {what} for {price}.", { name: buyer.name, what, price: P }));
+      return { text: /*t*/"{name} bought {what} for {price}.", data: { name: buyer.name, what, price: P } };
     }
     if (action === "sell") {
       const { shop, actor: seller } = await parties(data, userId, "seller");
@@ -338,14 +389,16 @@ const AXECLEFT_TRADE_HOST = (() => {
       if (qty < 1 || qty > qtyOf(item)) throw fail(/*t*/"Choose how many.");
       const price = offerPrice(shop, item, seller) * qty;
       if (price <= 0) throw fail(/*t*/"{shop} won't pay anything for that.", { shop: shop.name });
-      const pay = payment(shop, price);
-      if (!pay) throw fail(/*t*/"{shop} can't pay {price} (has {has}).", { shop: shop.name, price: money(price), has: money(wealth(shop)) });
+      const only = shopCoins(shop), P = priceText(shop, price);
+      const pay = payment(shop, price, only);
+      if (!pay) throw fail(/*t*/"{shop} can't pay {price} (has {has}).", { shop: shop.name, price: P, has: purseText(shop, shop) });
+      const taken = ownCoins(only) ? coinsTaken(shop, pay) : null;
       if (Object.keys(pay).length) await shop.update(pay);
-      await seller.update(addCoins(seller, price));
+      await seller.update(taken ? giveCoins(seller, taken) : addCoins(seller, price));
       const moved = await moveItem(seller, shop, item.id, qty, { "system.equipped": false });
-      await announce(shop, t("<b>{seller}</b> sells {qty} × {item} for {price}.", { seller: esc(seller.name), qty: moved.qty, item: esc(moved.name), price: esc(money(price)) }));
-      await logLoot(shop, t("{name} sold {qty} × {item} for {price}.", { name: seller.name, qty: moved.qty, item: moved.name, price: money(price) }));
-      return { text: /*t*/"{name} sold {qty} × {item} for {price}.", data: { name: seller.name, qty: moved.qty, item: moved.name, price: money(price) } };
+      await announce(shop, t("<b>{seller}</b> sells {qty} × {item} for {price}.", { seller: esc(seller.name), qty: moved.qty, item: esc(moved.name), price: esc(P) }));
+      await logLoot(shop, t("{name} sold {qty} × {item} for {price}.", { name: seller.name, qty: moved.qty, item: moved.name, price: P }));
+      return { text: /*t*/"{name} sold {qty} × {item} for {price}.", data: { name: seller.name, qty: moved.qty, item: moved.name, price: P } };
     }
     if (action === "haggle") {
       const { shop, actor: buyer, user } = await parties(data, userId, "buyer");
@@ -785,7 +838,7 @@ const AXECLEFT_TRADE_HOST = (() => {
     const limited = !gm && !shop.testUserPermission(game.user, OWN().LIMITED);
     const head = `<header class="ash-head"><img src="${esc(shop.img)}" alt="">
       ${gm ? `<button type="button" class="ash-act" data-ash="charsheet" style="order:9;margin-left:auto;align-self:flex-start" title="${H("The merchant's stats, skills and attacks on D35E's sheet (the shop stays its sheet)")}"><i class="fas fa-user"></i> ${H("Character sheet")}</button>` : ""}
-      <div><h2>${esc(shop.name)}</h2><div class="sub">${s.shopName && !shop.name.includes(s.shopName) ? `${esc(s.shopName)} · ` : ""}${H("Sells at {sell}%, buys at {buy}%", { sell: s.sell, buy: s.buy })}${s.haggle ? ` · ${H("haggles")}` : ""}</div></div></header>`;
+      <div><h2>${esc(shop.name)}</h2><div class="sub">${s.shopName && !shop.name.includes(s.shopName) ? `${esc(s.shopName)} · ` : ""}${H("Sells at {sell}%, buys at {buy}%", { sell: s.sell, buy: s.buy })}${s.haggle ? ` · ${H("haggles")}` : ""}${ownCoins(shopCoins(shop)) ? ` · <b>${H("takes only {currency}", { currency: shopCoins(shop).name })}</b>` : shopCoins(shop)?.std ? ` · ${H("standard coins only")}` : ""}</div></div></header>`;
     if (limited) return `${STYLE}${skin()}<div class="ash">${head}<div class="ash-closed">${H("This shop isn't open to you.")}</div></div>`;
     const hag = buyer ? s.haggles?.[buyer.id] : null;
     const locked = !!(buyer && s.locked[buyer.id]);
@@ -798,7 +851,7 @@ const AXECLEFT_TRADE_HOST = (() => {
       ${s.haggle && buyer && !locked ? (hag ? `<span class="muted">${hag.refused ? H("Haggled without success.") : (hag.pct > 0 ? H("Haggled: prices {pct}% better.", { pct: hag.pct }) : hag.pct < 0 ? H("Haggled: prices {pct}% worse.", { pct: -hag.pct }) : H("Haggled: prices unchanged."))}</span>`
         : HAGGLE_SKILLS.filter(([k]) => s.skills[k]).map(([k, label, icon]) => `<button type="button" class="ash-act" data-ash="haggle" data-skill="${k}" title="${H("Haggle: roll {skill}; the GM decides", { skill: t(label) })}"><i class="fas ${icon}"></i> ${H(label)}</button>`).join(""))
         : demoOn(sheet) ? `<span class="ash-demo">${HAGGLE_SKILLS.map(([k, label, icon]) => `<button type="button" class="ash-act" data-ash="haggle" data-skill="${k}" disabled><i class="fas ${icon}"></i> ${H(label)}</button>`).join("")}${demoTag()}</span>` : ""}
-      ${buyer ? `<span class="purse">${H("Purse")}: <b>${esc(money(wealth(buyer)))}</b></span>` : ""}</div>`;
+      ${buyer ? `<span class="purse">${H("Purse")}: <b>${esc(purseText(buyer, shop))}</b></span>` : ""}</div>`;
     const tabs = `<nav class="ash-tabs"><button type="button" data-ash-tab="buy" class="${st.tab === "buy" ? "active" : ""}"><i class="fas fa-store"></i> ${H("Buy")}</button>
       <button type="button" data-ash-tab="sell" class="${st.tab === "sell" ? "active" : ""}"><i class="fas fa-hand-holding-dollar"></i> ${H("Sell")}</button></nav>`;
     st.cart ??= {};
@@ -807,7 +860,7 @@ const AXECLEFT_TRADE_HOST = (() => {
     if (!basket && demoOn(sheet) && st.tab === "buy") {
       const first = stockOf(shop)[0];
       basket = `<fieldset class="ash-demo-box" disabled><div class="ash-row ash-basket ash-demo" style="padding:4px 6px;border:1px solid #7a7971;border-radius:4px;background:rgba(255,255,255,0.25)"><b><i class="fas fa-basket-shopping"></i> ${H("Basket")}</b>${demoTag()}
-        ${first ? `<span>1 × ${esc(shownName(first))}<a class="ash-ctl"><i class="fas fa-minus"></i></a></span><span style="margin-left:auto">${H("Total")}: <b>${esc(money(askPrice(shop, first, buyer)))}</b></span>` : `<span style="margin-left:auto"></span>`}
+        ${first ? `<span>1 × ${esc(shownName(first))}<a class="ash-ctl"><i class="fas fa-minus"></i></a></span><span style="margin-left:auto">${H("Total")}: <b>${esc(priceText(shop, askPrice(shop, first, buyer)))}</b></span>` : `<span style="margin-left:auto"></span>`}
         <button type="button" class="ash-act"><i class="fas fa-cash-register"></i> ${H("Buy all")}</button><button type="button" class="ash-act"><i class="fas fa-xmark"></i> ${H("Empty")}</button></div></fieldset>`;
     }
     return `${STYLE}${skin()}<div class="ash"${demoAttr(sheet, "merchant")}>${head}${gm ? gmHTML(shop, s, !!st.gmOpen, !!st.logOpen, demoOn(sheet)) : ""}${who}${tabs}${basket}<div class="ash-list">${list}</div>
@@ -833,7 +886,7 @@ const AXECLEFT_TRADE_HOST = (() => {
         <a class="ash-ctl" data-ash="qty" data-d="-1" data-id="${i.id}" title="${H("One fewer")}"><i class="fas fa-minus"></i></a><a class="ash-ctl" data-ash="qty" data-d="1" data-id="${i.id}" title="${H("One more")}"><i class="fas fa-plus"></i></a>
         <a class="ash-ctl" data-ash="edit" data-id="${i.id}" title="${H("Edit")}"><i class="fas fa-pen"></i></a><a class="ash-ctl" data-ash="delete" data-id="${i.id}" title="${H("Remove")}"><i class="fas fa-trash"></i></a>` : "";
       return `<tr class="${isHidden(i) ? "hidden-item" : ""}"><td class="name"><img src="${esc(i.img)}" alt=""><span class="ash-name" data-ash="desc" data-uuid="${i.uuid}">${name}</span></td><td class="n">${q}</td>
-        <td class="n">${esc(money(price))}</td><td class="n">${steal && q > 0 ? `<a class="ash-ctl" data-ash="shoplift" data-id="${i.id}" title="${H("Shoplift: Sleight of Hand; the GM decides")}"><i class="fas fa-hand-sparkles"></i></a> ` : ""}${buyer && q > 0 && cart ? `<a class="ash-ctl" data-ash="cart" data-id="${i.id}" title="${H("Add one to the basket (Shift+click: how many)")}"><i class="fas fa-cart-plus"></i>${cart[i.id] ? `<small>${cart[i.id]}</small>` : ""}</a> ` : ""}${buyer && q > 0 ? `<button type="button" class="ash-act" data-ash="buy" data-id="${i.id}">${H("Buy")}</button>` : ""}</td><td class="n">${ctl}</td></tr>`;
+        <td class="n">${esc(priceText(shop, price))}</td><td class="n">${steal && q > 0 ? `<a class="ash-ctl" data-ash="shoplift" data-id="${i.id}" title="${H("Shoplift: Sleight of Hand; the GM decides")}"><i class="fas fa-hand-sparkles"></i></a> ` : ""}${buyer && q > 0 && cart ? `<a class="ash-ctl" data-ash="cart" data-id="${i.id}" title="${H("Add one to the basket (Shift+click: how many)")}"><i class="fas fa-cart-plus"></i>${cart[i.id] ? `<small>${cart[i.id]}</small>` : ""}</a> ` : ""}${buyer && q > 0 ? `<button type="button" class="ash-act" data-ash="buy" data-id="${i.id}">${H("Buy")}</button>` : ""}</td><td class="n">${ctl}</td></tr>`;
     };
     return `<table class="ash-t"><tr><th>${H("Item")}</th><th class="n">${H("Qty")}</th><th class="n">${H("Price each")}</th><th></th><th></th></tr>${rowsByGroup(items, row)}</table>`;
   }
@@ -844,11 +897,11 @@ const AXECLEFT_TRADE_HOST = (() => {
     const lines = Object.entries(cart).map(([id, n]) => ({ it: shop.items.get(id), n })).filter((x) => x.it);
     if (!lines.length || !buyer) return "";
     const total = lines.reduce((s, x) => s + askPrice(shop, x.it, buyer) * x.n, 0);
-    const short = total > wealth(buyer);
+    const short = total > wealth(buyer, shopCoins(shop));
     return `<div class="ash-row ash-basket" style="padding:4px 6px;border:1px solid #7a7971;border-radius:4px;background:rgba(255,255,255,0.25)"><b><i class="fas fa-basket-shopping"></i> ${H("Basket")}</b>
       ${lines.map((x) => `<span>${x.n} × ${esc(shownName(x.it))}<a class="ash-ctl" data-ash="uncart" data-id="${x.it.id}" title="${H("One fewer (Shift+click: how many)")}"><i class="fas fa-minus"></i></a></span>`).join(" ")}
-      <span style="margin-left:auto">${H("Total")}: <b class="${short ? "warn" : ""}">${esc(money(total))}</b></span>
-      <button type="button" class="ash-act" data-ash="buyAll"${short ? ` title="${H("{name} has {has}", { name: buyer.name, has: money(wealth(buyer)) })}"` : ""}><i class="fas fa-cash-register"></i> ${H("Buy all")}</button>
+      <span style="margin-left:auto">${H("Total")}: <b class="${short ? "warn" : ""}">${esc(priceText(shop, total))}</b></span>
+      <button type="button" class="ash-act" data-ash="buyAll"${short ? ` title="${H("{name} has {has}", { name: buyer.name, has: purseText(buyer, shop) })}"` : ""}><i class="fas fa-cash-register"></i> ${H("Buy all")}</button>
       <button type="button" class="ash-act" data-ash="clearCart"><i class="fas fa-xmark"></i> ${H("Empty")}</button></div>`;
   }
 
@@ -860,9 +913,23 @@ const AXECLEFT_TRADE_HOST = (() => {
       const offer = offerPrice(shop, i, seller), q = qtyOf(i);
       const notes = [getP(i, "system.equipped") ? t("equipped") : "", isTradeGoods(i) ? t("trade goods at {pct}%", { pct: shopOf(shop).tradeBuy }) : ""].filter(Boolean).join(", ");
       return `<tr><td class="name"><img src="${esc(i.img)}" alt=""><span class="ash-name" data-ash="desc" data-uuid="${i.uuid}">${esc(i.name)}${notes ? ` <small class="muted">(${esc(notes)})</small>` : ""}</span></td><td class="n">${q}</td>
-        <td class="n">${offer > 0 ? esc(money(offer)) : `<span class="muted">${H("no offer")}</span>`}</td><td class="n">${offer > 0 ? `<button type="button" class="ash-act" data-ash="sell" data-id="${i.id}">${H("Sell")}</button>` : ""}</td><td></td></tr>`;
+        <td class="n">${offer > 0 ? esc(priceText(shop, offer)) : `<span class="muted">${H("no offer")}</span>`}</td><td class="n">${offer > 0 ? `<button type="button" class="ash-act" data-ash="sell" data-id="${i.id}">${H("Sell")}</button>` : ""}</td><td></td></tr>`;
     };
     return `<table class="ash-t"><tr><th>${H("{name}'s items", { name: seller.name })}</th><th class="n">${H("Qty")}</th><th class="n">${H("Offer each")}</th><th></th><th></th></tr>${rowsByGroup(items, row)}</table>`;
+  }
+
+  /** 1.40: Coins it takes: any coins, or one of D35E's custom currencies (shown only when the world has custom coins). */
+  function coinsSetting(s) {
+    const groups = currencyGroups();
+    if (!groups.length && !s.coins) return "";
+    const opts = [["", t("Any coins")], ["std", t("Standard coins")], ...groups.map((g) => [g.group, g.group])];
+    if (s.coins && s.coins !== "std" && !groups.some((g) => g.group === s.coins)) opts.push([s.coins, t("{currency} (not in D35E's custom coins: any coins)", { currency: s.coins })]);
+    return `<label title="${H("Any coins: every coin counts at its value in gp. Standard coins: no custom coins. A custom currency: only that one, with prices in whole coins of it (rounded up), and what the shop buys paid in it (rounded down). Buys at 0%: it buys nothing.")}">${H("Coins it takes")}</label><span><select data-ash-set="coins">${opts.map(([v, l]) => `<option value="${esc(v)}"${s.coins === v ? " selected" : ""}>${esc(l)}</option>`).join("")}</select></span>`;
+  }
+  /** The custom coins the GM's Purse row shows: the shop's currency, else any custom coin it has. */
+  function purseCustoms(shop, only) {
+    if (only?.std) return [];
+    return customs().filter((c) => (only ? only.ids.has(c.id) : (Number(shop.system?.customCurrency?.[c.id]) || 0) > 0));
   }
 
   function gmHTML(shop, s, gmOpen = false, logOpen = false, demo = false) {
@@ -870,6 +937,7 @@ const AXECLEFT_TRADE_HOST = (() => {
     const cur = shop.system?.currency ?? {};
     const open = (shop.ownership?.default ?? 0) >= OWN().LIMITED;
     const hag = Object.entries(s.haggles ?? {});
+    const only = shopCoins(shop);
     return `<details class="ash-gm"${gmOpen ? " open" : ""}><summary><i class="fas fa-user-shield"></i> ${H("GM: shop settings")} <small class="muted">${H("(players don't see this)")}</small></summary>
       <div class="ash-grid">
         <label>${H("Sheet")}</label><span>${modeSelect(s.mode)}</span><span></span><span></span>
@@ -879,6 +947,7 @@ const AXECLEFT_TRADE_HOST = (() => {
         <label>${H("Trade goods: buys at")}</label><span><input type="number" data-ash-set="tradeBuy" value="${own.tradeBuy ?? ""}" placeholder="${worldPct("tradeGoodsBuy")}" min="0" max="1000"> %</span>
         <label>${H("Open to")}</label><span><select data-ash-set="open"><option value="0"${open ? "" : " selected"}>${H("Players set in Ownership")}</option><option value="1"${open ? " selected" : ""}>${H("All players")}</option></select></span>
         <label>${H("Trades in chat")}</label><span><select data-ash-set="chat">${[["public", /*t*/"For everyone"], ["gm", /*t*/"GM only"], ["none", /*t*/"Not shown"]].map(([k, l]) => `<option value="${k}"${s.chat === k ? " selected" : ""}>${H(l)}</option>`).join("")}</select></span>
+        ${coinsSetting(s)}
       </div>
       <p class="muted" style="margin:2px 0;font-size:0.85em">${H("Trade goods are gems, art and jewelry (D35E's Full Resale Price). Empty: the world's house rule, set in the module settings ({sell}% / {buy}%).", { sell: worldPct("tradeGoodsSell"), buy: worldPct("tradeGoodsBuy") })}</p>
       <div class="ash-row"><label><input type="checkbox" data-ash-set="haggle"${s.haggle ? " checked" : ""}> ${H("Players can haggle (you approve each one), with:")}</label>
@@ -888,7 +957,7 @@ const AXECLEFT_TRADE_HOST = (() => {
       <div class="ash-row"><label><input type="checkbox" data-ash-set="steal"${s.steal ? " checked" : ""}> ${H("Players can try pickpocketing and shoplifting here (you decide each one)")}</label>
         <span style="flex-basis:100%"><b>${H("Security")}</b> ${SECURITY.map((x) => `<label title="${H(x.hint)}" style="white-space:nowrap"><input type="checkbox" data-ash-sec="${x.key}"${s.security.includes(x.key) ? " checked" : ""}> ${H(x.label)}</label>`).join(" ")}</span>
         ${Object.keys(s.locked).length ? `<span>${H("Locked out:")} ${Object.entries(s.locked).map(([id, n]) => `${esc(n)} <a class="ash-ctl" data-ash="unlock" data-id="${esc(id)}" title="${H("Let them trade again")}"><i class="fas fa-lock-open"></i></a>`).join(" ")}</span>` : ""}</div>
-      <div class="ash-row"><b>${H("Purse")}</b>${STD.map(([k]) => `<label>${esc(coinName(k))} <input type="number" data-ash-coin="${k}" value="${Number(cur[k]) || 0}" min="0" style="width:6em"></label>`).join("")}<span class="muted">${H("Total {money}", { money: money(wealth(shop)) })}</span></div>
+      <div class="ash-row"><b>${H("Purse")}</b>${(ownCoins(only) ? [] : STD).map(([k]) => `<label>${esc(coinName(k))} <input type="number" data-ash-coin="${k}" value="${Number(cur[k]) || 0}" min="0" style="width:6em"></label>`).join("")}${purseCustoms(shop, only).map((c) => `<label>${esc(c.name)} <input type="number" data-ash-coin="custom:${esc(c.id)}" value="${Math.floor(Number(shop.system?.customCurrency?.[c.id]) || 0)}" min="0" style="width:6em"></label>`).join("")}<span class="muted">${H("Total {money}", { money: purseText(shop, shop) })}</span></div>
       <div class="ash-row">${globalThis.AxecleftMerchants?.generateMerchant ? `<button type="button" class="ash-act" data-ash="restock"><i class="fas fa-boxes-stacked"></i> ${H("Restock")}</button>
         <button type="button" class="ash-act" data-ash="generator"><i class="fas fa-store"></i> ${H("Merchant Generator")}</button>` : ""}
         <span class="muted">${H("Players need Limited or Observer on this actor to trade (never Owner).")}</span></div>
@@ -897,14 +966,14 @@ const AXECLEFT_TRADE_HOST = (() => {
   }
 
   /** How many: a small dialog (1 when there's only one). */
-  async function askQty(title, label, max, priceEach) {
+  async function askQty(title, label, max, priceEach, shop = null) {
     if (max <= 1) return 1;
     const DV = A()?.DialogV2 ?? foundry.applications.api.DialogV2;
     let n = null;
     await DV.wait({
       window: { title }, rejectClose: false,
       content: `<div class="form-group"><label>${esc(label)}</label><input type="number" name="qty" value="1" min="1" max="${max}" style="width:6em"> <small>/ ${max}</small></div>
-        ${priceEach == null ? "" : `<p class="hint" style="font-size:0.9em;opacity:0.85">${H("{price} each", { price: money(priceEach) })}</p>`}`,
+        ${priceEach == null ? "" : `<p class="hint" style="font-size:0.9em;opacity:0.85">${H("{price} each", { price: priceText(shop, priceEach) })}</p>`}`,
       buttons: [
         { action: "ok", label: t("OK"), icon: "fas fa-check", default: true, callback: (ev, button) => { n = Number(button.form?.elements?.qty?.value ?? button.form?.querySelector?.("[name=qty]")?.value); return "ok"; } },
         { action: "no", label: t("Cancel"), icon: "fas fa-xmark" },
@@ -1005,9 +1074,9 @@ const AXECLEFT_TRADE_HOST = (() => {
       if (act === "buy") {
         const item = shop.items.get(id); if (!item || !buyer) return;
         const each = askPrice(shop, item, buyer);
-        const qty = await askQty(t("Buy {item}", { item: shownName(item) }), t("How many?"), qtyOf(item), each);
+        const qty = await askQty(t("Buy {item}", { item: shownName(item) }), t("How many?"), qtyOf(item), each, shop);
         if (!qty) return;
-        if (!(await confirmTrade(t("Buy"), H("{name} buys {qty} × {item} for {price}?", { name: buyer.name, qty, item: shownName(item), price: money(each * qty) })))) return;
+        if (!(await confirmTrade(t("Buy"), H("{name} buys {qty} × {item} for {price}?", { name: buyer.name, qty, item: shownName(item), price: priceText(shop, each * qty) })))) return;
         return run(() => call("buy", { shop: shop.uuid, item: id, qty, buyer: buyer.uuid }));
       }
       if (act === "sell") return sellFlow(sheet, shop, buyer, id, run);
@@ -1017,7 +1086,7 @@ const AXECLEFT_TRADE_HOST = (() => {
         const it = shop.items.get(id); if (!it) return; st.cart ??= {};
         const room = qtyOf(it) - (st.cart[id] ?? 0); if (room <= 0) return;
         let n = 1;
-        if (ev.shiftKey && room > 1) { n = await askQty(t("Add {item} to the basket", { item: shownName(it) }), t("How many?"), room, buyer ? askPrice(shop, it, buyer) : null); if (!n) return; }
+        if (ev.shiftKey && room > 1) { n = await askQty(t("Add {item} to the basket", { item: shownName(it) }), t("How many?"), room, buyer ? askPrice(shop, it, buyer) : null, shop); if (!n) return; }
         st.cart[id] = Math.min(qtyOf(it), (st.cart[id] ?? 0) + n); return rerender(sheet);
       }
       if (act === "uncart") {
@@ -1032,7 +1101,7 @@ const AXECLEFT_TRADE_HOST = (() => {
         const lines = Object.entries(st.cart ?? {}).map(([cid, n]) => ({ it: shop.items.get(cid), n })).filter((x) => x.it && x.n > 0);
         if (!lines.length) return;
         const total = lines.reduce((sum, x) => sum + askPrice(shop, x.it, buyer) * x.n, 0);
-        if (!(await confirmTrade(t("Buy"), H("{name} buys {what} for {price}?", { name: buyer.name, what: lines.map((x) => `${x.n} × ${shownName(x.it)}`).join(", "), price: money(total) })))) return;
+        if (!(await confirmTrade(t("Buy"), H("{name} buys {what} for {price}?", { name: buyer.name, what: lines.map((x) => `${x.n} × ${shownName(x.it)}`).join(", "), price: priceText(shop, total) })))) return;
         return run(async () => { const r = await call("buyMany", { shop: shop.uuid, buyer: buyer.uuid, items: lines.map((x) => ({ id: x.it.id, qty: x.n })) }); st.cart = {}; return r; });
       }
       if (act === "haggle") {
@@ -1106,7 +1175,13 @@ const AXECLEFT_TRADE_HOST = (() => {
       if (el.dataset.ash === "buyer") { st.buyer = el.value; return rerender(sheet); }
       if (!game.user.isGM) return;
       const set = el.dataset.ashSet, coin = el.dataset.ashCoin;
-      if (coin) return shop.update({ [`system.currency.${coin}`]: Math.max(0, Math.floor(Number(el.value) || 0)) });
+      if (coin) return shop.update({ [coin.startsWith("custom:") ? `system.customCurrency.${coin.slice(7)}` : `system.currency.${coin}`]: Math.max(0, Math.floor(Number(el.value) || 0)) });
+      if (set === "coins") {
+        // Kept with the Merchant Generator's saved settings too, so a restock keeps it
+        const u = { [`flags.${FLAG}.${KEY}.coins`]: el.value };
+        if (shop.flags?.[FLAG]?.axecleftMerchant) u[`flags.${FLAG}.axecleftMerchant.coins`] = el.value;
+        return shop.update(u);
+      }
       if (set === "sell" || set === "buy") {
         const v = Math.max(0, Math.round(Number(el.value) || 0));
         return shop.update({ [`flags.${FLAG}.${KEY}.${set}`]: v, [`flags.D35E.${set === "sell" ? "priceModifier" : "priceModifierBuy"}`]: v / 100 });
@@ -1175,10 +1250,10 @@ const AXECLEFT_TRADE_HOST = (() => {
     const item = seller?.items.get(id); if (!item) return;
     const each = offerPrice(shop, item, seller);
     if (each <= 0) return ui.notifications.warn(t("{shop} won't pay anything for that.", { shop: shop.name }));
-    const qty = await askQty(t("Sell {item}", { item: item.name }), t("How many?"), qtyOf(item), each);
+    const qty = await askQty(t("Sell {item}", { item: item.name }), t("How many?"), qtyOf(item), each, shop);
     if (!qty) return;
     const eq = getP(item, "system.equipped") ? ` ${H("(it's equipped)")}` : "";
-    if (!(await confirmTrade(t("Sell"), H("{name} sells {qty} × {item} for {price}?", { name: seller.name, qty, item: item.name, price: money(each * qty) }) + eq))) return;
+    if (!(await confirmTrade(t("Sell"), H("{name} sells {qty} × {item} for {price}?", { name: seller.name, qty, item: item.name, price: priceText(shop, each * qty) }) + eq))) return;
     return run(() => call("sell", { shop: shop.uuid, item: id, qty, seller: seller.uuid }));
   }
 
@@ -1762,7 +1837,7 @@ const AXECLEFT_TRADE_HOST = (() => {
     tour("shop-gm", "merchant", true, /*t*/"Axecleft's Shop: the merchant (GM)", /*t*/"The shop settings on a merchant's sheet: prices, haggling, security, the purse, restocking and the log.", "shop", [
       { id: "intro", title: /*t*/"Axecleft's Shop", content: /*t*/"The Merchant Generator puts its merchants on this sheet. Players need only Limited or Observer on the merchant: every purchase and sale goes through your game, which checks it and moves the coins and items. Without a GM connected, nothing can be traded." },
       { id: "gm", sel: "details.ash-gm:not(.ash-log) > summary", title: /*t*/"GM: shop settings", content: /*t*/"Only you see this. Click to open or close it." },
-      { id: "prices", sel: "[data-ash-set='sell']", title: /*t*/"Prices", content: /*t*/"What the shop charges and pays, as a % of an item's value, and its own % for trade goods (gems, art, jewelry; empty: the world's house rule in the module settings). Sheet changes it to a loot pile or party storage." },
+      { id: "prices", sel: "[data-ash-set='sell']", title: /*t*/"Prices", content: /*t*/"What the shop charges and pays, as a % of an item's value, and its own % for trade goods (gems, art, jewelry; empty: the world's house rule in the module settings). Sheet changes it to a loot pile or party storage. Coins it takes (when the world has custom coins): one currency only, with prices in whole coins of it." },
       { id: "open", sel: "[data-ash-set='open']", title: /*t*/"Who can trade", content: /*t*/"All players, or only those you set in the actor's Ownership; and whether trades show in chat for everyone, for you only or not at all." },
       { id: "haggle", sel: "[data-ash-set='haggle']", title: /*t*/"Haggling", content: /*t*/"Players can roll Diplomacy, Intimidate or Bluff (the ones ticked) for better prices; you approve, change or refuse each on a card in chat. A haggle lasts for that character until you reset it or restock." },
       { id: "steal", sel: "[data-ash-set='steal']", title: /*t*/"Pickpocketing, shoplifting and security", content: /*t*/"Whether players can try to rob this shop (you decide each attempt on a card: a time-out, a lock-out from the shop, the merchant's reaction). Security (guards, a watchful owner, locked cases, wards…) raises the DCs and the merchant's Spot. Locked-out characters are listed here, to let them back." },
@@ -1804,7 +1879,7 @@ const AXECLEFT_TRADE_HOST = (() => {
 
   const api = {
     version: AXECLEFT_TRADE_VERSION, hosts, SHEET, SheetClass: existing?.SheetClass ?? null,
-    shopOf, shopUpdate, money, wealth, payment, addCoins, valueOf, askPrice, offerPrice, call, haggleFor, stacks, moveItem,
+    shopOf, shopUpdate, money, wealth, payment, addCoins, shopCoins, priceText, currencyGroups, valueOf, askPrice, offerPrice, call, haggleFor, stacks, moveItem,
     stealFlow, pickTargeted, SECURITY, securityFx, statSheet, lootOf,
     /** Make an actor a loot pile or party storage on Axecleft's sheet. */
     lootUpdate: (mode = "loot") => ({ "flags.core.sheetClass": SHEET, [`flags.${FLAG}.${KEY}.mode`]: mode === "storage" ? "storage" : "loot" }),

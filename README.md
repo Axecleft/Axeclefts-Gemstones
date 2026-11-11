@@ -3,6 +3,10 @@
 
 Changelog:
 
+v1.14.6.26:
+
+- **Merchants that take one currency** (Axecleft's Shop 1.40, suggested by Seph): in a merchant's GM shop settings, **Coins it takes** can be any coins, the standard coins only, or one of D35E's custom currencies (such as *Minted Geld*). With a custom currency, prices show and are paid in whole coins of it, and what the merchant buys he pays in it too. See MERCHANT-GENERATOR-CHANGELOG.md.
+
 v1.14.6.25:
 
 - **One link installs the whole suite.** Every Axecleft module now recommends all the others (Gemstones, Armory, Curios, Traps, Adventurers and Minions, Hoard Editor, Printable Sheets, VooDoo and the Tools Suite manager), so installing any one of them offers to install the rest.
